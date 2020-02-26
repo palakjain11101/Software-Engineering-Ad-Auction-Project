@@ -11,5 +11,6 @@ public class MainController {
         this.view = view;
         this.model = model;
         System.out.println("init controller");
+        System.out.println("HELLO");
     }
 }
