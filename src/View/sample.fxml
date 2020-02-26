@@ -90,7 +90,7 @@
           <Button mnemonicParsing="false" text="Button" />
         </items>
       </ToolBar>
-      <FlowPane fx:id="lineChart" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+      <FlowPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <children>
             <Button mnemonicParsing="false" onAction="#btn" text="Load Chart" />
             <Slider />

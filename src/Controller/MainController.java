@@ -11,7 +11,7 @@ public class MainController {
     private MainView view;
     private MainModel model;
     @FXML
-    LineChart<String, Number> linechart;
+    LineChart<String, Number> lineChart;
 
     public void setView(MainView view){
         this.view = view;
@@ -22,13 +22,13 @@ public class MainController {
     }
 
     @FXML public void btn(ActionEvent event){
-        linechart.getData().clear();
+        lineChart.getData().clear();
         XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
         series.getData().add(new XYChart.Data<String, Number>("Jan", 200));
         series.getData().add(new XYChart.Data<String, Number>("Feb", 100));
         series.getData().add(new XYChart.Data<String, Number>("Mar", 300));
         series.getData().add(new XYChart.Data<String, Number>("Apr", 230));
         series.setName("Month Pay");
-        linechart.getData().add(series);
+        lineChart.getData().add(series);
     }
 }
