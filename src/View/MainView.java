@@ -29,9 +29,8 @@ public class MainView extends Application {
         Parent root;
         root = FXMLLoader.load(getClass().getResource("/View/sample.fxml"));
 
-
-        GridPane pane = new GridPane();
         primaryStage.setTitle("Dashboard");
+        root.getStylesheets().add("/View/styles.css");
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.setMaximized(true);
         primaryStage.show();

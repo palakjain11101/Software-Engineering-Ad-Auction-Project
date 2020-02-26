@@ -1,13 +1,17 @@
 .root{
-    -fx-background-color: black;
+    -fx-background-color: #adaba5;
 }
 
 .graph-pane{
-    -fx-background-color: #e2f8ff;
+    -fx-background-color: #feffdd;
+    -fx-border-color: #747474;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
 }
 
 .tab-selection-pane{
     -fx-background-color: #d6d6d6;
+    -fx-border-color: #747474;
 }
 
 .time-granulation-bar{
