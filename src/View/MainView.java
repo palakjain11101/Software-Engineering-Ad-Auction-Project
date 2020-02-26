@@ -33,7 +33,7 @@ public class MainView extends Application {
         GridPane pane = new GridPane();
         primaryStage.setTitle("Dashboard");
         primaryStage.setScene(new Scene(root, 300, 275));
-        //primaryStage.setMaximized(true);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 }
