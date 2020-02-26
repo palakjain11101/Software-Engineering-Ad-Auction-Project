@@ -1,0 +1,15 @@
+.root{
+    -fx-background-color: black;
+}
+
+.graph-pane{
+    -fx-background-color: #e2f8ff;
+}
+
+.tab-selection-pane{
+    -fx-background-color: #d6d6d6;
+}
+
+.time-granulation-bar{
+
+}

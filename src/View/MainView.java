@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -28,6 +29,8 @@ public class MainView extends Application {
         Parent root;
         root = FXMLLoader.load(getClass().getResource("/View/sample.fxml"));
 
+
+        GridPane pane = new GridPane();
         primaryStage.setTitle("Dashboard");
         primaryStage.setScene(new Scene(root, 300, 275));
         //primaryStage.setMaximized(true);
