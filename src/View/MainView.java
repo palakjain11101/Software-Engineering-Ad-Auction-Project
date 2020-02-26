@@ -22,15 +22,12 @@ public class MainView extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
         launch();
 
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("/View/sample.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Parent root;
+        root = FXMLLoader.load(getClass().getResource("/View/sample.fxml"));
+
         primaryStage.setTitle("Dashboard");
         primaryStage.setScene(new Scene(root, 300, 275));
         //primaryStage.setMaximized(true);
