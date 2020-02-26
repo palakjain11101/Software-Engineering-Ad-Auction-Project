@@ -14,20 +14,19 @@ import java.io.IOException;
 public class MainView extends Application {
 
 
-    private void launch(){
-        MainModel model = new MainModel();
-        new MainController(this,model);
-    }
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        launch();
-
         Parent root;
-        root = FXMLLoader.load(getClass().getResource("/View/sample.fxml"));
+        //root = FXMLLoader.load(getClass().getResource("/View/sample.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/sample.fxml"));
+        root = fxmlLoader.load();
+        MainController controller = fxmlLoader.getController();
+        controller.setView(this);
+        controller.setModel(new MainModel());
 
         primaryStage.setTitle("Dashboard");
         root.getStylesheets().add("/View/styles.css");

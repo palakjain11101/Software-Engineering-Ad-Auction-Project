@@ -12,14 +12,16 @@ public class MainController {
     private MainModel model;
     @FXML
     LineChart<String, Number> linechart;
-    public MainController(MainView view, MainModel model){
+
+    public void setView(MainView view){
         this.view = view;
-        this.model = model;
-        System.out.println("init controller");
-        System.out.println("HELLO");
     }
 
-    public void btn(ActionEvent event){
+    public void setModel(MainModel model){
+        this.model = model;
+    }
+
+    @FXML public void btn(ActionEvent event){
         linechart.getData().clear();
         XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
         series.getData().add(new XYChart.Data<String, Number>("Jan", 200));
