@@ -9,6 +9,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
@@ -18,20 +19,22 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?scenebuilder-stylesheet styles.css?>
 
-<GridPane hgap="10" prefHeight="387.0" prefWidth="496.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane hgap="10" prefHeight="1057.0" prefWidth="1625.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
       <ColumnConstraints maxWidth="350.0" minWidth="342.0" percentWidth="20.0" prefWidth="342.0" />
       <ColumnConstraints minWidth="76.0" percentWidth="80.0" prefWidth="84.0" />
       <ColumnConstraints />
       <ColumnConstraints />
       <ColumnConstraints />
-       <ColumnConstraints />
+       <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
       <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
       <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints percentHeight="5.0" />
-      <RowConstraints percentHeight="40.0" />
+      <RowConstraints maxHeight="135.0" minHeight="56.0" percentHeight="5.0" prefHeight="135.0" />
+      <RowConstraints maxHeight="399.0" minHeight="320.0" percentHeight="40.0" prefHeight="320.0" />
+      <RowConstraints />
+      <RowConstraints />
       <RowConstraints />
       <RowConstraints />
       <RowConstraints />
@@ -40,16 +43,29 @@
       <RowConstraints percentHeight="50.0" />
    </rowConstraints>
    <children>
-      <FlowPane prefHeight="200.0" prefWidth="200.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="6" GridPane.rowIndex="1">
+      <FlowPane prefHeight="346.0" prefWidth="1193.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="6" GridPane.rowIndex="1">
          <children>
-            <LineChart fx:id="lineChart" title="LINE CHART">
-              <xAxis>
-                <CategoryAxis label="My X Label" side="BOTTOM" />
-              </xAxis>
-              <yAxis>
-                <NumberAxis label="My Y Label" side="LEFT" />
-              </yAxis>
-            </LineChart>
+            <AnchorPane prefHeight="341.0" prefWidth="832.0">
+               <FlowPane.margin>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="40.0" />
+               </FlowPane.margin>
+               <children>
+                  <LineChart fx:id="lineChart" layoutX="14.0" layoutY="55.0" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" title="LINE CHART">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis label="LINE CHART" />
+                    </yAxis>
+                     <effect>
+                        <Glow />
+                     </effect>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                  </LineChart>
+               </children>
+            </AnchorPane>
          </children></FlowPane>
       <TabPane prefHeight="248.0" prefWidth="228.0" styleClass="tab-selection-pane" stylesheets="@styles.css" tabClosingPolicy="UNAVAILABLE" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
         <tabs>
@@ -74,9 +90,12 @@
           <Button mnemonicParsing="false" text="Button" />
         </items>
       </ToolBar>
-      <FlowPane fx:id="lineChart" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <FlowPane fx:id="lineChart" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <children>
+            <Button mnemonicParsing="false" onAction="#btn" text="Load Chart" />
             <Slider />
          </children></FlowPane>
+      <Button mnemonicParsing="false" text="Button" />
+      <Button mnemonicParsing="false" text="Button" />
    </children>
 </GridPane>
