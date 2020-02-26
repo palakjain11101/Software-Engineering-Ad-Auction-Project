@@ -92,7 +92,7 @@
       </ToolBar>
       <FlowPane fx:id="lineChart" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <children>
-            <Button mnemonicParsing="false" onAction="#btn" text="Load Chart" />
+            <Button mnemonicParsing="false" text="Load Chart" />
             <Slider />
          </children></FlowPane>
       <Button mnemonicParsing="false" text="Button" />
