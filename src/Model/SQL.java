@@ -16,9 +16,16 @@ public class SQL {
     public SQL(){
         this.connection();
         this.createTable();
-        this.putData("click_log.csv","click");
-        this.putData("impression_log.csv","impressions");
-        this.putData("server_log.csv","server");
+
+        //WILL BE REMOVED WHEN CONTROLLER IS IMPLEMENTED
+        try{
+            this.putData("click_log.csv","click");
+            this.putData("impression_log.csv","impressions");
+            this.putData("server_log.csv","server");
+        }catch(Exception e){
+            System.out.println("ERROR WITH A FILE");
+        }
+
     }
 
     public void connection(){
@@ -72,7 +79,7 @@ public class SQL {
 
     }
 
-    public void putData(String file, String table){
+    public void putData(String file, String table) throws Exception {
 
         String line = "";
         String cvsSplitBy = ",";
@@ -113,7 +120,7 @@ public class SQL {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
 
     }
