@@ -6,6 +6,7 @@ import View.MainView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
@@ -13,6 +14,12 @@ import javafx.stage.FileChooser;
 import java.io.File;
 
 public class MainController {
+    public static final int SLIDER_DAY = 0;
+    public static final int SLIDER_WEEK = 1;
+    public static final int SLIDER_MONTH = 2;
+    public static final int SLIDER_YEAR = 3;
+
+
     private MainView view;
     private MainModel model;
 
@@ -51,6 +58,24 @@ public class MainController {
         series.getData().add(new XYChart.Data<>(12, 230));
         series.setName("Month Pay");
         lineChart.getData().add(series);
+    }
+
+    public void onTimeGranulationSliderChanged(int value){
+        NumberAxis axis = (NumberAxis) lineChart.getXAxis();
+        switch (value){
+            case SLIDER_DAY:
+                axis.setUpperBound(364);
+                return;
+            case SLIDER_WEEK:
+                axis.setUpperBound(51);
+                return;
+            case SLIDER_MONTH:
+                axis.setUpperBound(11);
+                return;
+            case SLIDER_YEAR:
+                axis.setUpperBound(1);
+                return;
+        }
     }
 
     @FXML public void loadClickLogPressed(){

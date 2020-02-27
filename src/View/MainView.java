@@ -3,6 +3,8 @@ package View;
 import Controller.MainController;
 import Model.MainModel;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -36,7 +38,7 @@ public class MainView extends Application {
         controller.setModel(new MainModel());
 
         stage = primaryStage;
-        setUpTimeGranulationSlider();
+        setUpTimeGranulationSlider(controller);
 
         primaryStage.setTitle("Dashboard");
         root.getStylesheets().add("/View/styles.css");
@@ -45,19 +47,19 @@ public class MainView extends Application {
         primaryStage.show();
     }
 
-    private void setUpTimeGranulationSlider(){
+    private void setUpTimeGranulationSlider(MainController controller){
         Slider slider = (Slider) root.lookup("#timeGranulationSlider");
-        slider.setLabelFormatter(new StringConverter<Double>() {
+        slider.setLabelFormatter(new StringConverter<>() {
             @Override
             public String toString(Double d) {
                 switch (d.intValue()){
-                    case 0:
+                    case MainController.SLIDER_DAY:
                         return "Days";
-                    case 1:
+                    case MainController.SLIDER_WEEK:
                         return "Weeks";
-                    case 2:
+                    case MainController.SLIDER_MONTH:
                         return "Months";
-                    case 3:
+                    case MainController.SLIDER_YEAR:
                         return "Years";
                 }
                 return "";
@@ -67,6 +69,9 @@ public class MainView extends Application {
             public Double fromString(String s) {
                 return null;
             }
+        });
+        slider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+            controller.onTimeGranulationSliderChanged(newValue.intValue());
         });
     }
 
