@@ -68,9 +68,14 @@
          </children></FlowPane>
       <TabPane prefHeight="248.0" prefWidth="228.0" styleClass="tab-selection-pane" stylesheets="@styles.css" tabClosingPolicy="SELECTED_TAB" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
         <tabs>
-          <Tab closable="false" text="Untitled Tab 1" >
+          <Tab closable="false" text="Untitled Tab 1">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button layoutX="91.0" layoutY="53.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Load ClickLog" AnchorPane.topAnchor="53.0" />
+                        <Button layoutX="91.0" layoutY="130.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Load ImpressionLog" />
+                        <Button layoutX="88.0" layoutY="201.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="140.0" text="Load ServerLog" />
+                     </children></AnchorPane>
             </content>
           </Tab>
           <Tab text="Untitled Tab 2">
