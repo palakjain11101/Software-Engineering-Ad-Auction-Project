@@ -72,9 +72,10 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button layoutX="91.0" layoutY="53.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Load ClickLog" AnchorPane.topAnchor="53.0" />
-                        <Button layoutX="91.0" layoutY="130.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Load ImpressionLog" />
-                        <Button layoutX="88.0" layoutY="201.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="140.0" text="Load ServerLog" />
+                        <Button layoutX="91.0" layoutY="53.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Load ClickLog" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="50.0" />
+                        <Button layoutX="91.0" layoutY="130.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="134.0" text="Load ImpressionLog" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="100.0" />
+                        <Button layoutX="88.0" layoutY="201.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="140.0" text="Load ServerLog" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="150.0" />
+                        <Button layoutX="74.0" layoutY="230.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="167.0" text="Add Campaign" AnchorPane.bottomAnchor="746.6666666666666" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="230.0" />
                      </children></AnchorPane>
             </content>
           </Tab>
@@ -97,7 +98,10 @@
       <FlowPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <children>
             <Button mnemonicParsing="false" onAction="#btn" text="Load Chart" />
-            <Slider />
+            <Slider>
+               <FlowPane.margin>
+                  <Insets left="100.0" />
+               </FlowPane.margin></Slider>
          </children></FlowPane>
       <Button mnemonicParsing="false" text="Button" />
       <Button mnemonicParsing="false" text="Button" />
