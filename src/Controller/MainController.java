@@ -41,14 +41,16 @@ public class MainController {
     }
 
     @FXML public void loadClickLogPressed(){
+        System.out.println("1");
 
     }
 
     @FXML public void loadImpressionLogPressed(){
+        System.out.println("2");
 
     }
 
     @FXML public void loadServerLogPressed(){
-
+        System.out.println("3");
     }
 }
