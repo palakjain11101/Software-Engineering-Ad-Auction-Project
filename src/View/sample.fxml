@@ -68,7 +68,7 @@
                </children>
             </AnchorPane>
          </children></FlowPane>
-      <TabPane prefHeight="248.0" prefWidth="228.0" styleClass="tab-selection-pane" stylesheets="@styles.css" tabClosingPolicy="SELECTED_TAB" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
+      <TabPane fx:id="tabPane" prefHeight="248.0" prefWidth="228.0" styleClass="tab-selection-pane" stylesheets="@styles.css" tabClosingPolicy="SELECTED_TAB" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
         <tabs>
           <Tab closable="false" text="Load Files">
             <content>
