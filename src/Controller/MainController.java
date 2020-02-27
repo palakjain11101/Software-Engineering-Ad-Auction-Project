@@ -6,10 +6,18 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 
 public class MainController {
     private MainView view;
     private MainModel model;
+
+    private File clickLogCSV;
+    private File impressionLogCSV;
+    private File serverLogCSV;
+
     @FXML
     LineChart<Number, Number> lineChart;
 
@@ -41,16 +49,31 @@ public class MainController {
     }
 
     @FXML public void loadClickLogPressed(){
-        System.out.println("1");
-
+        clickLogCSV = view.showFileChooser();
     }
 
     @FXML public void loadImpressionLogPressed(){
-        System.out.println("2");
+        impressionLogCSV = view.showFileChooser();
 
     }
 
     @FXML public void loadServerLogPressed(){
-        System.out.println("3");
+        serverLogCSV = view.showFileChooser();
+    }
+
+    @FXML public void loadCampaignPressed(){
+        if(clickLogCSV == null){
+            view.showErrorMessage("Click Log file needed");
+            return;
+        }
+        if(impressionLogCSV == null){
+            view.showErrorMessage("Impression Log file needed");
+            return;
+        }
+        if(serverLogCSV == null){
+            view.showErrorMessage("Server Log file needed");
+            return;
+        }
+        System.out.println("4");
     }
 }
