@@ -1,12 +1,10 @@
 package Model;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
-import java.io.File;
 
 public class SQL {
     private Connection c;
@@ -85,42 +83,69 @@ public class SQL {
         String cvsSplitBy = ",";
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            int x = 1;
+            line = br.readLine();
 
-            while ((line = br.readLine()) != null) {
-                // use comma as separator
-                String[] data = line.split(cvsSplitBy);
+            if(table == "click" && line.equals("Date,ID,Click Cost")){
+                while ((line = br.readLine()) != null) {
+                    x+=1;
+                    // use comma as separator
+                    String[] data = line.split(cvsSplitBy);
+                    String insertLine;
 
-                String insertLine;
+                    if(data.length != 3){
+                        System.out.println("Values missing on line " + x + ", \"" + line + "\"");
+                    }else{
+                        insertLine = "INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");";
+                        try{
+                            stmt.execute(insertLine);
+                        } catch (SQLException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
 
-                if (table == "click" && !data[0].equals("Date") ){
-                    insertLine = "INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");";
-                    try{
-                        stmt.execute(insertLine);
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }else if (table == "impressions" && !data[0].equals("Date")){
-                    insertLine = "INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");";
-                    try{
-                        stmt.execute(insertLine);
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }else if (table == "server" && !data[0].equals("Entry Date")){
-                    insertLine = "INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");";
-                    try{
-                        stmt.execute(insertLine);
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }else{
-                    insertLine = "";
                 }
+            } else if(table == "impressions" && line.equals("Date,ID,Gender,Age,Income,Context,Impression Cost")){
+                while ((line = br.readLine()) != null) {
+                    x += 1;
+                    // use comma as separator
+                    String[] data = line.split(cvsSplitBy);
+                    String insertLine;
 
+                    if (data.length != 7) {
+                        System.out.println("Values missing on line " + x + ", \"" + line + "\"");
+                    } else {
+                        insertLine = "INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");";
+                        try {
+                            stmt.execute(insertLine);
+                        } catch (SQLException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                }
+            } else if(table == "server" && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
+                while ((line = br.readLine()) != null) {
+                    x += 1;
+                    // use comma as separator
+                    String[] data = line.split(cvsSplitBy);
+                    String insertLine;
+
+                    if (data.length != 5) {
+                        System.out.println("Values missing on line " + x + ", \"" + line + "\"");
+                    } else {
+                        insertLine = "INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");";
+                        try{
+                            stmt.execute(insertLine);
+                        } catch (SQLException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                }
+            } else {
+                throw new Exception("Incorrect file format");
             }
-
         } catch (IOException e) {
-            throw new IOException();
+            throw new Exception("No file found at given path");
         }
 
     }
