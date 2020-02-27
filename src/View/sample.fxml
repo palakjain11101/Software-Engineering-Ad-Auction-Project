@@ -97,12 +97,15 @@
            </items>
          </MenuButton>
       </ToolBar>
-      <FlowPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+      <FlowPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.rowIndex="5">
          <children>
-            <Button mnemonicParsing="false" onAction="#btn" text="Load Chart" />
-            <Slider>
+            <Button mnemonicParsing="false" onAction="#btn" prefHeight="38.0" prefWidth="94.0" text="Load Chart">
                <FlowPane.margin>
-                  <Insets left="100.0" />
+                  <Insets left="10.0" />
+               </FlowPane.margin></Button>
+            <Slider id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="38.0" prefWidth="250.0" showTickLabels="true" snapToTicks="true">
+               <FlowPane.margin>
+                  <Insets left="50.0" />
                </FlowPane.margin></Slider>
          </children></FlowPane>
    </children>

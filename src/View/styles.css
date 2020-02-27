@@ -3,7 +3,7 @@
 }
 
 .graph-pane{
-    -fx-background-color: #feffdd;
+    -fx-background-color: #f6fffa;
     -fx-border-color: #747474;
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
@@ -14,12 +14,15 @@
     -fx-border-color: #747474;
 }
 
-.campaign-tab{
-    -fx-padding: 10px;
-    -fx-background-color: green;
-    -fx-background-insets: 10px;
+.campaign-tab-radio-button-1{
+    -fx-background-color: grey;
 }
 
-.time-granulation-bar{
+.campaign-tab-radio-button-2{
+    -fx-background-color: #afafaf;
+}
 
+.time-granulation-bar-pane{
+    -fx-background-color: #a9a9a9;
+    -fx-background-insets: 5px;
 }
