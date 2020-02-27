@@ -53,4 +53,5 @@ public class MainView extends Application {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.showAndWait();
     }
+
 }

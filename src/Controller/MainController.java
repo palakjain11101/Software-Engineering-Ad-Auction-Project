@@ -1,11 +1,13 @@
 package Controller;
 
 import Model.MainModel;
+import View.CampaignTab;
 import View.MainView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -20,6 +22,9 @@ public class MainController {
 
     @FXML
     LineChart<Number, Number> lineChart;
+
+    @FXML
+    TabPane tabPane;
 
     public void setView(MainView view){
         this.view = view;
@@ -62,6 +67,9 @@ public class MainController {
     }
 
     @FXML public void loadCampaignPressed(){
+        CampaignTab tab = new CampaignTab();
+        tabPane.getTabs().add(tab);
+
         if(clickLogCSV == null){
             view.showErrorMessage("Click Log file needed");
             return;
@@ -74,6 +82,9 @@ public class MainController {
             view.showErrorMessage("Server Log file needed");
             return;
         }
-        System.out.println("4");
+
+        //Pass data to model here
+
+
     }
 }
