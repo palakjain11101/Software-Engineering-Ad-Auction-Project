@@ -39,4 +39,16 @@ public class MainController {
         series.setName("Month Pay");
         lineChart.getData().add(series);
     }
+
+    @FXML public void loadClickLogPressed(){
+
+    }
+
+    @FXML public void loadImpressionLogPressed(){
+
+    }
+
+    @FXML public void loadServerLogPressed(){
+
+    }
 }
