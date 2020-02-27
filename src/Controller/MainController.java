@@ -11,7 +11,10 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
 
+import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainController {
     public static final int SLIDER_DAY = 0;
@@ -23,6 +26,8 @@ public class MainController {
     private MainView view;
     private MainModel model;
 
+    private ArrayList<Point> graphData = new ArrayList<>();
+
     private File clickLogCSV;
     private File impressionLogCSV;
     private File serverLogCSV;
@@ -32,6 +37,20 @@ public class MainController {
 
     @FXML
     TabPane tabPane;
+
+    public MainController(){
+        graphData.add(new Point(122,200));
+        graphData.add(new Point(45,21));
+        graphData.add(new Point(231,210));
+        graphData.add(new Point(77,89));
+        graphData.add(new Point(300,341));
+        graphData.add(new Point(244,90));
+        graphData.add(new Point(188,100));
+        graphData.add(new Point(157,117));
+        graphData.add(new Point(90,165));
+        graphData.add(new Point(100,169));
+        graphData.add(new Point(362,198));
+    }
 
     public void setView(MainView view){
         this.view = view;
@@ -43,29 +62,21 @@ public class MainController {
 
     @FXML public void btn(ActionEvent event){
         lineChart.getData().clear();
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.getData().add(new XYChart.Data<>(1, 200));
-        series.getData().add(new XYChart.Data<>(2, 100));
-        series.getData().add(new XYChart.Data<>(3, 300));
-        series.getData().add(new XYChart.Data<>(4, 230));
-        series.getData().add(new XYChart.Data<>(5, 230));
-        series.getData().add(new XYChart.Data<>(6, 230));
-        series.getData().add(new XYChart.Data<>(7, 230));
-        series.getData().add(new XYChart.Data<>(8, 230));
-        series.getData().add(new XYChart.Data<>(9, 230));
-        series.getData().add(new XYChart.Data<>(10, 230));
-        series.getData().add(new XYChart.Data<>(11, 230));
-        series.getData().add(new XYChart.Data<>(12, 230));
-        series.setName("Month Pay");
-        lineChart.getData().add(series);
+        lineChart.getData().add(createSeries(SLIDER_DAY));
     }
 
-    public void onTimeGranulationSliderChanged(int value){
+    public void onTimeGranulationSliderChanged(int oldValue, int newValue){
+        if(oldValue == newValue){
+            return;
+        }
         NumberAxis axis = (NumberAxis) lineChart.getXAxis();
-        switch (value){
+        lineChart.getData().clear();
+        lineChart.getData().add(createSeries(newValue));
+
+        switch (newValue){
             case SLIDER_DAY:
                 axis.setUpperBound(365);
-                axis.setTickUnit(5);
+                axis.setTickUnit(15);
                 return;
             case SLIDER_WEEK:
                 axis.setUpperBound(52);
@@ -80,6 +91,31 @@ public class MainController {
                 axis.setTickUnit(1);
                 return;
         }
+    }
+
+    private XYChart.Series<Number, Number> createSeries(int value){
+        double divider = 1;
+        switch (value){
+            case SLIDER_DAY:
+                divider = 1;
+                break;
+            case SLIDER_WEEK:
+                divider = 7;
+                break;
+            case SLIDER_MONTH:
+                divider = 30;
+                break;
+            case SLIDER_YEAR:
+                divider = 365;
+                break;
+        }
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for(Point point : graphData){
+            series.getData().add(new XYChart.Data<>(Math.round(point.x/divider), point.y));
+        }
+        series.setName("Month Pay");
+        return series;
     }
 
     @FXML public void loadClickLogPressed(){
