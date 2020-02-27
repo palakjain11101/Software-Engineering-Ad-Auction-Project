@@ -15,6 +15,8 @@ public class SQL {
         this.connection();
         this.createTable();
         this.putData("click_log.csv","click");
+        this.putData("impression_log.csv","impressions");
+        this.putData("server_log.csv","server");
     }
 
     public void connection(){
@@ -32,29 +34,29 @@ public class SQL {
     }
 
     public void createTable(){
-        String serverTable = "CREATE TABLE IF NOT EXISTS server (\n"
-                + " id integer PRIMARY KEY,\n"
-                + " entryDate text NOT NULL,\n"
+        String serverTable = "CREATE TABLE server (\n"
+                + " id integer,\n"
+                + " entryDate text,\n"
                 + " exitDate text,\n"
-                + " pagesViewed integer NOT NULL,\n"
-                + " conversion text NOT NULL\n"
-                + ");";
+                + " pagesViewed integer,\n"
+                + " conversion text,\n"
+                + " PRIMARY KEY (id,entryDate));";
 
-        String impressionsTable = "CREATE TABLE IF NOT EXISTS impressions (\n"
-                + " id integer PRIMARY KEY,\n"
-                + " date text NOT NULL,\n"
-                + " gender text NOT NULL,\n"
-                + " age integer NOT NULL,\n"
-                + " income text NOT NULL,\n"
-                + " context text NOT NULL,\n"
-                + " cost real NOT NULL\n"
-                + ");";
+        String impressionsTable = "CREATE TABLE impressions (\n"
+                + " id integer,\n"
+                + " date text,\n"
+                + " gender text,\n"
+                + " ageRange text,\n"
+                + " income text,\n"
+                + " context text,\n"
+                + " cost real,\n"
+                + " PRIMARY KEY (id,date));";
 
-        String clickTable = "CREATE TABLE IF NOT EXISTS click (\n"
-                + " id integer PRIMARY KEY,\n"
-                + " date text NOT NULL,\n"
-                + " cost real NOT NULL\n"
-                + ");";
+        String clickTable = "CREATE TABLE click (\n"
+                + " id integer,\n"
+                + " date text,\n"
+                + " cost real,\n"
+                + " PRIMARY KEY (id,date));";
 
         try{
             this.stmt = this.c.createStatement();
@@ -75,17 +77,28 @@ public class SQL {
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 
-            //while ((line = br.readLine()) != null) {
-            for (int i = 0; i < 100; i++) {
-
+            while ((line = br.readLine()) != null) {
                 // use comma as separator
-                line = br.readLine();
                 String[] data = line.split(cvsSplitBy);
 
-                String insertLine = "";
-                //System.out.println("INSERT INTO click VALUES (" + data[1] + "," + data[0] + "," + data[2] + ");");
-                if (table == "click" && data[0] != "Date"){
+                String insertLine;
+
+                if (table == "click" && !data[0].equals("Date") ){
                     insertLine = "INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");";
+                    try{
+                        stmt.execute(insertLine);
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }else if (table == "impressions" && !data[0].equals("Date")){
+                    insertLine = "INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");";
+                    try{
+                        stmt.execute(insertLine);
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }else if (table == "server" && !data[0].equals("Entry Date")){
+                    insertLine = "INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");";
                     try{
                         stmt.execute(insertLine);
                     } catch (SQLException e) {
@@ -95,14 +108,17 @@ public class SQL {
                     insertLine = "";
                 }
 
-
             }
-
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    public ResultSet getData(String query){
+        ResultSet rs = stmt.execute(query);
+        return rs;
     }
 
     public static void main( String args[] ) {
@@ -114,6 +130,6 @@ public class SQL {
 
 // Connection method ////////
 // Create table method //////////
-// Read information from file method and store in database
-// Take query and get data from database method
+// Read information from file method and store in database /////////
+// Take query and get data from database method ////////
 
