@@ -1,17 +1,30 @@
 package Controller;
 
 import Model.MainModel;
+import View.CampaignTab;
 import View.MainView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.TabPane;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 
 public class MainController {
     private MainView view;
     private MainModel model;
+
+    private File clickLogCSV;
+    private File impressionLogCSV;
+    private File serverLogCSV;
+
     @FXML
     LineChart<Number, Number> lineChart;
+
+    @FXML
+    TabPane tabPane;
 
     public void setView(MainView view){
         this.view = view;
@@ -38,5 +51,40 @@ public class MainController {
         series.getData().add(new XYChart.Data<>(12, 230));
         series.setName("Month Pay");
         lineChart.getData().add(series);
+    }
+
+    @FXML public void loadClickLogPressed(){
+        clickLogCSV = view.showFileChooser();
+    }
+
+    @FXML public void loadImpressionLogPressed(){
+        impressionLogCSV = view.showFileChooser();
+
+    }
+
+    @FXML public void loadServerLogPressed(){
+        serverLogCSV = view.showFileChooser();
+    }
+
+    @FXML public void loadCampaignPressed(){
+        CampaignTab tab = new CampaignTab();
+        tabPane.getTabs().add(tab);
+
+        if(clickLogCSV == null){
+            view.showErrorMessage("Click Log file needed");
+            return;
+        }
+        if(impressionLogCSV == null){
+            view.showErrorMessage("Impression Log file needed");
+            return;
+        }
+        if(serverLogCSV == null){
+            view.showErrorMessage("Server Log file needed");
+            return;
+        }
+
+        //Pass data to model here
+
+
     }
 }
