@@ -52,10 +52,10 @@
                <children>
                   <LineChart fx:id="lineChart" layoutX="14.0" layoutY="55.0" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" title="LINE CHART">
                     <xAxis>
-                      <CategoryAxis side="BOTTOM" />
+                      <NumberAxis label="INSERT X AXIS TITLE HERE" upperBound="12.0" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis label="LINE CHART" />
+                      <NumberAxis label="INSERT Y AXIS TITLE HERE" upperBound="300.0" />
                     </yAxis>
                      <effect>
                         <Glow />
