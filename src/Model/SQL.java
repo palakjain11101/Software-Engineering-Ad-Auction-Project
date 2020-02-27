@@ -1,9 +1,11 @@
 package Model;
 
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.io.File;
 
 public class SQL {
@@ -117,7 +119,12 @@ public class SQL {
     }
 
     public ResultSet getData(String query){
-        ResultSet rs = stmt.execute(query);
+        ResultSet rs = null;
+        try{
+            rs = stmt.executeQuery(query);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         return rs;
     }
 
