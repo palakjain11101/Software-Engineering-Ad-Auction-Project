@@ -64,16 +64,20 @@ public class MainController {
         NumberAxis axis = (NumberAxis) lineChart.getXAxis();
         switch (value){
             case SLIDER_DAY:
-                axis.setUpperBound(364);
+                axis.setUpperBound(365);
+                axis.setTickUnit(5);
                 return;
             case SLIDER_WEEK:
-                axis.setUpperBound(51);
+                axis.setUpperBound(52);
+                axis.setTickUnit(4);
                 return;
             case SLIDER_MONTH:
-                axis.setUpperBound(11);
+                axis.setUpperBound(12);
+                axis.setTickUnit(1);
                 return;
             case SLIDER_YEAR:
                 axis.setUpperBound(1);
+                axis.setTickUnit(1);
                 return;
         }
     }
