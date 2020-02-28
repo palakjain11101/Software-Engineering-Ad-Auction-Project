@@ -1,5 +1,5 @@
 .root{
-    -fx-background-color: #adaba5;
+    -fx-background-color: #eae8e0;
 }
 
 .graph-pane{
@@ -8,7 +8,6 @@
 
 .tab-selection-pane{
     -fx-background-color: #d6d6d6;
-    -fx-border-color: #747474;
 }
 
 .campaign-tab-radio-button-1{
@@ -24,6 +23,6 @@
 }
 
 .time-granulation-bar-pane{
-    -fx-background-color: #a9a9a9;
-    -fx-background-insets: 5px;
+    -fx-background-color: #d6d6d6;
+    -fx-background-radius: 5px;
 }

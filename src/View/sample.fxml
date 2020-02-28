@@ -17,18 +17,19 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
 <?scenebuilder-stylesheet styles.css?>
 
 <GridPane hgap="10" prefHeight="1057.0" prefWidth="1625.0" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MainController">
    <columnConstraints>
       <ColumnConstraints maxWidth="350.0" minWidth="342.0" percentWidth="20.0" prefWidth="342.0" />
-      <ColumnConstraints minWidth="76.0" percentWidth="80.0" prefWidth="84.0" />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-       <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
-      <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
-      <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+      <ColumnConstraints minWidth="76.0" percentWidth="50.0" prefWidth="84.0" />
+      <ColumnConstraints percentWidth="5.0" />
+      <ColumnConstraints percentWidth="5.0" />
+      <ColumnConstraints percentWidth="5.0" />
+      <ColumnConstraints percentWidth="5.0" />
+      <ColumnConstraints percentWidth="5.0" />
+       <ColumnConstraints percentWidth="5.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints maxHeight="135.0" minHeight="56.0" percentHeight="5.0" prefHeight="135.0" />
@@ -39,28 +40,11 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <AnchorPane prefHeight="346.0" prefWidth="1193.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="6" GridPane.rowIndex="1">
+      <AnchorPane prefHeight="346.0" prefWidth="1193.0" styleClass="graph-pane" stylesheets="@styles.css" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="6" GridPane.rowIndex="1">
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <AnchorPane prefHeight="341.0" prefWidth="832.0">
-                     <children>
-                        <LineChart fx:id="lineChart" animated="false" layoutX="14.0" layoutY="55.0" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" title="LINE CHART">
-                          <xAxis>
-                            <NumberAxis autoRanging="false" label="INSERT X AXIS TITLE HERE" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis label="INSERT Y AXIS TITLE HERE" upperBound="300.0" />
-                          </yAxis>
-                           <effect>
-                              <Glow />
-                           </effect>
-                           <padding>
-                              <Insets top="10.0" />
-                           </padding>
-                        </LineChart>
-                     </children>
-                  </AnchorPane>
+                  <AnchorPane prefHeight="341.0" prefWidth="832.0" />
                </children>
             </HBox>
          </children></AnchorPane>
@@ -93,10 +77,25 @@
            </items>
          </MenuButton>
       </ToolBar>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
          <children>
-            <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="15.0" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time Granularity" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="15.0" />
+            <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="15.0" />
          </children>
       </AnchorPane>
+      <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" title="LINE CHART" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+        <xAxis>
+          <NumberAxis autoRanging="false" label="INSERT X AXIS TITLE HERE" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis label="INSERT Y AXIS TITLE HERE" upperBound="300.0" />
+        </yAxis>
+         <effect>
+            <Glow />
+         </effect>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </LineChart>
    </children>
 </GridPane>

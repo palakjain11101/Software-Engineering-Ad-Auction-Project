@@ -51,6 +51,8 @@ public class MainView extends Application {
         primaryStage.setWidth(bounds.getWidth());
         primaryStage.setHeight(bounds.getHeight());
         primaryStage.setMaximized(true);
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(900);
 
         primaryStage.show();
     }
