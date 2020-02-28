@@ -6,6 +6,7 @@ import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
@@ -24,8 +26,8 @@ import java.io.IOException;
 
 public class MainView extends Application {
 
-    Stage stage;
-    Parent root;
+    private Stage stage;
+    private Parent root;
 
     public static void main(String[] args) {
         launch(args);
@@ -81,10 +83,8 @@ public class MainView extends Application {
                 return null;
             }
         });
-        slider.valueChangingProperty().addListener((observableValue, wasChanging, isChanging) -> {
-            if(wasChanging && !isChanging) {
-                controller.onTimeGranulationSliderChanged((int) Math.round(slider.getValue()));
-            }
+        slider.setOnMouseReleased(mouseEvent -> {
+            controller.onTimeGranulationSliderChanged((int) slider.getValue());
         });
     }
 
