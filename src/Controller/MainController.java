@@ -65,13 +65,9 @@ public class MainController {
     }
 
     public void onTimeGranulationSliderChanged(int oldValue, int newValue){
-//        if(oldValue == newValue){
-//            return;
-//        }
         NumberAxis axis = (NumberAxis) lineChart.getXAxis();
         lineChart.getData().clear();
         lineChart.getData().add(createSeries(newValue));
-        timeGranulationSlider.setValue(newValue);
         switch (newValue){
             case SLIDER_DAY:
                 axis.setUpperBound(365);

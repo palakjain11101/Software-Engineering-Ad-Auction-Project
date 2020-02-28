@@ -81,7 +81,9 @@ public class MainView extends Application {
             }
         });
         slider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-            controller.onTimeGranulationSliderChanged(oldValue.intValue(),newValue.intValue());
+            if(!slider.isValueChanging()) {
+                controller.onTimeGranulationSliderChanged(oldValue.intValue(), newValue.intValue());
+            }
         });
     }
 
