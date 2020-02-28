@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -13,6 +14,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -43,7 +45,13 @@ public class MainView extends Application {
         primaryStage.setTitle("Dashboard");
         root.getStylesheets().add("/View/styles.css");
         primaryStage.setScene(new Scene(root, 300, 275));
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        primaryStage.setWidth(bounds.getWidth());
+        primaryStage.setHeight(bounds.getHeight());
         primaryStage.setMaximized(true);
+
         primaryStage.show();
     }
 

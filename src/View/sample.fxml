@@ -13,7 +13,6 @@
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -33,44 +32,45 @@
    </columnConstraints>
    <rowConstraints>
       <RowConstraints maxHeight="135.0" minHeight="56.0" percentHeight="5.0" prefHeight="135.0" />
-      <RowConstraints maxHeight="399.0" minHeight="320.0" percentHeight="50.0" prefHeight="320.0" />
-      <RowConstraints percentHeight="5.0" />
+      <RowConstraints maxHeight="567.2000122070312" minHeight="320.0" percentHeight="50.0" prefHeight="488.0" />
+      <RowConstraints maxHeight="102.0" minHeight="22.79998779296875" percentHeight="5.0" prefHeight="102.0" />
       <RowConstraints />
       <RowConstraints percentHeight="50.0" />
       <RowConstraints />
    </rowConstraints>
    <children>
-      <FlowPane prefHeight="346.0" prefWidth="1193.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="6" GridPane.rowIndex="1">
+      <AnchorPane prefHeight="346.0" prefWidth="1193.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="6" GridPane.rowIndex="1">
          <children>
-            <AnchorPane prefHeight="341.0" prefWidth="832.0">
-               <FlowPane.margin>
-                  <Insets bottom="20.0" left="20.0" right="20.0" top="40.0" />
-               </FlowPane.margin>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <LineChart fx:id="lineChart" layoutX="14.0" layoutY="55.0" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" title="LINE CHART">
-                    <xAxis>
-                      <NumberAxis autoRanging="false" label="INSERT X AXIS TITLE HERE" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis label="INSERT Y AXIS TITLE HERE" upperBound="300.0" />
-                    </yAxis>
-                     <effect>
-                        <Glow />
-                     </effect>
-                     <padding>
-                        <Insets top="10.0" />
-                     </padding>
-                  </LineChart>
+                  <AnchorPane prefHeight="341.0" prefWidth="832.0">
+                     <children>
+                        <LineChart fx:id="lineChart" animated="false" layoutX="14.0" layoutY="55.0" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" title="LINE CHART">
+                          <xAxis>
+                            <NumberAxis autoRanging="false" label="INSERT X AXIS TITLE HERE" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis label="INSERT Y AXIS TITLE HERE" upperBound="300.0" />
+                          </yAxis>
+                           <effect>
+                              <Glow />
+                           </effect>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </LineChart>
+                     </children>
+                  </AnchorPane>
                </children>
-            </AnchorPane>
-         </children></FlowPane>
-      <TabPane fx:id="tabPane" prefHeight="248.0" prefWidth="228.0" styleClass="tab-selection-pane" stylesheets="@styles.css" tabClosingPolicy="SELECTED_TAB" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
+            </HBox>
+         </children></AnchorPane>
+      <TabPane fx:id="tabPane" prefHeight="248.0" prefWidth="228.0" styleClass="tab-selection-pane" stylesheets="@styles.css" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
         <tabs>
           <Tab closable="false" text="Load Files">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button layoutX="91.0" layoutY="53.0" mnemonicParsing="false" onAction="#loadClickLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ClickLog" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="50.0" />
+                        <Button layoutX="91.0" layoutY="53.0" minWidth="100.0" mnemonicParsing="false" onAction="#loadClickLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ClickLog" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="50.0" />
                         <Button layoutX="91.0" layoutY="130.0" mnemonicParsing="false" onAction="#loadImpressionLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ImpressionLog" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="100.0" />
                         <Button layoutX="88.0" layoutY="201.0" mnemonicParsing="false" onAction="#loadServerLogPressed" prefHeight="25.0" prefWidth="140.0" text="Load ServerLog" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="150.0" />
                         <Button layoutX="74.0" layoutY="230.0" mnemonicParsing="false" onAction="#loadCampaignPressed" prefHeight="40.0" prefWidth="167.0" text="Add Campaign" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="230.0" />
@@ -93,16 +93,10 @@
            </items>
          </MenuButton>
       </ToolBar>
-      <FlowPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <children>
-            <Button mnemonicParsing="false" onAction="#btn" prefHeight="38.0" prefWidth="94.0" text="Load Chart">
-               <FlowPane.margin>
-                  <Insets left="10.0" />
-               </FlowPane.margin></Button>
-            <Slider id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="38.0" prefWidth="250.0" showTickLabels="true" snapToTicks="true">
-               <FlowPane.margin>
-                  <Insets left="50.0" />
-               </FlowPane.margin></Slider>
-         </children></FlowPane>
+            <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="15.0" />
+         </children>
+      </AnchorPane>
    </children>
 </GridPane>

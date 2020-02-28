@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
 
@@ -38,6 +39,9 @@ public class MainController {
     @FXML
     TabPane tabPane;
 
+    @FXML
+    Slider timeGranulationSlider;
+
     public MainController(){
         graphData.add(new Point(122,200));
         graphData.add(new Point(45,21));
@@ -60,35 +64,34 @@ public class MainController {
         this.model = model;
     }
 
-    @FXML public void btn(ActionEvent event){
-        lineChart.getData().clear();
-        lineChart.getData().add(createSeries(SLIDER_DAY));
-    }
-
     public void onTimeGranulationSliderChanged(int oldValue, int newValue){
-        if(oldValue == newValue){
-            return;
-        }
+//        if(oldValue == newValue){
+//            return;
+//        }
         NumberAxis axis = (NumberAxis) lineChart.getXAxis();
         lineChart.getData().clear();
         lineChart.getData().add(createSeries(newValue));
-
+        timeGranulationSlider.setValue(newValue);
         switch (newValue){
             case SLIDER_DAY:
                 axis.setUpperBound(365);
                 axis.setTickUnit(15);
+                axis.setLabel("Days Passed");
                 return;
             case SLIDER_WEEK:
                 axis.setUpperBound(52);
                 axis.setTickUnit(4);
+                axis.setLabel("Weeks Passed");
                 return;
             case SLIDER_MONTH:
                 axis.setUpperBound(12);
                 axis.setTickUnit(1);
+                axis.setLabel("Months Passed");
                 return;
             case SLIDER_YEAR:
                 axis.setUpperBound(1);
                 axis.setTickUnit(1);
+                axis.setLabel("Years Passed");
                 return;
         }
     }

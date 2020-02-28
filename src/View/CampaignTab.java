@@ -47,7 +47,7 @@ public class CampaignTab extends Tab {
         colConst.setPercentWidth(100.0);
         pane.getColumnConstraints().add(colConst);
 
-        for (int i = 0; i < ROW_NUMBER; i++) {
+        for (int i = 0; i < 20; i++) {
             RowConstraints rowConst = new RowConstraints();
             rowConst.setPercentHeight(100.0 / 11);
             pane.getRowConstraints().add(rowConst);
