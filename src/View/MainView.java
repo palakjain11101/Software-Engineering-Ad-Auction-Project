@@ -2,6 +2,7 @@ package View;
 
 import Controller.MainController;
 import Model.MainModel;
+import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -80,9 +81,9 @@ public class MainView extends Application {
                 return null;
             }
         });
-        slider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-            if(!slider.isValueChanging()) {
-                controller.onTimeGranulationSliderChanged(oldValue.intValue(), newValue.intValue());
+        slider.valueChangingProperty().addListener((observableValue, wasChanging, isChanging) -> {
+            if(wasChanging && !isChanging) {
+                controller.onTimeGranulationSliderChanged((int) Math.round(slider.getValue()));
             }
         });
     }

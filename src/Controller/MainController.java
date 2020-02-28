@@ -64,7 +64,7 @@ public class MainController {
         this.model = model;
     }
 
-    public void onTimeGranulationSliderChanged(int oldValue, int newValue){
+    public void onTimeGranulationSliderChanged(int newValue){
         NumberAxis axis = (NumberAxis) lineChart.getXAxis();
         lineChart.getData().clear();
         lineChart.getData().add(createSeries(newValue));
