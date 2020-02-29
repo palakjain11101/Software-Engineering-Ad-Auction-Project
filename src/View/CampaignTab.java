@@ -1,56 +1,95 @@
 package View;
 
-import javafx.scene.control.RadioButton;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CampaignTab extends Tab {
 
-    private final int ROW_NUMBER = 11;
+    private ArrayList<Tuple> basicMetrics = new ArrayList<>();
 
-
-    GridPane pane;
+    private VBox pane;
+    private TableView table;
 
     public CampaignTab(){
+        basicMetrics.add(new Tuple<>("Number of Impressions",10.0));
+        basicMetrics.add(new Tuple<>("Number of Clicks",10.0));
+        basicMetrics.add(new Tuple<>("Number of Uniques",10.0));
+        basicMetrics.add(new Tuple<>("Number of Bounces",10.0));
+        basicMetrics.add(new Tuple<>("Number of Conversions",10.0));
+        basicMetrics.add(new Tuple<>("Total Cost",10.0));
+        basicMetrics.add(new Tuple<>("CTR",10.0));
+        basicMetrics.add(new Tuple<>("CPA",10.0));
+        basicMetrics.add(new Tuple<>("CPC",10.0));
+        basicMetrics.add(new Tuple<>("CPM",10.0));
+        basicMetrics.add(new Tuple<>("Bounce Rate",10.0));
+
+
         initCampaignTab();
     }
 
-    private void initCampaignTab(){
+    private void initCampaignTab() {
         setText("Campaign 1");
-        pane = new GridPane();
+        pane = new VBox();
         pane.getStylesheets().add("View/styles.css");
         setContent(pane);
-        setConstraints();
 
-        RadioButton radioButton;
+        table = new TableView();
+        TableColumn mainColumn = new TableColumn("Click to View Graph");
+        TableColumn metric = new TableColumn("Metric");
+        TableColumn value = new TableColumn("Value");
 
-        for(int i = 0; i < ROW_NUMBER; i++){
-            radioButton = new RadioButton(Integer.toString(i));
-            //radioButton.getStyleClass().add("campaign-tab-radio-button");
-            if(i % 2 == 0){
-                radioButton.getStyleClass().add("campaign-tab-radio-button-1");
-            }
-            else {
-                radioButton.getStyleClass().add("campaign-tab-radio-button-2");
-            }
-            GridPane.setFillHeight(radioButton,true);
-            GridPane.setFillWidth(radioButton,true);
-            radioButton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            pane.add(radioButton,0,i,1,1);
-        }
+        metric.setCellValueFactory(new PropertyValueFactory<>("A"));
+        value.setCellValueFactory(new PropertyValueFactory<>("B"));
+
+        metric.setSortable(false);
+        value.setSortable(false);
+        metric.setReorderable(false);
+        mainColumn.setReorderable(false);
+        value.setReorderable(false);
+        mainColumn.setReorderable(false);
+        mainColumn.getColumns().addAll(metric, value);
+        table.getColumns().addAll(mainColumn);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setEditable(false);
+
+        addItems();
+
+        pane.getChildren().add(table);
     }
 
-    private void setConstraints(){
-        ColumnConstraints colConst = new ColumnConstraints();
-        colConst.setPercentWidth(100.0);
-        pane.getColumnConstraints().add(colConst);
+    private void addItems(){
+        for(Tuple tuple : basicMetrics){
+            table.getItems().add(tuple);
+        }
 
-        for (int i = 0; i < 20; i++) {
-            RowConstraints rowConst = new RowConstraints();
-            rowConst.setPercentHeight(100.0 / 11);
-            pane.getRowConstraints().add(rowConst);
+        table.getSelectionModel().selectFirst();
+        table.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            System.out.println(newValue);
+        });
+    }
+
+    public class Tuple<A,B>{
+        private final A a;
+        private final B b;
+        public Tuple(A a,B b){
+            this.a = a;
+            this.b = b;
+        }
+        public A getA(){
+            return a;
+        }
+        public B getB(){
+            return b;
         }
     }
 }
