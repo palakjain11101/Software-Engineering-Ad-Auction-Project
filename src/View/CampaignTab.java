@@ -1,5 +1,6 @@
 package View;
 
+import Controller.MainController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -15,12 +16,15 @@ import java.util.HashMap;
 
 public class CampaignTab extends Tab {
 
+    private MainController controller;
+
     private ArrayList<Tuple> basicMetrics = new ArrayList<>();
 
     private VBox pane;
     private TableView table;
 
-    public CampaignTab(){
+    public CampaignTab(MainController controller){
+        this.controller = controller;
         basicMetrics.add(new Tuple<>("Number of Impressions",10.0));
         basicMetrics.add(new Tuple<>("Number of Clicks",10.0));
         basicMetrics.add(new Tuple<>("Number of Uniques",10.0));

@@ -28,6 +28,7 @@ public class MainController {
     private MainModel model;
 
     private ArrayList<Point> graphData = new ArrayList<>();
+    private int timeGranulationValue = SLIDER_DAY;
 
     private File clickLogCSV;
     private File impressionLogCSV;
@@ -65,6 +66,7 @@ public class MainController {
     }
 
     public void onTimeGranulationSliderChanged(int newValue){
+        timeGranulationValue = newValue;
         NumberAxis axis = (NumberAxis) lineChart.getXAxis();
         lineChart.getData().clear();
         lineChart.getData().add(createSeries(newValue));
@@ -131,7 +133,7 @@ public class MainController {
     }
 
     @FXML public void loadCampaignPressed(){
-        CampaignTab tab = new CampaignTab();
+        CampaignTab tab = new CampaignTab(this);
         tabPane.getTabs().add(tab);
 
         if(clickLogCSV == null){
@@ -148,7 +150,9 @@ public class MainController {
         }
 
         //Pass data to model here
+    }
 
+    public void dataSelectedOnCampaignTab(){
 
     }
 }
