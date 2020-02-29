@@ -86,6 +86,7 @@ public class MainView extends Application {
         slider.setOnMouseReleased(mouseEvent -> {
             controller.onTimeGranulationSliderChanged((int) slider.getValue());
         });
+        controller.onTimeGranulationSliderChanged(0);
     }
 
     public File showFileChooser(){
