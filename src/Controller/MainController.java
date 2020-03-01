@@ -134,19 +134,21 @@ public class MainController {
 
     @FXML public void loadCampaignPressed(){
         CampaignTab tab = new CampaignTab(this);
-        tabPane.getTabs().add(tab);
 
         if(clickLogCSV == null){
             view.showErrorMessage("Click Log file needed");
             return;
         }
-        if(impressionLogCSV == null){
+        else if(impressionLogCSV == null){
             view.showErrorMessage("Impression Log file needed");
             return;
         }
-        if(serverLogCSV == null){
+        else if(serverLogCSV == null){
             view.showErrorMessage("Server Log file needed");
             return;
+        }
+        else{
+            tabPane.getTabs().add(tab);
         }
 
         //Pass data to model here
