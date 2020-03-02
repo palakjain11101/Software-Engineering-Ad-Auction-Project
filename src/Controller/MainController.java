@@ -14,7 +14,9 @@ import javafx.stage.FileChooser;
 
 import java.awt.*;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainController {
@@ -139,7 +141,10 @@ public class MainController {
     }
 
     @FXML public void loadCampaignPressed(){
-        CampaignTab tab = new CampaignTab(this);
+        String error;
+        CampaignTab tab;
+        ArrayList<CampaignTab.Tuple> basicMetrics = new ArrayList<>();
+
 
         if(clickLogCSV == null){
             view.showErrorMessage("Click Log file needed");
@@ -154,8 +159,30 @@ public class MainController {
             return;
         }
         else{
-            model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
-            tabPane.getTabs().add(tab);
+            error = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
+            if(error == null){
+                try {
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Impressions", model.getData("SELECT COUNT(*) FROM impressions;").getString(1)));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Clicks", model.getData("SELECT COUNT(*) FROM click;").getString(1)));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Uniques", model.getData("SELECT COUNT(DISTINCT id) FROM click;").getString(1)));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Bounces", model.getData("SELECT COUNT(case when conversion = 'No' then 1 else null end) FROM server").getString(1)));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Conversions", 10.0));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Total Cost", 10.0));
+                    basicMetrics.add(new CampaignTab.Tuple<>("CTR", 10.0));
+                    basicMetrics.add(new CampaignTab.Tuple<>("CPA", 10.0));
+                    basicMetrics.add(new CampaignTab.Tuple<>("CPC", 10.0));
+                    basicMetrics.add(new CampaignTab.Tuple<>("CPM", 10.0));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Bounce Rate", 10.0));
+                }
+                catch (SQLException e){e.printStackTrace();}
+
+                tab = new CampaignTab(this,basicMetrics);
+                tabPane.getTabs().add(tab);
+
+            }
+            else {
+                view.showErrorMessage(error);
+            }
         }
 
         //Pass data to model here

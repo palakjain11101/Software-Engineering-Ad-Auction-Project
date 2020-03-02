@@ -1,5 +1,6 @@
 package Model;
 
+import java.io.File;
 import java.sql.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -26,7 +27,6 @@ public class SQL {
 
     public void connection(String dbname){
         this.c = null;
-
 
         try {
             Class.forName("org.sqlite.JDBC");
@@ -65,6 +65,9 @@ public class SQL {
 
         try{
             this.stmt = this.c.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS server;");
+            stmt.execute("DROP TABLE IF EXISTS click;");
+            stmt.execute("DROP TABLE IF EXISTS impressions;");
             stmt.execute(serverTable);
             stmt.execute(impressionsTable);
             stmt.execute(clickTable);

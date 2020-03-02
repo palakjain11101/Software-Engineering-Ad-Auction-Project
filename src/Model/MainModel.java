@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.File;
+import java.sql.ResultSet;
 
 public class MainModel {
 
@@ -22,5 +23,9 @@ public class MainModel {
         }
 
         return null;
+    }
+
+    public ResultSet getData(String query){
+        return sql.getData(query);
     }
 }
