@@ -23,19 +23,9 @@ public class CampaignTab extends Tab {
     private VBox pane;
     private TableView table;
 
-    public CampaignTab(MainController controller){
+    public CampaignTab(MainController controller, ArrayList<Tuple> basicMetrics){
         this.controller = controller;
-        basicMetrics.add(new Tuple<>("Number of Impressions",10.0));
-        basicMetrics.add(new Tuple<>("Number of Clicks",10.0));
-        basicMetrics.add(new Tuple<>("Number of Uniques",10.0));
-        basicMetrics.add(new Tuple<>("Number of Bounces",10.0));
-        basicMetrics.add(new Tuple<>("Number of Conversions",10.0));
-        basicMetrics.add(new Tuple<>("Total Cost",10.0));
-        basicMetrics.add(new Tuple<>("CTR",10.0));
-        basicMetrics.add(new Tuple<>("CPA",10.0));
-        basicMetrics.add(new Tuple<>("CPC",10.0));
-        basicMetrics.add(new Tuple<>("CPM",10.0));
-        basicMetrics.add(new Tuple<>("Bounce Rate",10.0));
+        this.basicMetrics = basicMetrics;
 
 
         initCampaignTab();
@@ -78,11 +68,11 @@ public class CampaignTab extends Tab {
 
         table.getSelectionModel().selectFirst();
         table.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            System.out.println(newValue);
+            controller.metricSelectedOnCampaignTab((Tuple) newValue,"test");
         });
     }
 
-    public class Tuple<A,B>{
+    public static class Tuple<A,B>{
         private final A a;
         private final B b;
         public Tuple(A a,B b){

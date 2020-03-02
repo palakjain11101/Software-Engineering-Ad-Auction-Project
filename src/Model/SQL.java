@@ -1,5 +1,6 @@
 package Model;
 
+import java.io.File;
 import java.sql.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,8 +13,6 @@ public class SQL {
 
 
     public SQL(){
-        this.connection();
-        this.createTable();
 
         //WILL BE REMOVED WHEN CONTROLLER IS IMPLEMENTED
 //        try{
@@ -26,13 +25,12 @@ public class SQL {
 
     }
 
-    public void connection(){
+    public void connection(String dbname){
         this.c = null;
-
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:Campaign1.db");
+            c = DriverManager.getConnection("jdbc:sqlite:"+ dbname + ".db");
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
@@ -67,6 +65,9 @@ public class SQL {
 
         try{
             this.stmt = this.c.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS server;");
+            stmt.execute("DROP TABLE IF EXISTS click;");
+            stmt.execute("DROP TABLE IF EXISTS impressions;");
             stmt.execute(serverTable);
             stmt.execute(impressionsTable);
             stmt.execute(clickTable);
@@ -81,7 +82,7 @@ public class SQL {
 
         String line = "";
         String cvsSplitBy = ",";
-        String insertLine;
+        String errorMessage;
         c.setAutoCommit(false);
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -95,7 +96,7 @@ public class SQL {
                     String[] data = line.split(cvsSplitBy);
 
                     if(data.length != 3){
-                        System.out.println("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     }else{
                         stmt.addBatch("INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");");
                     }
@@ -108,7 +109,7 @@ public class SQL {
                     String[] data = line.split(cvsSplitBy);
 
                     if (data.length != 7) {
-                        System.out.println("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
                         stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
                     }
@@ -121,7 +122,7 @@ public class SQL {
 
 
                     if (data.length != 5) {
-                        System.out.println("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
                         stmt.addBatch("INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                     }
