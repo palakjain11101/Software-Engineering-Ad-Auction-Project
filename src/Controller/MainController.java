@@ -162,17 +162,23 @@ public class MainController {
             error = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
             if(error == null){
                 try {
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Impressions", model.getData("SELECT COUNT(*) FROM impressions;").getString(1)));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Clicks", model.getData("SELECT COUNT(*) FROM click;").getString(1)));
+                    String impressions = model.getData("SELECT COUNT(*) FROM impressions;").getString(1);
+                    String clicks = model.getData("SELECT COUNT(*) FROM click;").getString(1);
+                    String totalCostClick = model.getData("SELECT SUM(cost) FROM click").getString(1);
+                    String totalCostImpressions = model.getData("SELECT SUM(cost) FROM impressions").getString(1);
+                    String bounces = model.getData("SELECT COUNT(case when conversion = 'No' then 1 else null end) FROM server").getString(1);
+
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Impressions", impressions));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Clicks", clicks));
                     basicMetrics.add(new CampaignTab.Tuple<>("Number of Uniques", model.getData("SELECT COUNT(DISTINCT id) FROM click;").getString(1)));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Bounces", model.getData("SELECT COUNT(case when conversion = 'No' then 1 else null end) FROM server").getString(1)));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Conversions", 10.0));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Total Cost", 10.0));
-                    basicMetrics.add(new CampaignTab.Tuple<>("CTR", 10.0));
-                    basicMetrics.add(new CampaignTab.Tuple<>("CPA", 10.0));
-                    basicMetrics.add(new CampaignTab.Tuple<>("CPC", 10.0));
-                    basicMetrics.add(new CampaignTab.Tuple<>("CPM", 10.0));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Bounce Rate", 10.0));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Bounces", bounces));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Conversions", model.getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server").getString(1)));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Total Cost", totalCostClick)); //May need to be changed, not sure whether it should be per impression or click
+                    basicMetrics.add(new CampaignTab.Tuple<>("CTR", (Float.parseFloat(clicks))/(Float.parseFloat(impressions))));
+                    basicMetrics.add(new CampaignTab.Tuple<>("CPA", 10.0)); //I don't understand this one will talk about it tomorrow
+                    basicMetrics.add(new CampaignTab.Tuple<>("CPC",  (Float.parseFloat(totalCostClick))/(Float.parseFloat(clicks))));
+                    basicMetrics.add(new CampaignTab.Tuple<>("CPM", ((Float.parseFloat(totalCostImpressions))/(Float.parseFloat(impressions)))*1000));
+                    basicMetrics.add(new CampaignTab.Tuple<>("Bounce Rate",(Float.parseFloat(bounces))/(Float.parseFloat(clicks))));
                 }
                 catch (SQLException e){e.printStackTrace();}
 
