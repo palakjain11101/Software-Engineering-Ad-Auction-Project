@@ -32,7 +32,7 @@ public class SQL {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:test.db");
+            c = DriverManager.getConnection("jdbc:sqlite:Campaign1.db");
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
@@ -81,6 +81,8 @@ public class SQL {
 
         String line = "";
         String cvsSplitBy = ",";
+        String insertLine;
+        c.setAutoCommit(false);
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int x = 1;
@@ -91,17 +93,11 @@ public class SQL {
                     x+=1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
-                    String insertLine;
 
                     if(data.length != 3){
                         System.out.println("Values missing on line " + x + ", \"" + line + "\"");
                     }else{
-                        insertLine = "INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");";
-                        try{
-                            stmt.execute(insertLine);
-                        } catch (SQLException e) {
-                            System.out.println(e.getMessage());
-                        }
+                        stmt.addBatch("INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");");
                     }
 
                 }
@@ -110,17 +106,11 @@ public class SQL {
                     x += 1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
-                    String insertLine;
 
                     if (data.length != 7) {
                         System.out.println("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        insertLine = "INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");";
-                        try {
-                            stmt.execute(insertLine);
-                        } catch (SQLException e) {
-                            System.out.println(e.getMessage());
-                        }
+                        stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
                     }
                 }
             } else if(table == "server" && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
@@ -128,17 +118,12 @@ public class SQL {
                     x += 1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
-                    String insertLine;
+
 
                     if (data.length != 5) {
                         System.out.println("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        insertLine = "INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");";
-                        try{
-                            stmt.execute(insertLine);
-                        } catch (SQLException e) {
-                            System.out.println(e.getMessage());
-                        }
+                        stmt.addBatch("INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                     }
                 }
             } else {
@@ -146,6 +131,12 @@ public class SQL {
             }
         } catch (IOException e) {
             throw new Exception("No file found at given path");
+        }
+        try{
+            stmt.executeBatch();
+            c.setAutoCommit(true);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
 
     }
