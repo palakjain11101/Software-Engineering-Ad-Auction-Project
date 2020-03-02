@@ -184,11 +184,9 @@ public class MainController {
                 view.showErrorMessage(error);
             }
         }
-
-        //Pass data to model here
     }
 
-    public void dataSelectedOnCampaignTab(){
+    public void metricSelectedOnCampaignTab(CampaignTab.Tuple metricSelected, String database){
 
     }
 }

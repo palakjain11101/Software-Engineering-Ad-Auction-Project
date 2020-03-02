@@ -68,7 +68,7 @@ public class CampaignTab extends Tab {
 
         table.getSelectionModel().selectFirst();
         table.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            System.out.println(newValue);
+            controller.metricSelectedOnCampaignTab((Tuple) newValue,"test");
         });
     }
 
