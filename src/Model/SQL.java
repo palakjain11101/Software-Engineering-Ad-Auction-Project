@@ -16,13 +16,13 @@ public class SQL {
         this.createTable();
 
         //WILL BE REMOVED WHEN CONTROLLER IS IMPLEMENTED
-        try{
-            this.putData("click_log.csv","click");
-            this.putData("impression_log.csv","impressions");
-            this.putData("server_log.csv","server");
-        }catch(Exception e){
-            System.out.println("ERROR WITH A FILE");
-        }
+//        try{
+//            this.putData("click_log.csv","click");
+//            this.putData("impression_log.csv","impressions");
+//            this.putData("server_log.csv","server");
+//        }catch(Exception e){
+//            System.out.println("ERROR WITH A FILE");
+//        }
 
     }
 
@@ -32,7 +32,7 @@ public class SQL {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:test.db");
+            c = DriverManager.getConnection("jdbc:sqlite:Campaign1.db");
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
@@ -81,7 +81,8 @@ public class SQL {
 
         String line = "";
         String cvsSplitBy = ",";
-        String insertLine = "";
+        String insertLine;
+        c.setAutoCommit(false);
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int x = 1;
@@ -96,7 +97,7 @@ public class SQL {
                     if(data.length != 3){
                         System.out.println("Values missing on line " + x + ", \"" + line + "\"");
                     }else{
-                        insertLine += "INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");";
+                        stmt.addBatch("INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");");
                     }
 
                 }
@@ -109,7 +110,7 @@ public class SQL {
                     if (data.length != 7) {
                         System.out.println("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        insertLine += "INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");";
+                        stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
                     }
                 }
             } else if(table == "server" && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
@@ -118,10 +119,11 @@ public class SQL {
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
+
                     if (data.length != 5) {
                         System.out.println("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        insertLine += "INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");";
+                        stmt.addBatch("INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                     }
                 }
             } else {
@@ -130,9 +132,9 @@ public class SQL {
         } catch (IOException e) {
             throw new Exception("No file found at given path");
         }
-
         try{
-            stmt.execute(insertLine);
+            stmt.executeBatch();
+            c.setAutoCommit(true);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -153,11 +155,3 @@ public class SQL {
         SQL sql = new SQL();
     }
 }
-
-
-
-// Connection method ////////
-// Create table method //////////
-// Read information from file method and store in database /////////
-// Take query and get data from database method ////////
-

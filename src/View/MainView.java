@@ -19,6 +19,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.io.File;
@@ -94,6 +95,10 @@ public class MainView extends Application {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
         return fileChooser.showOpenDialog(stage);
+    }
+
+    public Window getWindow(){
+        return root.getScene().getWindow();
     }
 
     public void showErrorMessage(String message){
