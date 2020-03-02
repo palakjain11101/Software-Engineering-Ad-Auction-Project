@@ -120,16 +120,22 @@ public class MainController {
     }
 
     @FXML public void loadClickLogPressed(){
-        clickLogCSV = view.showFileChooser();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
+        clickLogCSV = fileChooser.showOpenDialog(view.getWindow());
     }
 
     @FXML public void loadImpressionLogPressed(){
-        impressionLogCSV = view.showFileChooser();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
+        impressionLogCSV = fileChooser.showOpenDialog(view.getWindow());
 
     }
 
     @FXML public void loadServerLogPressed(){
-        serverLogCSV = view.showFileChooser();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
+        serverLogCSV = fileChooser.showOpenDialog(view.getWindow());
     }
 
     @FXML public void loadCampaignPressed(){
@@ -148,6 +154,7 @@ public class MainController {
             return;
         }
         else{
+            model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
             tabPane.getTabs().add(tab);
         }
 
