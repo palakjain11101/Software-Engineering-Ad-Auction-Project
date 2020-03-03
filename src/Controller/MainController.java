@@ -66,22 +66,22 @@ public class MainController {
             case SLIDER_DAY:
                 xAxis.setUpperBound(graphData.size());
                 xAxis.setTickUnit(1);
-                xAxis.setLabel("Days Passed");
+                xAxis.setLabel("Day of Campaign");
                 return;
             case SLIDER_WEEK:
                 xAxis.setUpperBound(Math.round(graphData.size()/7.0));
                 xAxis.setTickUnit(1);
-                xAxis.setLabel("Weeks Passed");
+                xAxis.setLabel("Week of Campaign");
                 return;
             case SLIDER_MONTH:
                 xAxis.setUpperBound(Math.round(graphData.size()/30.0));
                 xAxis.setTickUnit(1);
-                xAxis.setLabel("Months Passed");
+                xAxis.setLabel("Month of Campaign");
                 return;
             case SLIDER_YEAR:
                 xAxis.setUpperBound(Math.round(graphData.size()/365.0));
                 xAxis.setTickUnit(1);
-                xAxis.setLabel("Years Passed");
+                xAxis.setLabel("Year of Campaign");
                 return;
         }
     }
