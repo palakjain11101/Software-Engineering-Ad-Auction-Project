@@ -1,6 +1,7 @@
 package View;
 
 import Controller.MainController;
+import Model.GraphPoint;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
@@ -73,8 +74,8 @@ public class CampaignTab extends Tab {
     public static class CampaignDataPackage{
         private final String a;
         private final Double b;
-        private final ArrayList<Point> c;
-        public CampaignDataPackage(String a, Double b, ArrayList<Point> c){
+        private final ArrayList<GraphPoint> c;
+        public CampaignDataPackage(String a, Double b, ArrayList<GraphPoint> c){
             this.a = a;
             this.b = b;
             this.c = c;
@@ -85,7 +86,7 @@ public class CampaignTab extends Tab {
         public Double getOverallMetric(){
             return b;
         }
-        public ArrayList<Point> getMetricOverTimePoints(){
+        public ArrayList<GraphPoint> getMetricOverTimePoints(){
             return c;
         }
     }

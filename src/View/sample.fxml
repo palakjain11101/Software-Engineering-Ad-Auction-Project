@@ -83,12 +83,12 @@
             <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="15.0" />
          </children>
       </AnchorPane>
-      <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" title="LINE CHART" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+      <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
         <xAxis>
-          <NumberAxis autoRanging="false" label="INSERT X AXIS TITLE HERE" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
+          <NumberAxis autoRanging="false" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
         </xAxis>
         <yAxis>
-          <NumberAxis label="INSERT Y AXIS TITLE HERE" upperBound="300.0" />
+          <NumberAxis upperBound="300.0" />
         </yAxis>
          <effect>
             <Glow />

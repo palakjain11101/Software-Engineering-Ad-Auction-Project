@@ -100,4 +100,12 @@ public class MainView extends Application {
         alert.showAndWait();
     }
 
+    public void showLoadingDialog(){
+
+    }
+
+    public void hideLoadingDialog(){
+
+    }
+
 }
