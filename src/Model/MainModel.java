@@ -1,7 +1,10 @@
 package Model;
 
+import java.awt.*;
 import java.io.File;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class MainModel {
 
@@ -25,7 +28,27 @@ public class MainModel {
         return null;
     }
 
-    public ResultSet getData(String query){
-        return sql.getData(query);
+    public Double getData(String overallMetricQuery){
+        try {
+            return sql.getData(overallMetricQuery).getDouble(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
+    public ArrayList<Point> getDataOverTimePoints(String metricOverTimeQuery){
+        if(metricOverTimeQuery.equals("")) return null;
+        ArrayList<Point> metricOverTime = new ArrayList<>();
+        ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery);
+        int i = 0;
+        try {
+            while (metricOverTimeSet.next()) {
+                metricOverTime.add(new Point(i, metricOverTimeSet.getInt(2)));
+                i++;
+            }
+        }
+        catch (SQLException e){e.printStackTrace();}
+        return metricOverTime;
     }
 }
