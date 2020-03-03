@@ -150,6 +150,7 @@ public class MainController {
                 double conversions = model.getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server");
                 double totalCostClick = model.getData("SELECT SUM(cost) FROM click");
                 double totalCostImpressions = model.getData("SELECT SUM(cost) FROM impressions");
+                double totalCost = totalCostClick + totalCostImpressions;
 
                 ArrayList<Point> impressionsOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(*) from impressions group by DATE(date);");
                 ArrayList<Point> clicksOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(*) from click group by DATE(date);");
@@ -168,9 +169,9 @@ public class MainController {
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Uniques", uniques, uniquesOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, conversionsOverTime));
-                basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCostClick, totalCostOverTime)); //May need to be changed, not sure whether it should be per impression or click
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime)); //May need to be changed, not sure whether it should be per impression or click
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", clicks/impressions, CTROverTime));
-                basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", 10.0, CPAOverTime)); //I don't understand this one will talk about it tomorrow
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime)); //I don't understand this one will talk about it tomorrow
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  totalCostClick/clicks, CPCOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (totalCostImpressions/impressions)*1000, CPMOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
