@@ -154,17 +154,25 @@ public class MainController {
     @FXML public void loadCampaignPressed(){
         if(clickLogCSV == null){
             view.showErrorMessage("Click Log file needed");
-            return;
         }
         else if(impressionLogCSV == null){
             view.showErrorMessage("Impression Log file needed");
-            return;
         }
         else if(serverLogCSV == null){
             view.showErrorMessage("Server Log file needed");
-            return;
+        }
+        else if(!clickLogCSV.getName().endsWith(".csv")){
+            view.showErrorMessage("Click Log file must be a CSV file");
+        }
+        else if(!impressionLogCSV.getName().endsWith(".csv")){
+            view.showErrorMessage("Impression Log file must be a CSV file");
+        }
+        else if(!serverLogCSV.getName().endsWith(".csv")){
+            view.showErrorMessage("Server Log file must be a CSV file");
         }
         else{
+            long startTime = System.currentTimeMillis();
+
             Task task = new Task<CampaignTab>() {
                 @Override
                 protected CampaignTab call() {
@@ -175,11 +183,15 @@ public class MainController {
             task.setOnRunning((e) -> view.showLoadingDialog());
             task.setOnSucceeded((e) -> {
                 view.hideLoadingDialog();
+                System.out.println((System.currentTimeMillis()-startTime) / 1000.0);
                 try {
                     if(task.get() != null) {
                         CampaignTab tab = ((Task<CampaignTab>) task).getValue();
                         tabPane.getTabs().add(tab);
                         tabPane.getSelectionModel().select(tab);
+                    }
+                    else {
+                        view.showErrorMessage("Incorrect file format");
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -231,13 +243,15 @@ public class MainController {
             basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
 
             tab = new CampaignTab(this,basicMetrics);
+            clickLogCSV = null;
+            impressionLogCSV = null;
+            serverLogCSV = null;
             //tabPane.getTabs().add(tab);
             return tab;
         }
         else {
-            view.showErrorMessage(error);
+            return null;
         }
-        return null;
     }
 
     public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
