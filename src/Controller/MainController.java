@@ -3,7 +3,6 @@ package Controller;
 import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -14,10 +13,7 @@ import javafx.stage.FileChooser;
 
 import java.awt.*;
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class MainController {
     public static final int SLIDER_DAY = 0;
@@ -45,20 +41,6 @@ public class MainController {
     @FXML
     Slider timeGranulationSlider;
 
-    public MainController(){
-        graphData.add(new Point(122,200));
-        graphData.add(new Point(45,21));
-        graphData.add(new Point(231,210));
-        graphData.add(new Point(77,89));
-        graphData.add(new Point(300,341));
-        graphData.add(new Point(244,90));
-        graphData.add(new Point(188,100));
-        graphData.add(new Point(157,117));
-        graphData.add(new Point(90,165));
-        graphData.add(new Point(100,169));
-        graphData.add(new Point(362,198));
-    }
-
     public void setView(MainView view){
         this.view = view;
     }
@@ -67,31 +49,31 @@ public class MainController {
         this.model = model;
     }
 
-    public void onTimeGranulationSliderChanged(int newValue){
-        timeGranulationValue = newValue;
-        NumberAxis axis = (NumberAxis) lineChart.getXAxis();
+    public void recreateGraph(int timeGranularityValue){
+        timeGranulationValue = timeGranularityValue;
+        NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
         lineChart.getData().clear();
-        lineChart.getData().add(createSeries(newValue));
-        switch (newValue){
+        lineChart.getData().add(createSeries(timeGranularityValue));
+        switch (timeGranularityValue){
             case SLIDER_DAY:
-                axis.setUpperBound(365);
-                axis.setTickUnit(15);
-                axis.setLabel("Days Passed");
+                xAxis.setUpperBound(graphData.size());
+                xAxis.setTickUnit(1);
+                xAxis.setLabel("Days Passed");
                 return;
             case SLIDER_WEEK:
-                axis.setUpperBound(52);
-                axis.setTickUnit(4);
-                axis.setLabel("Weeks Passed");
+                xAxis.setUpperBound(Math.round(graphData.size()/7.0));
+                xAxis.setTickUnit(1);
+                xAxis.setLabel("Weeks Passed");
                 return;
             case SLIDER_MONTH:
-                axis.setUpperBound(12);
-                axis.setTickUnit(1);
-                axis.setLabel("Months Passed");
+                xAxis.setUpperBound(Math.round(graphData.size()/30.0));
+                xAxis.setTickUnit(1);
+                xAxis.setLabel("Months Passed");
                 return;
             case SLIDER_YEAR:
-                axis.setUpperBound(1);
-                axis.setTickUnit(1);
-                axis.setLabel("Years Passed");
+                xAxis.setUpperBound(Math.round(graphData.size()/365.0));
+                xAxis.setTickUnit(1);
+                xAxis.setLabel("Years Passed");
                 return;
         }
     }
@@ -143,7 +125,7 @@ public class MainController {
     @FXML public void loadCampaignPressed(){
         String error;
         CampaignTab tab;
-        ArrayList<CampaignTab.Tuple> basicMetrics = new ArrayList<>();
+        ArrayList<CampaignTab.CampaignDataPackage> basicMetrics = new ArrayList<>();
 
 
         if(clickLogCSV == null){
@@ -161,30 +143,40 @@ public class MainController {
         else{
             error = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
             if(error == null){
-                try {
-                    String impressions = model.getData("SELECT COUNT(*) FROM impressions;").getString(1);
-                    String clicks = model.getData("SELECT COUNT(*) FROM click;").getString(1);
-                    String totalCostClick = model.getData("SELECT SUM(cost) FROM click").getString(1);
-                    String totalCostImpressions = model.getData("SELECT SUM(cost) FROM impressions").getString(1);
-                    String bounces = model.getData("SELECT COUNT(case when conversion = 'No' then 1 else null end) FROM server").getString(1);
+                double impressions = model.getData("SELECT COUNT(*) FROM impressions;");
+                double clicks = model.getData("SELECT COUNT(*) FROM click;");
+                double uniques = model.getData("SELECT COUNT(DISTINCT id) FROM click;");
+                double bounces = model.getData("SELECT COUNT(case when conversion = 'No' then 1 else null end) FROM server");
+                double conversions = model.getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server");
+                double totalCostClick = model.getData("SELECT SUM(cost) FROM click");
+                double totalCostImpressions = model.getData("SELECT SUM(cost) FROM impressions");
 
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Impressions", impressions));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Clicks", clicks));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Uniques", model.getData("SELECT COUNT(DISTINCT id) FROM click;").getString(1)));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Bounces", bounces));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Number of Conversions", model.getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server").getString(1)));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Total Cost", totalCostClick)); //May need to be changed, not sure whether it should be per impression or click
-                    basicMetrics.add(new CampaignTab.Tuple<>("CTR", (Float.parseFloat(clicks))/(Float.parseFloat(impressions))));
-                    basicMetrics.add(new CampaignTab.Tuple<>("CPA", 10.0)); //I don't understand this one will talk about it tomorrow
-                    basicMetrics.add(new CampaignTab.Tuple<>("CPC",  (Float.parseFloat(totalCostClick))/(Float.parseFloat(clicks))));
-                    basicMetrics.add(new CampaignTab.Tuple<>("CPM", ((Float.parseFloat(totalCostImpressions))/(Float.parseFloat(impressions)))*1000));
-                    basicMetrics.add(new CampaignTab.Tuple<>("Bounce Rate",(Float.parseFloat(bounces))/(Float.parseFloat(clicks))));
-                }
-                catch (SQLException e){e.printStackTrace();}
+                ArrayList<Point> impressionsOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(*) from impressions group by DATE(date);");
+                ArrayList<Point> clicksOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(*) from click group by DATE(date);");
+                ArrayList<Point> uniquesOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(distinct id) from click group by DATE(date);");
+                ArrayList<Point> bouncesOverTime = model.getDataOverTimePoints("SELECT DATE(entryDate), count(*) from server where strftime('%s',exitDate) - strftime('%s',entryDate) < 30 group by DATE (entryDate);");
+                ArrayList<Point> conversionsOverTime = model.getDataOverTimePoints("SELECT DATE(entryDate), count(*) from server where conversion = 'Yes' group by DATE(entryDate);");
+                ArrayList<Point> totalCostOverTime = model.getDataOverTimePoints("SELECT DATE(date), sum(cost) from click group by DATE(date);");
+                ArrayList<Point> CTROverTime = model.getDataOverTimePoints("");
+                ArrayList<Point> CPAOverTime = model.getDataOverTimePoints("");
+                ArrayList<Point> CPCOverTime = model.getDataOverTimePoints("");
+                ArrayList<Point> CPMOverTime = model.getDataOverTimePoints("");
+                ArrayList<Point> bounceRateOverTime = model.getDataOverTimePoints("");
+
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Impressions", impressions, impressionsOverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Clicks", clicks, clicksOverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Uniques", uniques, uniquesOverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, conversionsOverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCostClick, totalCostOverTime)); //May need to be changed, not sure whether it should be per impression or click
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", clicks/impressions, CTROverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", 10.0, CPAOverTime)); //I don't understand this one will talk about it tomorrow
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  totalCostClick/clicks, CPCOverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (totalCostImpressions/impressions)*1000, CPMOverTime));
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
 
                 tab = new CampaignTab(this,basicMetrics);
                 tabPane.getTabs().add(tab);
-
             }
             else {
                 view.showErrorMessage(error);
@@ -192,7 +184,9 @@ public class MainController {
         }
     }
 
-    public void metricSelectedOnCampaignTab(CampaignTab.Tuple metricSelected, String database){
-
+    public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
+        graphData = metricSelected.getMetricOverTimePoints();
+        lineChart.getYAxis().setLabel(metricSelected.getID());
+        recreateGraph(timeGranulationValue);
     }
 }
