@@ -10,10 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
-import javafx.stage.FileChooser;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+import javafx.stage.*;
 import javafx.util.StringConverter;
 
 import java.io.File;
@@ -23,6 +20,7 @@ public class MainView extends Application {
 
     private Stage stage;
     private Parent root;
+    private Alert waitingBox;
 
     public static void main(String[] args) {
         launch(args);
@@ -101,11 +99,13 @@ public class MainView extends Application {
     }
 
     public void showLoadingDialog(){
-
+        waitingBox = new Alert(Alert.AlertType.NONE,"Please wait...");
+        waitingBox.show();
     }
 
     public void hideLoadingDialog(){
-
+        waitingBox.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+        waitingBox.hide();
     }
 
 }
