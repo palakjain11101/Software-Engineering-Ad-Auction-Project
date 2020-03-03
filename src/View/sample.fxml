@@ -20,7 +20,7 @@
 <?import javafx.scene.text.Text?>
 <?scenebuilder-stylesheet styles.css?>
 
-<GridPane hgap="10" prefHeight="1057.0" prefWidth="1625.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MainController">
+<GridPane hgap="10" prefHeight="1057.0" prefWidth="1625.0" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MainController">
    <columnConstraints>
       <ColumnConstraints maxWidth="350.0" minWidth="342.0" percentWidth="20.0" prefWidth="342.0" />
       <ColumnConstraints minWidth="76.0" percentWidth="50.0" prefWidth="84.0" />
@@ -54,10 +54,10 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button layoutX="38.0" layoutY="53.0" minWidth="100.0" mnemonicParsing="false" onAction="#loadClickLogPressed" prefHeight="39.0" prefWidth="224.0" text="Load ClickLog" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="56.0" AnchorPane.topAnchor="50.0" />
-                        <Button layoutX="38.0" layoutY="130.0" mnemonicParsing="false" onAction="#loadImpressionLogPressed" prefHeight="39.0" prefWidth="222.0" text="Load ImpressionLog" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="58.0" AnchorPane.topAnchor="100.0" />
-                        <Button layoutX="38.0" layoutY="201.0" mnemonicParsing="false" onAction="#loadServerLogPressed" prefHeight="39.0" prefWidth="222.0" text="Load ServerLog" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="58.0" AnchorPane.topAnchor="150.0" />
-                        <Button layoutX="30.0" layoutY="224.0" mnemonicParsing="false" onAction="#loadCampaignPressed" prefHeight="68.0" prefWidth="241.0" text="Add Campaign" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="47.0" AnchorPane.topAnchor="224.0" />
+                        <Button fx:id="loadClickLogButton" layoutX="91.0" layoutY="53.0" minWidth="100.0" mnemonicParsing="false" onAction="#loadClickLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ClickLog" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                        <Button fx:id="loadImpressionLogButton" layoutX="91.0" layoutY="130.0" mnemonicParsing="false" onAction="#loadImpressionLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ImpressionLog" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="35.0" />
+                        <Button fx:id="loadServerLogButton" layoutX="88.0" layoutY="201.0" mnemonicParsing="false" onAction="#loadServerLogPressed" prefHeight="25.0" prefWidth="140.0" text="Load ServerLog" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="65.0" />
+                        <Button fx:id="addCampaignButton" layoutX="74.0" layoutY="230.0" mnemonicParsing="false" onAction="#loadCampaignPressed" prefHeight="40.0" prefWidth="140.0" text="Add Campaign" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="125.0" />
                      </children></AnchorPane>
             </content>
           </Tab>
@@ -83,12 +83,12 @@
             <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="15.0" />
          </children>
       </AnchorPane>
-      <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" title="LINE CHART" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+      <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
         <xAxis>
-          <NumberAxis autoRanging="false" label="INSERT X AXIS TITLE HERE" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
+          <NumberAxis autoRanging="false" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
         </xAxis>
         <yAxis>
-          <NumberAxis label="INSERT Y AXIS TITLE HERE" upperBound="300.0" />
+          <NumberAxis upperBound="300.0" />
         </yAxis>
          <effect>
             <Glow />

@@ -37,14 +37,14 @@ public class MainModel {
         return 0.0;
     }
 
-    public ArrayList<Point> getDataOverTimePoints(String metricOverTimeQuery){
+    public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery){
         if(metricOverTimeQuery.equals("")) return null;
-        ArrayList<Point> metricOverTime = new ArrayList<>();
+        ArrayList<GraphPoint> metricOverTime = new ArrayList<>();
         ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery);
         int i = 0;
         try {
             while (metricOverTimeSet.next()) {
-                metricOverTime.add(new Point(i, metricOverTimeSet.getInt(2)));
+                metricOverTime.add(new GraphPoint(i, metricOverTimeSet.getDouble(2)));
                 i++;
             }
         }
