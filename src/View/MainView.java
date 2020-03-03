@@ -2,11 +2,7 @@ package View;
 
 import Controller.MainController;
 import Model.MainModel;
-import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -14,8 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -85,9 +79,9 @@ public class MainView extends Application {
             }
         });
         slider.setOnMouseReleased(mouseEvent -> {
-            controller.onTimeGranulationSliderChanged((int) slider.getValue());
+            controller.recreateGraph((int) slider.getValue());
         });
-        controller.onTimeGranulationSliderChanged(0);
+        controller.recreateGraph(0);
     }
 
     public File showFileChooser(){
