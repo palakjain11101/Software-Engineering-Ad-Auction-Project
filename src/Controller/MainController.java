@@ -152,8 +152,6 @@ public class MainController {
     }
 
     @FXML public void loadCampaignPressed(){
-
-
         if(clickLogCSV == null){
             view.showErrorMessage("Click Log file needed");
             return;
@@ -179,7 +177,9 @@ public class MainController {
                 view.hideLoadingDialog();
                 try {
                     if(task.get() != null) {
-                        tabPane.getTabs().add(((Task<CampaignTab>) task).getValue());
+                        CampaignTab tab = ((Task<CampaignTab>) task).getValue();
+                        tabPane.getTabs().add(tab);
+                        tabPane.getSelectionModel().select(tab);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
