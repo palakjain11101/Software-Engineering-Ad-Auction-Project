@@ -200,7 +200,7 @@ public class MainController {
             double impressions = model.getData("SELECT COUNT(*) FROM impressions;");
             double clicks = model.getData("SELECT COUNT(*) FROM click;");
             double uniques = model.getData("SELECT COUNT(DISTINCT id) FROM click;");
-            double bounces = model.getData("SELECT COUNT(case when conversion = 'No' then 1 else null end) FROM server");
+            double bounces = model.getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 then 1 else null end) FROM server");
             double conversions = model.getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server");
             double totalCostClick = model.getData("SELECT SUM(cost) FROM click");
             double totalCostImpressions = model.getData("SELECT SUM(cost) FROM impressions");
