@@ -150,27 +150,28 @@ public class MainController {
                 double conversions = model.getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server");
                 double totalCostClick = model.getData("SELECT SUM(cost) FROM click");
                 double totalCostImpressions = model.getData("SELECT SUM(cost) FROM impressions");
+                double totalCost = totalCostClick + totalCostImpressions;
 
                 ArrayList<Point> impressionsOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(*) from impressions group by DATE(date);");
                 ArrayList<Point> clicksOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(*) from click group by DATE(date);");
                 ArrayList<Point> uniquesOverTime = model.getDataOverTimePoints("SELECT DATE(date), count(distinct id) from click group by DATE(date);");
                 ArrayList<Point> bouncesOverTime = model.getDataOverTimePoints("SELECT DATE(entryDate), count(*) from server where strftime('%s',exitDate) - strftime('%s',entryDate) < 30 group by DATE (entryDate);");
                 ArrayList<Point> conversionsOverTime = model.getDataOverTimePoints("SELECT DATE(entryDate), count(*) from server where conversion = 'Yes' group by DATE(entryDate);");
-                ArrayList<Point> totalCostOverTime = model.getDataOverTimePoints("SELECT DATE(date), sum(cost) from click group by DATE(date);");
-                ArrayList<Point> CTROverTime = model.getDataOverTimePoints("");
-                ArrayList<Point> CPAOverTime = model.getDataOverTimePoints("");
-                ArrayList<Point> CPCOverTime = model.getDataOverTimePoints("");
-                ArrayList<Point> CPMOverTime = model.getDataOverTimePoints("");
-                ArrayList<Point> bounceRateOverTime = model.getDataOverTimePoints("");
+                ArrayList<Point> totalCostOverTime = model.getDataOverTimePoints("SELECT d1, c+i from (SELECT DATE(date) as d1, SUM(cost) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(cost) as i from impressions group by DATE(date)) ON d1=d2 group by DATE(d1);");
+                ArrayList<Point> CTROverTime = model.getDataOverTimePoints("SELECT d1, CAST(c as float)/CAST(i as float) from (SELECT date(date) as d1, count(*) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT date(date) as d2, count(*) as i from impressions group by DATE(date)) ON d1=d2 group by d1;");
+                ArrayList<Point> CPAOverTime = model.getDataOverTimePoints("SELECT d1, CAST(c2 as float)/CAST(i as float) from (SELECT d1, c+i as c2 from (SELECT DATE(date) as d1, SUM(cost) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(cost) as i from impressions group by DATE(date)) ON d1=d2 group by DATE(d1)) LEFT OUTER JOIN (SELECT date(entryDate) as d2, count(*) as i from server where conversion='Yes' group by DATE(entryDate)) ON d1=d2 group by d1;");
+                ArrayList<Point> CPCOverTime = model.getDataOverTimePoints("SELECT DATE(date), avg(cost) from click group by DATE(date);");
+                ArrayList<Point> CPMOverTime = model.getDataOverTimePoints("SELECT DATE(date), avg(cost)*1000 from impressions group by DATE(date);");
+                ArrayList<Point> bounceRateOverTime = model.getDataOverTimePoints("SELECT d1, CAST(i as float)/CAST(c as float) from (SELECT DATE(date) as d1, count(*) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(entryDate) as d2, count(*) as i from server where strftime('%s',exitDate) - strftime('%s',entryDate) < 30 group by DATE (entryDate)) ON d1=d2 GROUP BY DATE(d1);");
 
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Impressions", impressions, impressionsOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Clicks", clicks, clicksOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Uniques", uniques, uniquesOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, conversionsOverTime));
-                basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCostClick, totalCostOverTime)); //May need to be changed, not sure whether it should be per impression or click
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime)); //May need to be changed, not sure whether it should be per impression or click
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", clicks/impressions, CTROverTime));
-                basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", 10.0, CPAOverTime)); //I don't understand this one will talk about it tomorrow
+                basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime)); //I don't understand this one will talk about it tomorrow
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  totalCostClick/clicks, CPCOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (totalCostImpressions/impressions)*1000, CPMOverTime));
                 basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
