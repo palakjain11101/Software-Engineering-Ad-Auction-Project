@@ -65,7 +65,7 @@ public class CampaignTab extends Tab {
             table.getItems().add(data);
         }
 
-        table.getSelectionModel().selectFirst();
+        //table.getSelectionModel().selectFirst();
         table.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             controller.metricSelectedOnCampaignTab((CampaignDataPackage) newValue,"test");
         });
