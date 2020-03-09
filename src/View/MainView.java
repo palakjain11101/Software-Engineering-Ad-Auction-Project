@@ -28,8 +28,8 @@ public class MainView extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        //root = FXMLLoader.load(getClass().getResource("/View/sample.fxml"));
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/sample.fxml"));
+        //root = FXMLLoader.load(getClass().getResource("/View/mainScene.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/mainScene.fxml"));
         root = fxmlLoader.load();
         MainController controller = fxmlLoader.getController();
         controller.setView(this);
