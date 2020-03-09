@@ -7,6 +7,9 @@ import View.MainView;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -15,9 +18,12 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -227,11 +233,20 @@ public class MainController {
         recreateGraph(timeGranulationValue);
     }
 
-    @FXML public void addFilterButtonPressed(){
-        filterListView.getItems().add("hello");
+    @FXML public void addFilterButtonPressed() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
+        Parent parent = fxmlLoader.load();
+        Scene scene = new Scene(parent, 300, 200);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
+
+        filterListView.getItems().add("hello world!");
     }
 
     @FXML public void removeFilterButtonPressed(){
+        filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
 
     }
 }
