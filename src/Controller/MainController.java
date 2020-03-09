@@ -240,6 +240,8 @@ public class MainController {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
+        AddFilterDialogController dialogController = fxmlLoader.getController();
+        dialogController.setUpDialogController();
         stage.showAndWait();
 
         filterListView.getItems().add("hello world!");
