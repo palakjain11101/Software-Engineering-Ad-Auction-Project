@@ -58,6 +58,9 @@ public class CampaignTab extends Tab {
         addItems();
 
         pane.getChildren().add(table);
+
+        //TEMPORARY
+        Button button = new Button();
     }
 
     private void addItems(){
