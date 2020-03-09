@@ -222,6 +222,7 @@ public class MainController {
     }
 
     public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
+        if(metricSelected == null){return;}
         graphData = metricSelected.getMetricOverTimePoints();
 
         String id = metricSelected.getID();
@@ -250,5 +251,14 @@ public class MainController {
     @FXML public void removeFilterButtonPressed(){
         filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
 
+    }
+
+    //TEST BUTTON ONLY
+    public void onTestButtonPressed(){
+        HashMap map = new HashMap();
+        map.put("gender","Male");
+        ArrayList<CampaignTab.CampaignDataPackage> list = model.updateFilters(map);
+        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+        tab.updateData(list);
     }
 }

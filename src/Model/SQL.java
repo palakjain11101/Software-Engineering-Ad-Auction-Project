@@ -11,26 +11,12 @@ public class SQL {
     private Connection c;
     private Statement stmt;
 
-
-    public SQL(){
-
-        //WILL BE REMOVED WHEN CONTROLLER IS IMPLEMENTED
-//        try{
-//            this.putData("click_log.csv","click");
-//            this.putData("impression_log.csv","impressions");
-//            this.putData("server_log.csv","server");
-//        }catch(Exception e){
-//            System.out.println("ERROR WITH A FILE");
-//        }
-
-    }
-
-    public void connection(String dbname){
+    public void connection(String databaseName){
         this.c = null;
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:"+ dbname + ".db");
+            c = DriverManager.getConnection("jdbc:sqlite:"+ databaseName + ".db");
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
@@ -50,12 +36,16 @@ public class SQL {
         String impressionsTable = "CREATE TABLE impressions (\n"
                 + " id integer,\n"
                 + " date text,\n"
-                + " gender text,\n"
-                + " ageRange text,\n"
-                + " income text,\n"
                 + " context text,\n"
                 + " cost real,\n"
                 + " PRIMARY KEY (id,date));";
+
+        String personTable = "CREATE TABLE person (\n"
+                + " id integer,\n"
+                + " gender text,\n"
+                + " ageRange text,\n"
+                + " income text,\n"
+                + " PRIMARY KEY (id));";
 
         String clickTable = "CREATE TABLE click (\n"
                 + " id integer,\n"
@@ -68,10 +58,11 @@ public class SQL {
             stmt.execute("DROP TABLE IF EXISTS server;");
             stmt.execute("DROP TABLE IF EXISTS click;");
             stmt.execute("DROP TABLE IF EXISTS impressions;");
+            stmt.execute("DROP TABLE IF EXISTS person;");
             stmt.execute(serverTable);
             stmt.execute(impressionsTable);
+            stmt.execute(personTable);
             stmt.execute(clickTable);
-            System.out.println("WORKED");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -80,16 +71,15 @@ public class SQL {
 
     public void putData(String file, String table) throws Exception {
 
-        String line = "";
+        String line;
         String cvsSplitBy = ",";
-        String errorMessage;
         c.setAutoCommit(false);
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int x = 1;
             line = br.readLine();
 
-            if(table == "click" && line.equals("Date,ID,Click Cost")){
+            if(table.equals("click") && line.equals("Date,ID,Click Cost")){
                 while ((line = br.readLine()) != null) {
                     x+=1;
                     // use comma as separator
@@ -102,7 +92,7 @@ public class SQL {
                     }
 
                 }
-            } else if(table == "impressions" && line.equals("Date,ID,Gender,Age,Income,Context,Impression Cost")){
+            } else if(table.equals("impressions") && line.equals("Date,ID,Gender,Age,Income,Context,Impression Cost")){
                 while ((line = br.readLine()) != null) {
                     x += 1;
                     // use comma as separator
@@ -111,10 +101,11 @@ public class SQL {
                     if (data.length != 7) {
                         throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
+                        stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
+                        stmt.addBatch("INSERT OR IGNORE INTO person VALUES (" + data[1] + ",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                     }
                 }
-            } else if(table == "server" && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
+            } else if(table.equals("server") && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
                 while ((line = br.readLine()) != null) {
                     x += 1;
                     // use comma as separator
