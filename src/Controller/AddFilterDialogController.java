@@ -41,6 +41,10 @@ public class AddFilterDialogController {
         addFilterDialogListView.getItems().add(contextComboBox);
         addFilterDialogListView.getItems().add(incomeComboBox);
 
+        addFilterDialogListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            
+        });
+
     }
 
 }
