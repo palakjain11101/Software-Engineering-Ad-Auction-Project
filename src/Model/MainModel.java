@@ -84,9 +84,9 @@ public class MainModel {
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Uniques", uniques, uniquesOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, conversionsOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime)); //May need to be changed, not sure whether it should be per impression or click
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", clicks/impressions, CTROverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime)); //I don't understand this one will talk about it tomorrow
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  totalCostClick/clicks, CPCOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (totalCostImpressions/impressions)*1000, CPMOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
@@ -121,19 +121,16 @@ public class MainModel {
             }
         }
 
-        System.out.println("SELECT COUNT(*) FROM impressions " + whereClause + ";");
-
-
-        double impressions = getData("SELECT COUNT(*) FROM impressions " + whereClause + " ;");
-        double clicks = getData("SELECT COUNT(*) FROM click;");
-        double uniques = getData("SELECT COUNT(DISTINCT id) FROM click;");
-        double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 then 1 else null end) FROM server");
-        double conversions = getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server");
-        double totalCostClick = getData("SELECT SUM(cost) FROM click");
-        double totalCostImpressions = getData("SELECT SUM(cost) FROM impressions " + whereClause + " ;");
+        double impressions = getData("SELECT COUNT(*) FROM impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " ;");
+        double clicks = getData("SELECT COUNT(*) FROM click INNER JOIN person ON click.id = person.id " + whereClause + " ;");
+        double uniques = getData("SELECT COUNT(DISTINCT click.id) FROM click INNER JOIN person ON click.id = person.id " + whereClause + " ;");
+        double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 then 1 else null end) FROM server INNER JOIN person ON server.id = person.id " + whereClause + " ;");
+        double conversions = getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server INNER JOIN person ON server.id = person.id " + whereClause + " ;");
+        double totalCostClick = getData("SELECT SUM(cost) FROM click INNER JOIN person ON click.id = person.id " + whereClause + " ;");
+        double totalCostImpressions = getData("SELECT SUM(cost) FROM impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " ;");
         double totalCost = totalCostClick + totalCostImpressions;
 
-        ArrayList<GraphPoint> impressionsOverTime = getDataOverTimePoints("SELECT DATE(date), count(*) from impressions " + whereClause + " group by DATE(date);");
+        ArrayList<GraphPoint> impressionsOverTime = getDataOverTimePoints("SELECT DATE(date), count(*) from impressions group by DATE(date);");
         ArrayList<GraphPoint> clicksOverTime = getDataOverTimePoints("SELECT DATE(date), count(*) from click group by DATE(date);");
         ArrayList<GraphPoint> uniquesOverTime = getDataOverTimePoints("SELECT DATE(date), count(distinct id) from click group by DATE(date);");
         ArrayList<GraphPoint> bouncesOverTime = getDataOverTimePoints("SELECT DATE(entryDate), count(*) from server where strftime('%s',exitDate) - strftime('%s',entryDate) < 30 group by DATE (entryDate);");
@@ -150,13 +147,12 @@ public class MainModel {
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Uniques", uniques, uniquesOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, conversionsOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime)); //May need to be changed, not sure whether it should be per impression or click
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", clicks/impressions, CTROverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime)); //I don't understand this one will talk about it tomorrow
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  totalCostClick/clicks, CPCOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (totalCostImpressions/impressions)*1000, CPMOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
-
 
         return basicMetrics;
     }

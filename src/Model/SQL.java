@@ -41,14 +41,14 @@ public class SQL {
                 + " PRIMARY KEY (id,date));";
 
         String personTable = "CREATE TABLE person (\n"
-                + " id integer,\n"
+                + " id integer UNIQUE,\n"
                 + " gender text,\n"
                 + " ageRange text,\n"
                 + " income text,\n"
                 + " PRIMARY KEY (id));";
 
         String clickTable = "CREATE TABLE click (\n"
-                + " id integer,\n"
+                + " id integer ,\n"
                 + " date text,\n"
                 + " cost real,\n"
                 + " PRIMARY KEY (id,date));";
