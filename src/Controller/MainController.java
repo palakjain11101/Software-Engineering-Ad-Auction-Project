@@ -176,7 +176,12 @@ public class MainController {
                 @Override
                 protected ArrayList<CampaignTab.CampaignDataPackage> call() {
                     error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
-                    return model.loadCampaign();
+                    if(error[0] == null){
+                        return model.loadCampaign();
+                    }
+                    else {
+                        return null;
+                    }
                 }
             };
 
