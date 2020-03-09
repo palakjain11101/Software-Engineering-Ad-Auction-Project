@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -47,6 +48,9 @@ public class MainController {
 
     @FXML
     Slider timeGranulationSlider;
+
+    @FXML
+    ListView filterListView;
 
     public void setView(MainView view){
         this.view = view;
@@ -221,5 +225,13 @@ public class MainController {
         lineChart.setTitle(id + " Over Time");
 
         recreateGraph(timeGranulationValue);
+    }
+
+    @FXML public void addFilterButtonPressed(){
+        filterListView.getItems().add("hello");
+    }
+
+    @FXML public void removeFilterButtonPressed(){
+
     }
 }
