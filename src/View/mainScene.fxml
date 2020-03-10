@@ -107,7 +107,8 @@
             <HBox prefHeight="41.0" prefWidth="410.0" BorderPane.alignment="CENTER">
                <children>
                   <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addFilterButtonPressed" text="Add" HBox.hgrow="ALWAYS" />
-                  <Button mnemonicParsing="false" onAction="#removeFilterButtonPressed" text="Remove" HBox.hgrow="SOMETIMES" />
+
+                   <Button mnemonicParsing="false" onAction="#removeFilterButtonPressed" text="Remove" HBox.hgrow="SOMETIMES" />
                </children>
             </HBox>
          </bottom>

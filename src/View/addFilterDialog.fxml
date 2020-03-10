@@ -12,7 +12,7 @@
    <bottom>
       <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Confirm" />
+            <Button mnemonicParsing="false" onAction="#AddFilterDialogListViewElement" text="Confirm" />
          </children>
       </HBox>
    </bottom>
