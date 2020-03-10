@@ -28,8 +28,6 @@ public class CampaignTab extends Tab {
     public CampaignTab(MainController controller, ArrayList<CampaignDataPackage> basicMetrics){
         this.controller = controller;
         this.basicMetrics = basicMetrics;
-
-
         initCampaignTab();
     }
 

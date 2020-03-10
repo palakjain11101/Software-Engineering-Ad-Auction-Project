@@ -232,7 +232,7 @@ public class MainController {
     }
 
     @FXML public void addFilterButtonPressed() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/addFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
         Scene scene = new Scene(parent, 300, 200);
         Stage stage = new Stage();
@@ -248,9 +248,7 @@ public class MainController {
 
     @FXML public void removeFilterButtonPressed(){
         filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
-
     }
-
 
 
     //TEST BUTTON ONLY
