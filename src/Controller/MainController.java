@@ -119,7 +119,9 @@ public class MainController {
             nextX = (int) Math.floor(point.getX()/divider);
             if(previousX < nextX){
                 if(shouldGraphAvg){
-                    total /= count;
+                    if(count > 0) {
+                        total /= count;
+                    }
                 }
                 series.getData().add(new XYChart.Data<>(previousX+1, total));
                 total = point.getY();
@@ -128,11 +130,15 @@ public class MainController {
             }
             else {
                 total += point.getY();
-                count++;
+                if(point.getY() > 0) {
+                    count++;
+                }
             }
         }
         if(shouldGraphAvg){
-            total /= count;
+            if(count > 0) {
+                total /= count;
+            }
         }
         series.getData().add(new XYChart.Data<>(previousX+1, total));
         series.setName("Data");
@@ -223,7 +229,7 @@ public class MainController {
         graphData = metricSelected.getMetricOverTimePoints();
 
         String id = metricSelected.getID();
-        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Number of Cost");
+        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
 
         lineChart.getYAxis().setLabel(id);
         lineChart.setTitle(id + " Over Time");
