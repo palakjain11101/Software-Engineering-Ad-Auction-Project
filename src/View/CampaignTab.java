@@ -56,6 +56,7 @@ public class CampaignTab extends Tab {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setEditable(false);
 
+
         addItems();
         setSelectionModel();
 

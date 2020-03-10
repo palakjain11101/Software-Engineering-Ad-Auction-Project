@@ -242,7 +242,7 @@ public class MainController {
         dialogController.setUpDialogController();
         stage.showAndWait();
 
-        filterListView.getItems().add("hello world!");
+
         // Register the filter for another event type
     }
 
