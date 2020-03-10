@@ -5,6 +5,7 @@ import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,10 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,7 +31,6 @@ public class MainController {
     public static final int SLIDER_WEEK = 1;
     public static final int SLIDER_MONTH = 2;
     public static final int SLIDER_YEAR = 3;
-
 
     private MainView view;
     private MainModel model;
@@ -246,12 +243,15 @@ public class MainController {
         stage.showAndWait();
 
         filterListView.getItems().add("hello world!");
+        // Register the filter for another event type
     }
 
     @FXML public void removeFilterButtonPressed(){
         filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
 
     }
+
+
 
     //TEST BUTTON ONLY
     public void onTestButtonPressed(){
