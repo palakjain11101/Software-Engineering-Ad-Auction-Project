@@ -4,17 +4,21 @@ public class GraphPoint {
 
     private double x;
     private double y;
-    private double denom;
+    private double Ydenom;
+    private double Ynum;
 
     public GraphPoint(double x, double y){
         this.x = x;
         this.y = y;
+        this.Ynum = y;
+        this.Ydenom = 0;
     }
 
     public GraphPoint(double x, double num, double denom){
         this.x = x;
-        this.y = num/denom;
-        this.denom = denom;
+        this.y = denom == 0 ? 0 : num/denom;
+        this.Ydenom = denom;
+        this.Ynum = num;
     }
 
     public double getX() {
@@ -25,5 +29,7 @@ public class GraphPoint {
         return y;
     }
 
-    public double getDenom() {return denom;}
+    public double getYdenom() {return Ydenom;}
+
+    public double getYnum() {return Ynum;}
 }

@@ -111,36 +111,29 @@ public class MainController {
         }
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
+
         int previousX = 0;
         int nextX;
-        int count = 0;
+        double holdTotal;
         double total = 0;
+        double totalDenom = 0;
+
         for(GraphPoint point : graphData){
             nextX = (int) Math.floor(point.getX()/divider);
             if(previousX < nextX){
-                if(shouldGraphAvg){
-                    if(count > 0) {
-                        total /= count;
-                    }
-                }
-                series.getData().add(new XYChart.Data<>(previousX+1, total));
-                total = point.getY();
-                count = 1;
+                holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
+                series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
+                total = point.getYnum();
+                totalDenom = point.getYdenom();
                 previousX = nextX;
             }
             else {
-                total += point.getY();
-                if(point.getY() > 0) {
-                    count++;
-                }
+                total += point.getYnum();
+                totalDenom += point.getYdenom();
             }
         }
-        if(shouldGraphAvg){
-            if(count > 0) {
-                total /= count;
-            }
-        }
-        series.getData().add(new XYChart.Data<>(previousX+1, total));
+        holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
+        series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
         series.setName("Data");
         return series;
     }
