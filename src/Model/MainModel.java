@@ -174,7 +174,13 @@ public class MainModel {
         }
         String holdCase = "1";
         for(String filter : hashFilters.keySet()){
-            holdCase += " AND " + filter + " = \"" + hashFilters.get(filter) + "\"";
+            if(filter == "beforeDate"){
+                holdCase += " AND date" + " < \"" + hashFilters.get(filter) + "\"";
+            }else if (filter == "afterDate"){
+                holdCase += " AND date" + " > \"" + hashFilters.get(filter) + "\"";
+            }else{
+                holdCase += " AND " + filter + " = \"" + hashFilters.get(filter) + "\"";
+            }
         }
         return holdCase;
     }
