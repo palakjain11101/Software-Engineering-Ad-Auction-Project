@@ -185,4 +185,19 @@ public class MainModel {
         System.out.println(holdCase);
         return holdCase;
     }
+
+    public ArrayList<Double> getAllClickCosts(){
+        ArrayList<Double> clickCosts = new ArrayList<>();
+        ResultSet resultSet = sql.getData("SELECT cost FROM click;");
+        while (true) {
+            try {
+                clickCosts.add(resultSet.getDouble(1));
+                if (!resultSet.next()) break;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return clickCosts;
+    }
 }
