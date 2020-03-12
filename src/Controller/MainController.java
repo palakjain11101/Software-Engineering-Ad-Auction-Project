@@ -249,6 +249,9 @@ public class MainController {
         filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
     }
 
+    @FXML public void onDisplayHistogramPressed(){
+        System.out.println("Put histogram code here");
+    }
 
     //TEST BUTTON ONLY
     public void onTestButtonPressed(){
