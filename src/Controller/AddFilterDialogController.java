@@ -23,13 +23,14 @@ import java.time.LocalDate;
 
 public class AddFilterDialogController {
 
-    @FXML
-    ListView addFilterDialogListView;
 
     public AddFilterDialogController(){
     }
 
-    public void setUpDialogController(){
+    public void setUpDialogController() {
+    }
+
+    /*public void setUpDialogController(){
         DatePicker dateBeforePicker = new DatePicker();
         DatePicker dateAfterPicker = new DatePicker();
         ComboBox ageComboBox = new ComboBox();
@@ -56,14 +57,14 @@ public class AddFilterDialogController {
 
         });
 
-    }
+    }*/
 
 
 
 
 
-    @FXML public void AddFilterDialogListViewElement(ActionEvent actionEvent) throws IOException {
-        /*FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
+    /*@FXML public void AddFilterDialogListViewElement(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
         Scene scene = new Scene(parent, 300, 200);
         Stage stage = new Stage();
@@ -71,7 +72,7 @@ public class AddFilterDialogController {
         stage.setScene(scene);
         AddFilterDialogController dialogController = fxmlLoader.getController();
         dialogController.setUpDialogController();
-        stage.showAndWait(); */
+        stage.showAndWait();
 
         addFilterDialogListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         ObservableList selectedIndices = addFilterDialogListView.getSelectionModel().getSelectedIndices();
@@ -83,6 +84,6 @@ public class AddFilterDialogController {
         // Register the filter for another event type
 
 
-    }
+    } */
 
 }
