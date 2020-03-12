@@ -111,30 +111,29 @@ public class MainController {
         }
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
+
         int previousX = 0;
         int nextX;
-        int count = 0;
+        double holdTotal;
         double total = 0;
+        double totalDenom = 0;
+
         for(GraphPoint point : graphData){
             nextX = (int) Math.floor(point.getX()/divider);
             if(previousX < nextX){
-                if(shouldGraphAvg){
-                    total /= count;
-                }
-                series.getData().add(new XYChart.Data<>(previousX+1, total));
-                total = point.getY();
-                count = 1;
+                holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
+                series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
+                total = point.getYnum();
+                totalDenom = point.getYdenom();
                 previousX = nextX;
             }
             else {
-                total += point.getY();
-                count++;
+                total += point.getYnum();
+                totalDenom += point.getYdenom();
             }
         }
-        if(shouldGraphAvg){
-            total /= count;
-        }
-        series.getData().add(new XYChart.Data<>(previousX+1, total));
+        holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
+        series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
         series.setName("Data");
         return series;
     }
@@ -223,7 +222,7 @@ public class MainController {
         graphData = metricSelected.getMetricOverTimePoints();
 
         String id = metricSelected.getID();
-        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Number of Cost");
+        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
 
         lineChart.getYAxis().setLabel(id);
         lineChart.setTitle(id + " Over Time");
