@@ -27,11 +27,11 @@ public class SQL {
     public void createTable(){
         String serverTable = "CREATE TABLE server (\n"
                 + " id integer,\n"
-                + " entryDate text,\n"
+                + " date text,\n" //This means entry date
                 + " exitDate text,\n"
                 + " pagesViewed integer,\n"
                 + " conversion text,\n"
-                + " PRIMARY KEY (id,entryDate));";
+                + " PRIMARY KEY (id,date));";
 
         String impressionsTable = "CREATE TABLE impressions (\n"
                 + " id integer,\n"
