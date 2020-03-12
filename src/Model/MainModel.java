@@ -60,74 +60,9 @@ public class MainModel {
         return metricOverTime;
     }
 
-    public ArrayList<CampaignTab.CampaignDataPackage> loadCampaign(){
-        ArrayList<CampaignTab.CampaignDataPackage> basicMetrics = new ArrayList<>();
-
-        double impressions = getData("SELECT COUNT(*) FROM impressions;");
-        double clicks = getData("SELECT COUNT(*) FROM click;");
-        double uniques = getData("SELECT COUNT(DISTINCT id) FROM click;");
-        double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < 30 then 1 else null end) FROM server");
-        double conversions = getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server");
-        double totalCostClick = getData("SELECT SUM(cost) FROM click");
-        double totalCostImpressions = getData("SELECT SUM(cost) FROM impressions");
-        double totalCost = totalCostClick + totalCostImpressions;
-
-        ArrayList<GraphPoint> impressionsOverTime = getDataOverTimePoints("SELECT DATE(date), count(*) from impressions group by DATE(date);",false);
-        ArrayList<GraphPoint> clicksOverTime = getDataOverTimePoints("SELECT DATE(date), count(*) from click group by DATE(date);",false);
-        ArrayList<GraphPoint> uniquesOverTime = getDataOverTimePoints("SELECT DATE(date), count(distinct id) from click group by DATE(date);",false);
-        ArrayList<GraphPoint> bouncesOverTime = getDataOverTimePoints("SELECT DATE(date), count(case when strftime('%s',exitDate) - strftime('%s',date) < 30 then 1 else null end) from server group by DATE (date);",false);
-        ArrayList<GraphPoint> conversionsOverTime = getDataOverTimePoints("SELECT DATE(date), count(case when conversion = 'Yes' then 1 else null end) from server group by DATE(date);",false);
-        ArrayList<GraphPoint> totalCostOverTime = getDataOverTimePoints("SELECT d1, c+i from (SELECT DATE(date) as d1, SUM(cost) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(cost) as i from impressions group by DATE(date)) ON d1=d2 group by DATE(d1);",false);
-        ArrayList<GraphPoint> CTROverTime = getDataOverTimePoints("SELECT d1, c, i from (SELECT date(date) as d1, count(*) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT date(date) as d2, count(*) as i from impressions group by DATE(date)) ON d1=d2 group by d1;",true);
-        ArrayList<GraphPoint> CPAOverTime = getDataOverTimePoints("SELECT d1, c2, i from (SELECT d1, c+i as c2 from (SELECT DATE(date) as d1, SUM(cost) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(cost) as i from impressions group by DATE(date)) ON d1=d2 group by DATE(d1)) LEFT OUTER JOIN (SELECT date(date) as d2, count(*) as i from server where conversion='Yes' group by DATE(date)) ON d1=d2 group by d1;",true);
-        ArrayList<GraphPoint> CPCOverTime = getDataOverTimePoints("SELECT DATE(date), sum(cost), count(*) from click group by DATE(date);",true);
-        ArrayList<GraphPoint> CPMOverTime = getDataOverTimePoints("SELECT DATE(date), sum(cost)*1000, count(*) from impressions group by DATE(date);",true);
-        ArrayList<GraphPoint> bounceRateOverTime = getDataOverTimePoints("SELECT d1, i, c from (SELECT DATE(date) as d1, count(*) as c from click group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, count(*) as i from server where strftime('%s',exitDate) - strftime('%s',date) < 30 group by DATE (date)) ON d1=d2 GROUP BY DATE(d1);",true);
-
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Impressions", impressions, impressionsOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Clicks", clicks, clicksOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Uniques", uniques, uniquesOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, conversionsOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", clicks/impressions, CTROverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  totalCostClick/clicks, CPCOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (totalCostImpressions/impressions)*1000, CPMOverTime));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
-
-        return basicMetrics;
-
-    }
-
-    public ArrayList<CampaignTab.CampaignDataPackage> updateFilters(HashMap<String,String> hashFilters){
+    public ArrayList<CampaignTab.CampaignDataPackage> queryCampaign(HashMap<String,String> hashFilters){
 
         ArrayList<CampaignTab.CampaignDataPackage> basicMetrics = new ArrayList<>();
-
-//
-//        String whereClause = "";
-//
-//        HashMap<String,String> hashFiltersClone = (HashMap<String,String>) hashFilters.clone();
-//
-//        if (hashFiltersClone.size() == 0){
-//            System.out.println("No filters supplied");
-//        }else {
-//            HashMap.Entry<String, String> first = hashFiltersClone.entrySet().stream().findFirst().get();
-//            String key = first.getKey();
-//            String value = first.getValue();
-//
-//            hashFiltersClone.remove(key);
-//
-//            whereClause = "WHERE " + key + " = \"" + value + "\"";
-//
-//            for(HashMap.Entry<String,String> entry : hashFiltersClone.entrySet()) {
-//                key = entry.getKey();
-//                value = entry.getValue();
-//
-//                whereClause += " AND " + key + " = \"" + value + "\"";
-//
-//            }
-//        }
 
         String cases = convertFiltersToCase(hashFilters);
 

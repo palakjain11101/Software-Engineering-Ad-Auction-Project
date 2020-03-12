@@ -4,8 +4,6 @@ import Model.GraphPoint;
 import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
-import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,12 +17,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 public class MainController {
     public static final int SLIDER_DAY = 0;
@@ -183,7 +179,7 @@ public class MainController {
                 protected ArrayList<CampaignTab.CampaignDataPackage> call() {
                     error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
                     if(error[0] == null){
-                        return model.loadCampaign();
+                        return model.queryCampaign(new HashMap<>());
                     }
                     else {
                         return null;
@@ -259,7 +255,7 @@ public class MainController {
     public void onTestButtonPressed(){
         HashMap map = new HashMap();
         map.put("gender","Male");
-        ArrayList<CampaignTab.CampaignDataPackage> list = model.updateFilters(map);
+        ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
         tab.updateData(list);
     }
