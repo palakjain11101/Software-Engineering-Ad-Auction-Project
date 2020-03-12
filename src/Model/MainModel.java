@@ -132,13 +132,13 @@ public class MainModel {
         String countCases = convertFiltersToCase(hashFilters, true);
         String sumCases = convertFiltersToCase(hashFilters, false);
 
-        double impressions = getData("SELECT COUNT(*) FROM impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " ;");
-        double clicks = getData("SELECT COUNT(*) FROM click INNER JOIN person ON click.id = person.id " + whereClause + " ;");
+        double impressions = getData("SELECT COUNT(case when " + countCases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
+        double clicks = getData("SELECT COUNT(case when " + countCases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
         double uniques = getData("SELECT COUNT(DISTINCT click.id) FROM click INNER JOIN person ON click.id = person.id " + whereClause + " ;");
-        double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 then 1 else null end) FROM server INNER JOIN person ON server.id = person.id " + whereClause + " ;");
-        double conversions = getData("SELECT COUNT(case when conversion = 'Yes' then 1 else null end) FROM server INNER JOIN person ON server.id = person.id " + whereClause + " ;");
-        double totalCostClick = getData("SELECT SUM(cost) FROM click INNER JOIN person ON click.id = person.id " + whereClause + " ;");
-        double totalCostImpressions = getData("SELECT SUM(cost) FROM impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " ;");
+        double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 AND " + countCases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
+        double conversions = getData("SELECT COUNT(case when conversion = 'Yes' AND " + countCases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
+        double totalCostClick = getData("SELECT SUM(case when " + countCases + " then cost else 0 end) FROM click INNER JOIN person ON click.id = person.id;");
+        double totalCostImpressions = getData("SELECT SUM(case when " + countCases + " then cost else 0 end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
         double totalCost = totalCostClick + totalCostImpressions;
 
         ArrayList<GraphPoint> impressionsOverTime = getDataOverTimePoints("select DATE(date), COUNT(case when " + countCases + " then 1 else null end) from (SELECT * from impressions INNER JOIN person ON impressions.id = person.id) GROUP BY DATE(date);",false);
