@@ -111,29 +111,30 @@ public class MainController {
         }
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
-
         int previousX = 0;
         int nextX;
-        double holdTotal;
+        int count = 0;
         double total = 0;
-        double totalDenom = 0;
-
         for(GraphPoint point : graphData){
             nextX = (int) Math.floor(point.getX()/divider);
             if(previousX < nextX){
-                holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
-                series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
-                total = point.getYnum();
-                totalDenom = point.getYdenom();
+                if(shouldGraphAvg){
+                    total /= count;
+                }
+                series.getData().add(new XYChart.Data<>(previousX+1, total));
+                total = point.getY();
+                count = 1;
                 previousX = nextX;
             }
             else {
-                total += point.getYnum();
-                totalDenom += point.getYdenom();
+                total += point.getY();
+                count++;
             }
         }
-        holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
-        series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
+        if(shouldGraphAvg){
+            total /= count;
+        }
+        series.getData().add(new XYChart.Data<>(previousX+1, total));
         series.setName("Data");
         return series;
     }
@@ -222,7 +223,7 @@ public class MainController {
         graphData = metricSelected.getMetricOverTimePoints();
 
         String id = metricSelected.getID();
-        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
+        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Number of Cost");
 
         lineChart.getYAxis().setLabel(id);
         lineChart.setTitle(id + " Over Time");
@@ -232,6 +233,8 @@ public class MainController {
 
     @FXML public void addFilterButtonPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/addFilterDialog.fxml"));
+
+        fxmlLoader.setLocation(AddFilterDialogController.class.getResource("/javafxapplication8/FXML.fxml"));
         Parent parent = fxmlLoader.load();
         Scene scene = new Scene(parent, 300, 200);
         Stage stage = new Stage();
@@ -241,7 +244,7 @@ public class MainController {
         dialogController.setUpDialogController();
         stage.showAndWait();
 
-
+        filterListView.getItems().add("hello world!");
         // Register the filter for another event type
     }
 

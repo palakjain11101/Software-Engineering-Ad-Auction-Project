@@ -14,16 +14,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane prefHeight="400.0" prefWidth="245.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.AddFilterDialogController">
+<BorderPane fx:id="borderpane" prefHeight="400.0" prefWidth="245.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.AddFilterDialogController">
    <bottom>
       <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#AddFilterDialogListViewElement" text="Confirm"/>
+            <Button fx:id="confirmFilter" mnemonicParsing="false" onAction="#AddFilterDialogListViewElement" text="Confirm" />
          </children>
       </HBox>
    </bottom>
    <center>
-      <TabPane prefHeight="375.0" prefWidth="338.0" style="-fx-pref-width: 200;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+      <TabPane prefHeight="383.0" prefWidth="303.0" style="-fx-pref-width: 200;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
             <Tab text="Date">
                <content>
@@ -59,7 +59,7 @@
                   </GridPane>
                </content>
             </Tab>
-            <Tab text="Context">
+            <Tab fx:id="filter1" text="Context">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
