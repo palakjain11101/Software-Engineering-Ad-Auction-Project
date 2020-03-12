@@ -63,27 +63,27 @@ public class AddFilterDialogController {
 
 
 
-    /*@FXML public void AddFilterDialogListViewElement(ActionEvent actionEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
-        Parent parent = fxmlLoader.load();
-        Scene scene = new Scene(parent, 300, 200);
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        AddFilterDialogController dialogController = fxmlLoader.getController();
-        dialogController.setUpDialogController();
-        stage.showAndWait();
+    @FXML public void AddFilterDialogListViewElement(ActionEvent actionEvent) throws IOException {
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
+//        Parent parent = fxmlLoader.load();
+//        Scene scene = new Scene(parent, 300, 200);
+//        Stage stage = new Stage();
+//        stage.initModality(Modality.APPLICATION_MODAL);
+//        stage.setScene(scene);
+//        AddFilterDialogController dialogController = fxmlLoader.getController();
+//        dialogController.setUpDialogController();
+//        stage.showAndWait();
+//
+//        addFilterDialogListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+//        ObservableList selectedIndices = addFilterDialogListView.getSelectionModel().getSelectedIndices();
+//
+//        for(Object o : selectedIndices){
+//            System.out.println("o = " + o + " (" + o.getClass() + ")");
+//        }
+//
+//        // Register the filter for another event type
+//
 
-        addFilterDialogListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        ObservableList selectedIndices = addFilterDialogListView.getSelectionModel().getSelectedIndices();
-
-        for(Object o : selectedIndices){
-            System.out.println("o = " + o + " (" + o.getClass() + ")");
-        }
-
-        // Register the filter for another event type
-
-
-    } */
+    }
 
 }
