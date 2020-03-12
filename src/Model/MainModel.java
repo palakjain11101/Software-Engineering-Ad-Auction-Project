@@ -104,20 +104,23 @@ public class MainModel {
 
         ArrayList<CampaignTab.CampaignDataPackage> basicMetrics = new ArrayList<>();
 
+
         String whereClause = "";
 
-        if (hashFilters.size() == 0){
+        HashMap<String,String> hashFiltersClone = (HashMap<String,String>) hashFilters.clone();
+
+        if (hashFiltersClone.size() == 0){
             System.out.println("No filters supplied");
         }else {
-            HashMap.Entry<String, String> first = hashFilters.entrySet().stream().findFirst().get();
+            HashMap.Entry<String, String> first = hashFiltersClone.entrySet().stream().findFirst().get();
             String key = first.getKey();
             String value = first.getValue();
 
-            hashFilters.remove(key);
+            hashFiltersClone.remove(key);
 
             whereClause = "WHERE " + key + " = \"" + value + "\"";
 
-            for(HashMap.Entry<String,String> entry : hashFilters.entrySet()) {
+            for(HashMap.Entry<String,String> entry : hashFiltersClone.entrySet()) {
                 key = entry.getKey();
                 value = entry.getValue();
 
@@ -125,6 +128,9 @@ public class MainModel {
 
             }
         }
+
+        String countCases = convertFiltersToCase(hashFilters, true);
+        String sumCases = convertFiltersToCase(hashFilters, false);
 
         double impressions = getData("SELECT COUNT(*) FROM impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " ;");
         double clicks = getData("SELECT COUNT(*) FROM click INNER JOIN person ON click.id = person.id " + whereClause + " ;");
@@ -135,17 +141,17 @@ public class MainModel {
         double totalCostImpressions = getData("SELECT SUM(cost) FROM impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " ;");
         double totalCost = totalCostClick + totalCostImpressions;
 
-        ArrayList<GraphPoint> impressionsOverTime = getDataOverTimePoints("SELECT DATE(date), count(*) from impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " group by DATE(date);",false);
-        ArrayList<GraphPoint> clicksOverTime = getDataOverTimePoints("SELECT DATE(date), count(*) from click INNER JOIN person ON click.id = person.id " + whereClause + " group by DATE(date);",false);
-        ArrayList<GraphPoint> uniquesOverTime = getDataOverTimePoints("SELECT DATE(date), count(distinct click.id) from click INNER JOIN person ON click.id = person.id " + whereClause + " group by DATE(date);",false);
-        ArrayList<GraphPoint> bouncesOverTime = getDataOverTimePoints("SELECT DATE(entryDate), COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 then 1 else null end) from server INNER JOIN person ON server.id = person.id " + whereClause + " group by DATE (entryDate);",false);
-        ArrayList<GraphPoint> conversionsOverTime = getDataOverTimePoints("SELECT DATE(entryDate), COUNT(case when conversion = 'Yes' then 1 else null end) from server INNER JOIN person ON server.id = person.id " + whereClause + " group by DATE(entryDate);",false);
-        ArrayList<GraphPoint> totalCostOverTime = getDataOverTimePoints("SELECT d1, c+i from (SELECT DATE(date) as d1, SUM(cost) as c from click INNER JOIN person ON click.id = person.id " + whereClause + " group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(cost) as i from impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " group by DATE(date)) ON d1=d2 group by DATE(d1);",false);
-        ArrayList<GraphPoint> CTROverTime = getDataOverTimePoints("SELECT d1, CAST(c as float)/CAST(i as float) from (SELECT date(date) as d1, count(*) as c from click INNER JOIN person ON click.id = person.id " + whereClause + " group by DATE(date)) LEFT OUTER JOIN (SELECT date(date) as d2, count(*) as i from impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " group by DATE(date)) ON d1=d2 group by d1;",false);
-        ArrayList<GraphPoint> CPAOverTime = getDataOverTimePoints("SELECT d1, CAST(c2 as float)/CAST(i as float) from (SELECT d1, c+i as c2 from (SELECT DATE(date) as d1, SUM(cost) as c from click INNER JOIN person ON click.id = person.id " + whereClause + " group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(cost) as i from impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " group by DATE(date)) ON d1=d2 group by DATE(d1)) LEFT OUTER JOIN (SELECT date(entryDate) as d2, COUNT(case when conversion = 'Yes' then 1 else null end) as i from server INNER JOIN person ON server.id = person.id " + whereClause + " group by DATE(entryDate)) ON d1=d2 group by d1;",false);
-        ArrayList<GraphPoint> CPCOverTime = getDataOverTimePoints("SELECT DATE(date), avg(cost) from click INNER JOIN person ON click.id = person.id " + whereClause + " group by DATE(date);",false);
-        ArrayList<GraphPoint> CPMOverTime = getDataOverTimePoints("SELECT DATE(date), avg(cost)*1000 from impressions INNER JOIN person ON impressions.id = person.id " + whereClause + " group by DATE(date);",false);
-        ArrayList<GraphPoint> bounceRateOverTime = getDataOverTimePoints("SELECT d1, CAST(i as float)/CAST(c as float) from (SELECT DATE(date) as d1, count(*) as c from click INNER JOIN person ON click.id = person.id " + whereClause + " group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(entryDate) as d2, COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 then 1 else null end) as i from server INNER JOIN person ON server.id = person.id " + whereClause + " group by DATE (entryDate)) ON d1=d2 GROUP BY DATE(d1);",false);
+        ArrayList<GraphPoint> impressionsOverTime = getDataOverTimePoints("select DATE(date), COUNT(case when " + countCases + " then 1 else null end) from (SELECT * from impressions INNER JOIN person ON impressions.id = person.id) GROUP BY DATE(date);",false);
+        ArrayList<GraphPoint> clicksOverTime = getDataOverTimePoints("select DATE(date), COUNT(case when " + countCases + " then 1 else null end) from (SELECT * from click INNER JOIN person ON click.id = person.id)  GROUP BY DATE(date);",false);
+        ArrayList<GraphPoint> uniquesOverTime = getDataOverTimePoints("select DATE(date), COUNT(case when " + countCases + " then 1 else null end) from (SELECT DISTINCT * from click INNER JOIN person ON click.id = person.id) GROUP BY DATE(date);",false);
+        ArrayList<GraphPoint> bouncesOverTime = getDataOverTimePoints("select DATE(entryDate), COUNT(case when strftime('%s',exitDate) - strftime('%s',entryDate) < 30 AND " + countCases + " then 1 else null end) from (SELECT * from server INNER JOIN person ON server.id = person.id) group by DATE(entryDate);",false);
+        ArrayList<GraphPoint> conversionsOverTime = getDataOverTimePoints("Select DATE(entryDate), COUNT(case when (conversion = 'Yes' AND " + countCases + ") then 1 else null end) from (SELECT *  from server INNER JOIN person ON server.id = person.id) group by DATE(entryDate);",false);
+        ArrayList<GraphPoint> totalCostOverTime = getDataOverTimePoints("SELECT d1, c+i from (SELECT DATE(date) as d1, SUM(case when " + sumCases + " then cost else 0 end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) INNER JOIN (SELECT DATE(date) as d2, SUM(case when " + sumCases + " then cost else 0 end) as i from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) ON d1=d2 group by DATE(d1);",false);
+        ArrayList<GraphPoint> CTROverTime = getDataOverTimePoints("SELECT d1, c, i from (SELECT date(date) as d1, count(case when " + countCases + " then 1 else null end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) LEFT OUTER JOIN (SELECT date(date) as d2, count(case when " + countCases + " then 1 else null end) as i from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) ON d1=d2 group by d1;",true);
+        ArrayList<GraphPoint> CPAOverTime = getDataOverTimePoints("SELECT d1, c2, i from (SELECT d1, c+i as c2 from (SELECT DATE(date) as d1, SUM(case when " + sumCases + " then cost else 0 end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(case when " + countCases + " then cost else 0 end) as i from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) ON d1=d2 group by DATE(d1)) LEFT OUTER JOIN (SELECT date(entryDate) as d2, COUNT(case when (conversion = 'Yes' AND " + countCases + ") then 1 else null end) as i from server INNER JOIN person ON server.id = person.id group by DATE(entryDate)) ON d1=d2 group by d1;",true);
+        ArrayList<GraphPoint> CPCOverTime = getDataOverTimePoints("SELECT DATE(date), sum(case when " + sumCases + " then cost else 0 end), count(case when " + countCases + " then 1 else null end) from click INNER JOIN person ON click.id = person.id group by DATE(date);",true);
+        ArrayList<GraphPoint> CPMOverTime = getDataOverTimePoints("SELECT DATE(date), sum(case when " + sumCases + " then cost else 0 end)*1000, count(case when " + countCases + " then 1 else null end) from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date);",true);
+        ArrayList<GraphPoint> bounceRateOverTime = getDataOverTimePoints("SELECT d1, i, c from (SELECT DATE(date) as d1, count(case when " + countCases + " then 1 else null end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(entryDate) as d2, COUNT(case when (strftime('%s',exitDate) - strftime('%s',entryDate) < 30 AND " + countCases + ") then 1 else null end) as i from server INNER JOIN person ON server.id = person.id group by DATE (entryDate)) ON d1=d2 GROUP BY DATE(d1);",true);
 
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Impressions", impressions, impressionsOverTime));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Clicks", clicks, clicksOverTime));
@@ -160,5 +166,16 @@ public class MainModel {
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime));
 
         return basicMetrics;
+    }
+
+    private String convertFiltersToCase(HashMap<String,String> hashFilters, boolean isCount){
+        if(hashFilters.size()==0){
+            return isCount ? "*" : "cost";
+        }
+        String holdCase = "1";
+        for(String filter : hashFilters.keySet()){
+            holdCase += " AND " + filter + " = \"" + hashFilters.get(filter) + "\"";
+        }
+        return holdCase;
     }
 }
