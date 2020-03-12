@@ -134,7 +134,7 @@ public class MainModel {
 
         double impressions = getData("SELECT COUNT(case when " + countCases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
         double clicks = getData("SELECT COUNT(case when " + countCases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
-        double uniques = getData("SELECT COUNT(DISTINCT click.id) FROM click INNER JOIN person ON click.id = person.id;");
+        double uniques = getData("select count(case when " + countCases + " then 1 else null end) from (SELECT distinct click.id,gender,ageRange,income from click INNER JOIN person ON click.id = person.id);");
         double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < 30 AND " + countCases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
         double conversions = getData("SELECT COUNT(case when conversion = 'Yes' AND " + countCases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
         double totalCostClick = getData("SELECT SUM(case when " + countCases + " then cost else 0 end) FROM click INNER JOIN person ON click.id = person.id;");
