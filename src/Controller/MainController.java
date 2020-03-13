@@ -5,18 +5,22 @@ import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -249,6 +253,10 @@ public class MainController {
 
     @FXML public void onDisplayHistogramPressed(){
         System.out.println("Put histogram code here");
+    }
+
+    @FXML public void saveOrPrintSelected(){
+
     }
 
     //TEST BUTTON ONLY
