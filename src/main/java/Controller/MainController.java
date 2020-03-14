@@ -64,6 +64,11 @@ public class MainController {
     @FXML
     ListView filterListView;
 
+    @FXML
+    Button defineBounceButton;
+    @FXML
+    CheckBox customBounceCheckBox;
+
     public void setView(MainView view){
         this.view = view;
     }
@@ -293,6 +298,21 @@ public class MainController {
                 job.endJob();
             }
         }
+    }
+
+    @FXML
+    public void customBounceCheckBoxSelected(){
+        if(customBounceCheckBox.isSelected()){
+            defineBounceButton.setDisable(false);
+        }
+        else {
+            defineBounceButton.setDisable(true);
+        }
+    }
+
+    @FXML
+    public void defineCustomBounceClicked(){
+
     }
 
     //TEST BUTTON ONLY

@@ -128,7 +128,7 @@
       </Button>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
          <children>
-            <CheckBox mnemonicParsing="false" text="Custom Bounce">
+            <CheckBox fx:id="customBounceCheckBox" mnemonicParsing="false" onAction="#customBounceCheckBoxSelected" text="Custom Bounce">
                <padding>
                   <Insets bottom="30.0" top="30.0" />
                </padding>
@@ -136,7 +136,7 @@
                   <Font size="18.0" />
                </font>
             </CheckBox>
-            <Button mnemonicParsing="false" text="Define Bounce">
+            <Button fx:id="defineBounceButton" disable="true" mnemonicParsing="false" onAction="#defineCustomBounceClicked" text="Define Bounce">
                <padding>
                   <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
                </padding>
