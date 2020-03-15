@@ -8,20 +8,50 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.SelectionMode;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddFilterDialogController {
-
+    List myList = new ArrayList();
+    @FXML
+    private CheckBox cb1;
+    @FXML
+    private CheckBox cb2;
+    @FXML
+    private CheckBox cb3;
+    @FXML
+    private CheckBox c1;
+    @FXML
+    private CheckBox c2;
+    @FXML
+    private CheckBox c3;
+    @FXML
+    private CheckBox c4;
+    @FXML
+    private CheckBox c5;
+    @FXML
+    private CheckBox c6;
+    @FXML
+    private CheckBox cbb1;
+    @FXML
+    private CheckBox cbb2;
+    @FXML
+    private CheckBox cbbb1;
+    @FXML
+    private CheckBox cbbb2;
+    @FXML
+    private CheckBox cbbb3;
+    @FXML
+    private CheckBox cbbb4;
+    @FXML
+    private CheckBox cbbb5;
 
     public AddFilterDialogController(){
     }
@@ -84,5 +114,95 @@ public class AddFilterDialogController {
 //
 
     }
+
+    //3
+    @FXML public void CheckBoxes(ActionEvent actionEvent) {
+        String message = "";
+
+        if(cb1.isSelected()){
+            message += cb1.getText() + "\n";
+        }
+        else if(cb2.isSelected()){
+            message += cb2.getText() + "\n";
+        }
+        else if(cb3.isSelected()){
+            message += cb3.getText() + "\n";
+        }
+
+        System.out.println(message);
+
+    }
+
+    //6
+
+    @FXML public void CheckBoxes1(ActionEvent actionEvent) {
+        String message = "";
+
+        if(c1.isSelected()){
+            message += c1.getText() + "\n";
+        }
+        else if(c2.isSelected()){
+            message += c2.getText() + "\n";
+        }
+        else if(c3.isSelected()){
+            message += c3.getText() + "\n";
+        }
+        else if(c4.isSelected()){
+            message += c4.getText() + "\n";
+        }
+        else if(c5.isSelected()){
+            message += c5.getText() + "\n";
+        }
+        else if(c6.isSelected()){
+            message += c6.getText() + "\n";
+        }
+
+        System.out.println(message);
+
+    }
+
+    //2
+    @FXML public void CheckBoxes2(ActionEvent actionEvent) {
+        String message = "";
+
+        if(cb1.isSelected()){
+            message += cbb1.getText() + "\n";
+        }
+        else if(cb2.isSelected()){
+            message += cbb2.getText() + "\n";
+        }
+        System.out.println(message);
+
+    }
+
+    //5
+    @FXML public void CheckBoxes3(ActionEvent actionEvent) {
+        String message = "";
+
+        if(cb1.isSelected()){
+            message += cbbb1.getText() + "\n";
+        }
+        else if(cb2.isSelected()){
+            message += cbbb2.getText() + "\n";
+        }
+        else if(cb3.isSelected()){
+            message += cbbb3.getText() + "\n";
+        }
+        else if(cb2.isSelected()){
+            message += cbbb4.getText() + "\n";
+        }
+        else if(cb2.isSelected()){
+            message += cbbb5.getText() + "\n";
+        }
+
+        System.out.println(message);
+
+    }
+
+
+
+
+
+
 
 }

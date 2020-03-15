@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.print.*;
@@ -246,8 +247,7 @@ public class MainController {
 
     @FXML public void addFilterButtonPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/addFilterDialog.fxml"));
-
-        //fxmlLoader.setLocation(AddFilterDialogController.class.getResource("/javafxapplication8/FXML.fxml"));
+        fxmlLoader.setLocation(AddFilterDialogController.class.getResource("target/classes/addFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
         Scene scene = new Scene(parent, 300, 200);
         Stage stage = new Stage();
@@ -257,8 +257,8 @@ public class MainController {
         dialogController.setUpDialogController();
         stage.showAndWait();
 
-        filterListView.getItems().add("hello world!");
-        // Register the filter for another event type
+        //filterListView.getItems().add("hello world!");
+        //Register the filter for another event type
     }
 
     @FXML public void removeFilterButtonPressed(){
@@ -323,4 +323,6 @@ public class MainController {
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
         tab.updateData(list);
     }
+
+
 }
