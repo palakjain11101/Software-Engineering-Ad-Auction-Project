@@ -53,6 +53,8 @@ public class AddFilterDialogController {
     @FXML
     private CheckBox cbbb5;
 
+    static String message= "";
+
     public AddFilterDialogController(){
     }
 
@@ -115,10 +117,8 @@ public class AddFilterDialogController {
 
     }
 
-    //3
-    @FXML public void CheckBoxes(ActionEvent actionEvent) {
-        String message = "";
 
+    public void CheckBoxes(){
         if(cb1.isSelected()){
             message += cb1.getText() + "\n";
         }
@@ -128,17 +128,7 @@ public class AddFilterDialogController {
         else if(cb3.isSelected()){
             message += cb3.getText() + "\n";
         }
-
-        System.out.println(message);
-
-    }
-
-    //6
-
-    @FXML public void CheckBoxes1(ActionEvent actionEvent) {
-        String message = "";
-
-        if(c1.isSelected()){
+        else if(c1.isSelected()){
             message += c1.getText() + "\n";
         }
         else if(c2.isSelected()){
@@ -156,47 +146,29 @@ public class AddFilterDialogController {
         else if(c6.isSelected()){
             message += c6.getText() + "\n";
         }
-
-        System.out.println(message);
-
-    }
-
-    //2
-    @FXML public void CheckBoxes2(ActionEvent actionEvent) {
-        String message = "";
-
-        if(cb1.isSelected()){
+        else if(cbb1.isSelected()){
             message += cbb1.getText() + "\n";
         }
-        else if(cb2.isSelected()){
+        else if(cbb2.isSelected()){
             message += cbb2.getText() + "\n";
         }
-        System.out.println(message);
-
-    }
-
-    //5
-    @FXML public void CheckBoxes3(ActionEvent actionEvent) {
-        String message = "";
-
-        if(cb1.isSelected()){
+        else if(cbbb1.isSelected()){
             message += cbbb1.getText() + "\n";
         }
-        else if(cb2.isSelected()){
+        else if(cbbb2.isSelected()){
             message += cbbb2.getText() + "\n";
         }
-        else if(cb3.isSelected()){
+        else if(cbbb3.isSelected()){
             message += cbbb3.getText() + "\n";
         }
-        else if(cb2.isSelected()){
+        else if(cbbb4.isSelected()){
             message += cbbb4.getText() + "\n";
         }
-        else if(cb2.isSelected()){
+        else if(cbbb5.isSelected()){
             message += cbbb5.getText() + "\n";
         }
 
         System.out.println(message);
-
     }
 
 
