@@ -247,7 +247,7 @@ public class MainController {
 
     @FXML public void addFilterButtonPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/addFilterDialog.fxml"));
-        fxmlLoader.setLocation(AddFilterDialogController.class.getResource("target/classes/addFilterDialog.fxml"));
+        //fxmlLoader.setLocation(AddFilterDialogController.class.getResource("target/classes/addFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
         Scene scene = new Scene(parent, 300, 200);
         Stage stage = new Stage();
