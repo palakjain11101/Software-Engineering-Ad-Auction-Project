@@ -4,6 +4,7 @@ import Model.GraphPoint;
 import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
+import com.sun.javafx.charts.Legend;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.concurrent.Task;
@@ -41,6 +42,7 @@ public class MainController {
     public static final int SLIDER_WEEK = 1;
     public static final int SLIDER_MONTH = 2;
     public static final int SLIDER_YEAR = 3;
+
 
     private MainView view;
     private MainModel model;

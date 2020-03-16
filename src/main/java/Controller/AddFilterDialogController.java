@@ -1,5 +1,7 @@
 package Controller;
 
+import javafx.beans.property.ListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,14 +14,22 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.control.ListView;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class AddFilterDialogController {
-    List myList = new ArrayList();
+
+public class AddFilterDialogController<string> {
+
+    //protected ListProperty<String> listProperty = new SimpleListProperty<>();
+
+    MainController controller;
+
     @FXML
     private CheckBox cb1;
     @FXML
@@ -54,6 +64,13 @@ public class AddFilterDialogController {
     private CheckBox cbbb5;
 
     static String message= "";
+
+    List<String> list = new ArrayList<String>();
+
+    ObservableList<String> data = FXCollections.observableArrayList();
+    ListView <String> listview = controller.filterListView;
+
+    Set<String> hashSet = new HashSet<String>();
 
     public AddFilterDialogController(){
     }
@@ -116,60 +133,198 @@ public class AddFilterDialogController {
 //
 
     }
-
-
-    public void CheckBoxes(){
-        if(cb1.isSelected()){
-            message += cb1.getText() + "\n";
-        }
-        else if(cb2.isSelected()){
-            message += cb2.getText() + "\n";
-        }
-        else if(cb3.isSelected()){
-            message += cb3.getText() + "\n";
-        }
-        else if(c1.isSelected()){
-            message += c1.getText() + "\n";
-        }
-        else if(c2.isSelected()){
-            message += c2.getText() + "\n";
-        }
-        else if(c3.isSelected()){
-            message += c3.getText() + "\n";
-        }
-        else if(c4.isSelected()){
-            message += c4.getText() + "\n";
-        }
-        else if(c5.isSelected()){
-            message += c5.getText() + "\n";
-        }
-        else if(c6.isSelected()){
-            message += c6.getText() + "\n";
-        }
-        else if(cbb1.isSelected()){
-            message += cbb1.getText() + "\n";
-        }
-        else if(cbb2.isSelected()){
-            message += cbb2.getText() + "\n";
-        }
-        else if(cbbb1.isSelected()){
-            message += cbbb1.getText() + "\n";
-        }
-        else if(cbbb2.isSelected()){
-            message += cbbb2.getText() + "\n";
-        }
-        else if(cbbb3.isSelected()){
-            message += cbbb3.getText() + "\n";
-        }
-        else if(cbbb4.isSelected()){
-            message += cbbb4.getText() + "\n";
-        }
-        else if(cbbb5.isSelected()){
-            message += cbbb5.getText() + "\n";
+    /*
+    public void CheckBoxes(CheckBox checkbox) {
+        int month = 8;
+        String monthString;
+        switch (checkbox) {
+            case 0:
+                cb1.isSelected();
+                message += cb1.getText() + "\n";
+                list.add(cb1.getText());
+            case 1:
+                cb2.isSelected();
+                message += cb2.getText() + "\n";
+                list.add(cb2.getText());
+            case 2:
+                cb3.isSelected();
+                message += cb3.getText() + "\n";
+                list.add(cb3.getText());
+                break;
         }
 
-        System.out.println(message);
     }
+
+    public void CheckBoxes1() {
+        int month = 8;
+        String monthString;
+        switch (month) {
+            case 1:
+                c1.isSelected();
+                message += c1.getText() + "\n";
+                list.add(c1.getText());
+            case 2:
+                c2.isSelected();
+                message += c2.getText() + "\n";
+                list.add(c2.getText());
+            case 3:
+                c3.isSelected();
+                message += c3.getText() + "\n";
+                list.add(c3.getText());
+            case 4:
+                c4.isSelected();
+                message += c4.getText() + "\n";
+                list.add(c4.getText());
+            case 5:
+                c5.isSelected();
+                message += c5.getText() + "\n";
+                list.add(c5.getText());
+            case 6:
+                c6.isSelected();
+                message += c6.getText() + "\n";
+                list.add(c6.getText());
+        }
+
+    }
+
+
+    public void CheckBoxes2() {
+        int month = 8;
+        String monthString;
+        switch (month) {
+            case 1:
+                cbb1.isSelected();
+                message += cbb1.getText() + "\n";
+                list.add(cbb1.getText());
+            case 2:
+                cbb2.isSelected();
+                message += cbb2.getText() + "\n";
+                list.add(cbb2.getText());
+        }
+
+    }
+
+
+    public void CheckBoxes3() {
+        int month = 8;
+        String monthString;
+        switch (month) {
+            case 1:
+                cbbb1.isSelected();
+                message += cbbb1.getText() + "\n";
+                list.add(cbbb1.getText());
+            case 2:
+                cbbb2.isSelected();
+                message += cbbb2.getText() + "\n";
+                list.add(cbbb2.getText());
+            case 3:
+                cbbb3.isSelected();
+                message += cbbb3.getText() + "\n";
+                list.add(cbbb3.getText());
+            case 4:
+                cbbb4.isSelected();
+                message += cbbb4.getText() + "\n";
+                list.add(cbbb4.getText());
+            case 5:
+                cbbb5.isSelected();
+                message += cbbb5.getText() + "\n";
+                list.add(cbbb5.getText());
+
+        }
+    } */
+
+
+    public void CheckBoxes() {
+        hashSet.clear();
+        System.out.println("-------------");
+        ListView listview  = controller.filterListView;
+
+
+        if (cb1.isSelected()) {
+            int i = 0;
+            message += cb1.getText() + "\n";
+            hashSet.add(cb1.getText());
+            listview.getItems().add(cb1.getText());
+        }
+        if (cb2.isSelected()) {
+            message += cb2.getText() + "\n";
+            hashSet.add(cb2.getText());
+        }
+        if (cb3.isSelected()) {
+            message += cb3.getText() + "\n";
+            hashSet.add(cb3.getText());
+        }
+        if (c1.isSelected()) {
+            message += c1.getText() + "\n";
+            hashSet.add(c1.getText());
+        }
+        if (c2.isSelected()) {
+            message += c2.getText() + "\n";
+            hashSet.add(c2.getText());
+        }
+        if (c3.isSelected()) {
+            message += c3.getText() + "\n";
+            hashSet.add(c3.getText());
+        }
+        if (c4.isSelected()) {
+            message += c4.getText() + "\n";
+            hashSet.add(c4.getText());
+        }
+        if (c5.isSelected()) {
+            message += c5.getText() + "\n";
+            hashSet.add(c5.getText());
+        }
+        if (c6.isSelected()) {
+            message += c6.getText() + "\n";
+            hashSet.add(c6.getText());
+        }
+        if (cbb1.isSelected()) {
+            message += cbb1.getText() + "\n";
+            hashSet.add(cbb1.getText());
+        }
+        if (cbb2.isSelected()) {
+            message += cbb2.getText() + "\n";
+            hashSet.add(cbb2.getText());
+        }
+        if (cbbb1.isSelected()) {
+            message += cbbb1.getText() + "\n";
+            hashSet.add(cbbb1.getText());
+        }
+        if (cbbb2.isSelected()) {
+            message += cbbb2.getText() + "\n";
+            hashSet.add(cbbb2.getText());
+        }
+        if (cbbb3.isSelected()) {
+            message += cbbb3.getText() + "\n";
+            hashSet.add(cbbb3.getText());
+        }
+        if (cbbb4.isSelected()) {
+            message += cbbb4.getText() + "\n";
+            hashSet.add(cbbb4.getText());
+        }
+        if (cbbb5.isSelected()) {
+            message += cbbb5.getText() + "\n";
+            hashSet.add(cbbb5.getText());
+        }
+
+        for (Object obj: hashSet){
+            System.out.println(obj);
+        }
+
+
+
+    }
+
+
+        /*
+        string[] row = { "Hello" };
+        var listViewItem = new ListViewItem(row);
+        Then you need to add that row into listview like below-
+
+        listView1.Items.Add(listViewItem);
+         */
+
+
 
 
 
