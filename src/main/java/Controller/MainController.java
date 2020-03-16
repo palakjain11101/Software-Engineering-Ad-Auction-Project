@@ -34,8 +34,8 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+
 
 public class MainController {
     public static final int SLIDER_DAY = 0;
@@ -71,6 +71,8 @@ public class MainController {
     Button defineBounceButton;
     @FXML
     CheckBox customBounceCheckBox;
+
+
 
     public void setView(MainView view){
         this.view = view;
@@ -258,8 +260,26 @@ public class MainController {
         AddFilterDialogController dialogController = fxmlLoader.getController();
         dialogController.setUpDialogController();
         stage.showAndWait();
+        AddFilterDialogController controller = fxmlLoader.getController();
 
-        //filterListView.getItems().add("hello world!");
+        Map<String, List<String>>  map = controller.CheckBoxes();
+
+        Set<String> keys = map.keySet();
+
+        for(Object key: keys){
+            List<String> keyList = map.get(key);
+            for(Object o: keyList){
+                filterListView.getItems().addAll(""+key + ":" + o);
+            }
+        }
+
+
+
+
+        //get the data
+        //change the list view
+        //pass data to the Model
+
         //Register the filter for another event type
     }
 

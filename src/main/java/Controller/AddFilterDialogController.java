@@ -1,27 +1,13 @@
 package Controller;
 
-import javafx.beans.property.ListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.scene.control.ListView;
+import javafx.scene.control.CheckBox;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class AddFilterDialogController<string> {
@@ -29,6 +15,8 @@ public class AddFilterDialogController<string> {
     //protected ListProperty<String> listProperty = new SimpleListProperty<>();
 
     MainController controller;
+
+    Map<String,String> mymap = new HashMap<String, String>();
 
     @FXML
     private CheckBox cb1;
@@ -65,10 +53,10 @@ public class AddFilterDialogController<string> {
 
     static String message= "";
 
-    List<String> list = new ArrayList<String>();
+
 
     ObservableList<String> data = FXCollections.observableArrayList();
-    ListView <String> listview = controller.filterListView;
+
 
     Set<String> hashSet = new HashSet<String>();
 
@@ -234,82 +222,99 @@ public class AddFilterDialogController<string> {
     } */
 
 
-    public void CheckBoxes() {
-        hashSet.clear();
+    public Map<String, List<String>> CheckBoxes() {
+        Map<String, List<String>> map = new HashMap<>();
+        List<String> list = new ArrayList<String>();
+        List<String> list1 = new ArrayList<String>();
+        List<String> list2 = new ArrayList<String>();
+        List<String> list3 = new ArrayList<String>();
+
+
+        map.put("Income", list);
+        map.put("Context", list1);
+        map.put("Gender", list2);
+        map.put("Age", list3);
+
         System.out.println("-------------");
-        ListView listview  = controller.filterListView;
 
 
         if (cb1.isSelected()) {
             int i = 0;
             message += cb1.getText() + "\n";
-            hashSet.add(cb1.getText());
-            listview.getItems().add(cb1.getText());
+            map.get("Income").add(cb1.getText());
         }
         if (cb2.isSelected()) {
             message += cb2.getText() + "\n";
-            hashSet.add(cb2.getText());
+            map.get("Income").add(cb2.getText());
         }
         if (cb3.isSelected()) {
             message += cb3.getText() + "\n";
-            hashSet.add(cb3.getText());
+            map.get("Income").add(cb3.getText());
         }
         if (c1.isSelected()) {
             message += c1.getText() + "\n";
-            hashSet.add(c1.getText());
+            map.get("Income").add(c1.getText());
         }
         if (c2.isSelected()) {
             message += c2.getText() + "\n";
-            hashSet.add(c2.getText());
+            map.get("Context").add(c2.getText());
         }
         if (c3.isSelected()) {
             message += c3.getText() + "\n";
-            hashSet.add(c3.getText());
+            map.get("Context").add(c3.getText());
         }
         if (c4.isSelected()) {
             message += c4.getText() + "\n";
-            hashSet.add(c4.getText());
+            map.get("Context").add(c4.getText());
         }
         if (c5.isSelected()) {
             message += c5.getText() + "\n";
-            hashSet.add(c5.getText());
+            map.get("Context").add(c5.getText());
         }
         if (c6.isSelected()) {
             message += c6.getText() + "\n";
-            hashSet.add(c6.getText());
+            map.get("Context").add(c6.getText());
         }
         if (cbb1.isSelected()) {
             message += cbb1.getText() + "\n";
-            hashSet.add(cbb1.getText());
+            map.get("Gender").add(cbb1.getText());
         }
         if (cbb2.isSelected()) {
             message += cbb2.getText() + "\n";
-            hashSet.add(cbb2.getText());
+            map.get("Gender").add(cbb2.getText());
         }
         if (cbbb1.isSelected()) {
             message += cbbb1.getText() + "\n";
-            hashSet.add(cbbb1.getText());
+            map.get("Age").add("<25");
         }
         if (cbbb2.isSelected()) {
             message += cbbb2.getText() + "\n";
-            hashSet.add(cbbb2.getText());
+            map.get("Age").add("25-34");
         }
         if (cbbb3.isSelected()) {
             message += cbbb3.getText() + "\n";
-            hashSet.add(cbbb3.getText());
+            map.get("Age").add("35-44");
         }
         if (cbbb4.isSelected()) {
             message += cbbb4.getText() + "\n";
-            hashSet.add(cbbb4.getText());
+            map.get("Age").add("45-54");
         }
         if (cbbb5.isSelected()) {
             message += cbbb5.getText() + "\n";
-            hashSet.add(cbbb5.getText());
+            map.get("Age").add(">55");
         }
 
-        for (Object obj: hashSet){
-            System.out.println(obj);
-        }
+
+
+
+        System.out.println(map);
+        return map;
+
+
+
+
+
+
 
 
 
