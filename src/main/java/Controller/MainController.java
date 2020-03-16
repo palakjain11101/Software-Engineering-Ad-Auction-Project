@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.BounceDefinition;
 import Model.GraphPoint;
 import Model.MainModel;
 import View.CampaignTab;
@@ -333,8 +334,20 @@ public class MainController {
     }
 
     @FXML
-    public void defineCustomBounceClicked(){
+    public void defineCustomBounceClicked() throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/setBounceDefinition.fxml"));
+        Parent parent = fxmlLoader.load();
+        SetBounceDefinitionDialogController controller = fxmlLoader.getController();
+        Scene scene = new Scene(parent, 300, 150);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.showAndWait();
 
+        BounceDefinition bounceDefinition = new BounceDefinition(controller.getSecondsAfterEntry(),controller.getNeedToConvert());
+        System.out.println(controller.getSecondsAfterEntry());
+        System.out.println(controller.getNeedToConvert());
     }
 
     //TEST BUTTON ONLY
