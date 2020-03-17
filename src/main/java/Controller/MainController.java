@@ -267,8 +267,6 @@ public class MainController {
 
         Set<String> keys = map.keySet();
 
-        MainModel model = new MainModel();
-
 
         for(Object key: keys){
             List<String> keyList = map.get(key);
@@ -363,9 +361,9 @@ public class MainController {
 
     //TEST BUTTON ONLY
     public void onTestButtonPressed(){
-        HashMap map = new HashMap();
-        MainModel model = new MainModel();
-        map.put("gender","Male");
+        HashMap map = new HashMap<String,String[]>();
+        String[] genders = {"Male","Female"};
+        map.put("gender",genders);
         ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
         tab.updateData(list);

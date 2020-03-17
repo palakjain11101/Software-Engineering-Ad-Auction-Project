@@ -34,7 +34,9 @@ public class MainModel {
 
     public Double getData(String overallMetricQuery){
         try {
-            return sql.getData(overallMetricQuery).getDouble(1);
+            ResultSet set = sql.getData(overallMetricQuery);
+            Double value = set.getDouble(1);
+            return value;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -61,11 +63,12 @@ public class MainModel {
         return metricOverTime;
     }
 
-    public ArrayList<CampaignTab.CampaignDataPackage> queryCampaign(HashMap<String,String> hashFilters){
+    public ArrayList<CampaignTab.CampaignDataPackage> queryCampaign(HashMap<String,String[]> hashFilters){
 
         ArrayList<CampaignTab.CampaignDataPackage> basicMetrics = new ArrayList<>();
 
         String cases = convertFiltersToCase(hashFilters);
+        System.out.println(cases);
 
         double impressions = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
         double clicks = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
@@ -103,22 +106,30 @@ public class MainModel {
         return basicMetrics;
     }
 
-    private String convertFiltersToCase(HashMap<String,String> hashFilters){
+    private String convertFiltersToCase(HashMap<String,String[]> hashFilters){
         if(hashFilters.size()==0){
             return "1";
         }
         String holdCase = "1";
         for(String filter : hashFilters.keySet()){
             if(filter == "beforeDate"){
-                holdCase += " AND date" + " < \"" + hashFilters.get(filter) + "\"";
+                holdCase += " AND date" + " < \"" + hashFilters.get(filter)[0] + "\"";
             }else if (filter == "afterDate"){
-                holdCase += " AND date" + " > \"" + hashFilters.get(filter) + "\"";
+                holdCase += " AND date" + " > \"" + hashFilters.get(filter)[0] + "\"";
             }else{
-                holdCase += " AND " + filter + " = \"" + hashFilters.get(filter) + "\"";
+                holdCase += " AND (" + convertFilterListToString(filter,hashFilters.get(filter)) + ")";
             }
         }
         System.out.println(holdCase);
         return holdCase;
+    }
+
+    private String convertFilterListToString(String filter, String[] filterList){
+        String holdFilters = "0";
+        for(String filterValue : filterList){
+            holdFilters += " OR " + filter + " = \"" + filterValue + "\"";
+        }
+        return holdFilters;
     }
 
     public ArrayList<Double> getAllClickCosts(){
