@@ -263,16 +263,27 @@ public class MainController {
         stage.showAndWait();
         AddFilterDialogController controller = fxmlLoader.getController();
 
-        Map<String, List<String>>  map = controller.CheckBoxes();
+        HashMap<String, List<String>>  map = controller.CheckBoxes();
 
         Set<String> keys = map.keySet();
+
+        MainModel model = new MainModel();
+
 
         for(Object key: keys){
             List<String> keyList = map.get(key);
             for(Object o: keyList){
                 filterListView.getItems().addAll(""+key + ":" + o);
+
             }
         }
+
+        //queryCampaign(map);
+
+
+
+
+
 
 
 
@@ -353,6 +364,7 @@ public class MainController {
     //TEST BUTTON ONLY
     public void onTestButtonPressed(){
         HashMap map = new HashMap();
+        MainModel model = new MainModel();
         map.put("gender","Male");
         ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);

@@ -2,12 +2,13 @@ package Model;
 
 import View.CampaignTab;
 
-import java.awt.*;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainModel {
 

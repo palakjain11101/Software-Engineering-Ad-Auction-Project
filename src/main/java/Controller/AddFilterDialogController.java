@@ -222,8 +222,8 @@ public class AddFilterDialogController<string> {
     } */
 
 
-    public Map<String, List<String>> CheckBoxes() {
-        Map<String, List<String>> map = new HashMap<>();
+    public HashMap<String, List<String>> CheckBoxes() {
+        HashMap<String, List<String>> map = new HashMap<>();
         List<String> list = new ArrayList<String>();
         List<String> list1 = new ArrayList<String>();
         List<String> list2 = new ArrayList<String>();
@@ -306,11 +306,8 @@ public class AddFilterDialogController<string> {
 
 
 
-
-        System.out.println(map);
         return map;
-
-
+    }
 
 
 
@@ -337,4 +334,4 @@ public class AddFilterDialogController<string> {
 
 
 
-}
+
