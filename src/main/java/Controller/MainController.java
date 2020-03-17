@@ -70,6 +70,7 @@ public class MainController {
 
     @FXML
     Button defineBounceButton;
+
     @FXML
     CheckBox customBounceCheckBox;
 
@@ -262,21 +263,23 @@ public class MainController {
         dialogController.setUpDialogController();
         stage.showAndWait();
         AddFilterDialogController controller = fxmlLoader.getController();
-
         HashMap<String, List<String>>  map = controller.CheckBoxes();
 
         Set<String> keys = map.keySet();
-
 
         for(Object key: keys){
             List<String> keyList = map.get(key);
             for(Object o: keyList){
                 filterListView.getItems().addAll(""+key + ":" + o);
-
             }
         }
 
-        //queryCampaign(map);
+        MainModel model = new MainModel();
+        model.queryCampaign(map);
+        //get data
+        //change listview
+        //pass data to Model
+
 
 
 
