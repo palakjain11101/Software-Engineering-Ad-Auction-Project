@@ -364,9 +364,12 @@ public class MainController {
 
     //TEST BUTTON ONLY
     public void onTestButtonPressed(){
-        HashMap map = new HashMap<String,String[]>();
-        String[] genders = {"Male","Female"};
+        HashMap map = new HashMap<String,List<String>>();
+        List<String> genders = new ArrayList<String>();
+        genders.add("Male");
+        //genders.add("Female");
         map.put("gender",genders);
+        model.setBounceAttributes(50000,true);
         ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
         tab.updateData(list);
