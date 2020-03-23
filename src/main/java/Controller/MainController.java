@@ -274,7 +274,6 @@ public class MainController {
             }
         }
 
-        MainModel model = new MainModel();
         model.queryCampaign(map);
         //get data
         //change listview
@@ -342,6 +341,8 @@ public class MainController {
         }
         else {
             defineBounceButton.setDisable(true);
+            model.setBounceAttributes(30,false);
+            testUpdateCampaign(new HashMap<>());
         }
     }
 
@@ -357,9 +358,10 @@ public class MainController {
         stage.setResizable(false);
         stage.showAndWait();
 
-        BounceDefinition bounceDefinition = new BounceDefinition(controller.getSecondsAfterEntry(),controller.getNeedToConvert());
-        System.out.println(controller.getSecondsAfterEntry());
-        System.out.println(controller.getNeedToConvert());
+        if(controller.getIsConfirmPressed()) {
+            model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getNeedToConvert());
+            testUpdateCampaign(new HashMap<>());
+        }
     }
 
     //TEST BUTTON ONLY
@@ -370,6 +372,10 @@ public class MainController {
         //genders.add("Female");
         map.put("gender",genders);
         model.setBounceAttributes(50000,true);
+        testUpdateCampaign(map);
+    }
+
+    public void testUpdateCampaign(HashMap<String,List<String>> map){
         ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
         tab.updateData(list);

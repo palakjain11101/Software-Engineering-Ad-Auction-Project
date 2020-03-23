@@ -21,6 +21,8 @@ public class SetBounceDefinitionDialogController {
     @FXML
     Button confirmButton;
 
+    private boolean isConfirmPressed = false;
+
     public void initialize(){
         secondsAfterEntryInput.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -30,15 +32,25 @@ public class SetBounceDefinitionDialogController {
     }
 
     public void confirmButtonPressed(){
+        isConfirmPressed = true;
         Stage stage = (Stage) confirmButton.getScene().getWindow();
         stage.close();
     }
 
     public int getSecondsAfterEntry(){
-        return Integer.parseInt(secondsAfterEntryInput.getText());
+        try {
+            return Integer.parseInt(secondsAfterEntryInput.getText());
+        }
+        catch (NumberFormatException e){
+            return Integer.MAX_VALUE;
+        }
     }
 
     public boolean getNeedToConvert(){
         return needToConverseCheckBox.isSelected();
+    }
+
+    public boolean getIsConfirmPressed(){
+        return isConfirmPressed;
     }
 }
