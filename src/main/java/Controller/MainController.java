@@ -6,6 +6,7 @@ import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
 import com.sun.javafx.charts.Legend;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.concurrent.Task;
@@ -14,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.print.*;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -21,6 +23,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
@@ -31,11 +34,19 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.printing.Orientation;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 
 public class MainController {
@@ -306,30 +317,27 @@ public class MainController {
     @FXML public void saveOrPrintSelected(){
         WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
         BufferedImage awtImage = SwingFXUtils.fromFXImage(image, null);
-//        PDDocument doc = new PDDocument();
-//        doc.addPage(new PDPage());
-//        PDImageXObject pdImageXObject = null;
-//        try {
-//            pdImageXObject = LosslessFactory.createFromImage(doc, awtImage);
-//            PDPageContentStream contentStream = new PDPageContentStream(doc, doc.getPage(0), PDPageContentStream.AppendMode.APPEND, true, true);
-//            contentStream.drawImage(pdImageXObject, 100, 160, awtImage.getWidth() / 2, awtImage.getHeight() / 2);
-//            contentStream.close();
-//            doc.save("test.pdf");
-//            doc.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
-        Printer printer = Printer.getDefaultPrinter();
-        PrinterJob job = PrinterJob.createPrinterJob(printer);
-        if (job.showPrintDialog(this.view.getWindow())) {
-            //PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, 0, 0, 0, 0);
-            PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.HARDWARE_MINIMUM);
-//            double scaleX = pageLayout.getPrintableWidth() / lineChart.getBoundsInParent().getWidth();
-//            double scaleY = pageLayout.getPrintableHeight() / lineChart.getBoundsInParent().getHeight();
-//            lineChart.getTransforms().add(new Scale(scaleX,scaleY));
-            if(job.printPage(pageLayout,lineChart)){
-                job.endJob();
+        PrinterJob printJob = PrinterJob.getPrinterJob();
+
+        printJob.setPrintable((graphics, pageFormat, pageIndex) -> {
+            int x = (int) Math.ceil(pageFormat.getImageableX());
+            int y = (int) Math.ceil(pageFormat.getImageableY());
+            if (pageIndex != 0) {
+                return Printable.NO_SUCH_PAGE;
+            }
+
+            double scaler = Math.ceil(pageFormat.getImageableWidth())/awtImage.getWidth();
+
+            graphics.drawImage(awtImage, x, y, (int) Math.ceil(pageFormat.getImageableWidth()), (int) Math.ceil(awtImage.getHeight()*scaler), null);
+            return Printable.PAGE_EXISTS;
+        });
+
+        if (printJob.printDialog()) {
+            try {
+                printJob.print();
+            } catch (PrinterException prt) {
+                prt.printStackTrace();
             }
         }
     }
