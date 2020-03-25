@@ -372,6 +372,19 @@ public class MainController {
         }
     }
 
+    @FXML
+    public void displayAverageCharts() throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/averageChartsScreen.fxml"));
+        Parent parent = fxmlLoader.load();
+        AverageChartsScreenController controller = fxmlLoader.getController();
+        Scene scene = new Scene(parent, 500, 500);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.showAndWait();
+    }
+
     //TEST BUTTON ONLY
     public void onTestButtonPressed(){
         HashMap map = new HashMap<String,List<String>>();
