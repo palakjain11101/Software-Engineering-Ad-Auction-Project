@@ -316,12 +316,12 @@ public class AddFilterDialogController<string> {
             map.get("Age").add(">55");
         }
         if (String.valueOf(before) != null){
-            //System.err.println("Selected date: " + before);
-            //map.get("Date Before:").add(String.valueOf(before));
+            System.err.println("Selected date: " + before);
+            map.get("Date Before:").add(String.valueOf(before));
         }
         if (String.valueOf(after) != null){
-            //System.err.println("Selected date: " + after);
-            //map.get("Date After:").add(String.valueOf(after));
+            System.err.println("Selected date: " + after);
+            map.get("Date After:").add(String.valueOf(after));
         }
 
 
