@@ -5,8 +5,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -18,6 +20,10 @@ public class AddFilterDialogController<string> {
 
     Map<String,String> mymap = new HashMap<String, String>();
 
+    @FXML
+    DatePicker dateBefore;
+    @FXML
+    DatePicker dateAfter;
     @FXML
     private CheckBox cb1;
     @FXML
@@ -228,15 +234,21 @@ public class AddFilterDialogController<string> {
         List<String> list1 = new ArrayList<String>();
         List<String> list2 = new ArrayList<String>();
         List<String> list3 = new ArrayList<String>();
+        List<String> list4 = new ArrayList<String>();
+        List<String> list5 = new ArrayList<String>();
+
+        LocalDate before = dateBefore.getValue();
+        LocalDate after  = dateAfter.getValue();
 
 
         map.put("Income", list);
         map.put("Context", list1);
         map.put("Gender", list2);
         map.put("Age", list3);
+        map.put("Date Before:", list4);
+        map.put("Date After:", list5);
 
         System.out.println("-------------");
-
 
         if (cb1.isSelected()) {
             int i = 0;
@@ -302,6 +314,14 @@ public class AddFilterDialogController<string> {
         if (cbbb5.isSelected()) {
             message += cbbb5.getText() + "\n";
             map.get("Age").add(">55");
+        }
+        if (String.valueOf(before) != null){
+            //System.err.println("Selected date: " + before);
+            //map.get("Date Before:").add(String.valueOf(before));
+        }
+        if (String.valueOf(after) != null){
+            //System.err.println("Selected date: " + after);
+            //map.get("Date After:").add(String.valueOf(after));
         }
 
 

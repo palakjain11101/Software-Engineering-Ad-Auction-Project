@@ -40,6 +40,7 @@ public class SQL {
                 + " cost real,\n"
                 + " PRIMARY KEY (id,date));";
 
+
         String personTable = "CREATE TABLE person (\n"
                 + " id integer UNIQUE,\n"
                 + " gender text,\n"
