@@ -273,7 +273,7 @@ public class AddFilterDialogController<string> {
         if (highIncome.isSelected()) {
             message += highIncome.getText() + "\n";
             if (!list.contains(highIncome.getText())) {
-                list.add(mediumIncome.getText());
+                list.add(highIncome.getText());
             }
         }
         if (newsContext.isSelected()) {
