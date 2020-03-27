@@ -6,8 +6,6 @@ import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
 import com.sun.javafx.charts.Legend;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -67,8 +65,6 @@ public class MainController {
     private boolean shouldGraphAvg = true; //Otherwise just sum
     private int timeGranulationValue = SLIDER_DAY;
 
-    private String chartType = "Standard";
-
     private File clickLogCSV;
     private File impressionLogCSV;
     private File serverLogCSV;
@@ -80,23 +76,13 @@ public class MainController {
     TabPane tabPane;
 
     @FXML
-    Tab defaultTab;
-
-    @FXML
     Slider timeGranulationSlider;
 
     @FXML
     ListView filterListView;
-    @FXML
-    Button filterButton;
-    @FXML
-    Button filterRemoveButton;
 
     @FXML
     Button defineBounceButton;
-
-    @FXML
-    Button displayHistogramButton;
 
     @FXML
     CheckBox customBounceCheckBox;
@@ -105,36 +91,8 @@ public class MainController {
     ComboBox chartTypeComboBox;
 
     public void initialize(){
-        //disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
         chartTypeComboBox.getSelectionModel().select(0);
-        tabPane.getSelectionModel().selectedItemProperty().addListener(
-                (ov, t, t1) -> {
-                    if(t1 == defaultTab){
-                        disableCampaignFunctionalityButtons();
-                    }
-                    else {
-                        enableCampaignFunctionalityButtons();
-                    }
-                });
-    }
-
-    private void disableCampaignFunctionalityButtons(){
-        customBounceCheckBox.setDisable(true);
-        chartTypeComboBox.setDisable(true);
-        timeGranulationSlider.setDisable(true);
-        displayHistogramButton.setDisable(true);
-        filterButton.setDisable(true);
-        filterRemoveButton.setDisable(true);
-    }
-
-    private void enableCampaignFunctionalityButtons(){
-        customBounceCheckBox.setDisable(false);
-        chartTypeComboBox.setDisable(false);
-        timeGranulationSlider.setDisable(false);
-        displayHistogramButton.setDisable(false);
-        filterButton.setDisable(false);
-        filterRemoveButton.setDisable(false);
     }
 
     public void setView(MainView view){
@@ -301,18 +259,7 @@ public class MainController {
 
     public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
         if(metricSelected == null){return;}
-
-        switch (chartType){
-            case "Standard":
-                graphData = metricSelected.getMetricOverTimePoints();
-                break;
-            case "Per Hour of Day":
-                graphData = metricSelected.getDataPerHourOfDay();
-                break;
-            case "Per Day of Week":
-                graphData = metricSelected.getDataPerDayOfWeek();
-                break;
-        }
+        graphData = metricSelected.getMetricOverTimePoints();
 
         String id = metricSelected.getID();
         shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
@@ -342,7 +289,13 @@ public class MainController {
         for(Object key: keys){
             List<String> keyList = map.get(key);
             for(Object o: keyList){
-                filterListView.getItems().addAll(""+key + ":" + o);
+                if (filterListView.getItems().contains(o)){
+                    System.out.println("Already added");
+                }
+                else{
+                    filterListView.getItems().addAll(""+key + ":" + o);
+                }
+
             }
         }
 
@@ -350,15 +303,6 @@ public class MainController {
         //get data
         //change listview
         //pass data to Model
-
-
-
-
-
-
-
-
-
 
         //get the data
         //change the list view
@@ -436,9 +380,14 @@ public class MainController {
     @FXML
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
-        chartType = selected;
-        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
-        tab.retriggerSelectionProperty();
+        switch (selected){
+            case "Standard":
+                break;
+            case "Per Hour of Day":
+                break;
+            case "Per Day of Week":
+                break;
+        }
     }
 
     //TEST BUTTON ONLY
