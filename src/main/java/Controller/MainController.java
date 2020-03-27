@@ -397,14 +397,8 @@ public class MainController {
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
         chartType = selected;
-//        switch (selected){
-//            case "Standard":
-//                break;
-//            case "Per Hour of Day":
-//                break;
-//            case "Per Day of Week":
-//                break;
-//        }
+        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+        tab.retriggerSelectionProperty();
     }
 
     //TEST BUTTON ONLY
