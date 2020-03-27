@@ -105,7 +105,7 @@ public class MainController {
     ComboBox chartTypeComboBox;
 
     public void initialize(){
-        disableCampaignFunctionalityButtons();
+        //disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
         chartTypeComboBox.getSelectionModel().select(0);
         tabPane.getSelectionModel().selectedItemProperty().addListener(
