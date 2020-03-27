@@ -29,9 +29,9 @@
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <DatePicker layoutX="45.0" layoutY="65.0" />
+                        <DatePicker fx:id="dateBefore" layoutX="45.0" layoutY="65.0" />
                         <TextField layoutX="45.0" layoutY="27.0" text="Date Before:" />
-                        <DatePicker layoutX="45.0" layoutY="181.0" />
+                        <DatePicker fx:id="dateAfter" layoutX="45.0" layoutY="181.0" />
                         <TextField layoutX="45.0" layoutY="147.0" text="Date After:" />
                      </children></AnchorPane>
                </content>
