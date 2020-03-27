@@ -88,10 +88,14 @@ public class CampaignTab extends Tab {
         private final String a;
         private final Double b;
         private final ArrayList<GraphPoint> c;
-        public CampaignDataPackage(String a, Double b, ArrayList<GraphPoint> c){
-            this.a = a;
-            this.b = b;
-            this.c = c;
+        private final ArrayList<GraphPoint> d;
+        private final ArrayList<GraphPoint> e;
+        public CampaignDataPackage(String metricType, Double overallMetric, ArrayList<GraphPoint> dataOverTime,ArrayList<GraphPoint> dataPerHourOfDay,ArrayList<GraphPoint> dataPerDayOfWeek){
+            this.a = metricType;
+            this.b = overallMetric;
+            this.c = dataOverTime;
+            this.d = dataPerHourOfDay;
+            this.e = dataPerDayOfWeek;
         }
         public String getID(){
             return a;
@@ -101,6 +105,12 @@ public class CampaignTab extends Tab {
         }
         public ArrayList<GraphPoint> getMetricOverTimePoints(){
             return c;
+        }
+        public ArrayList<GraphPoint> getDataPerHourOfDay(){
+            return d;
+        }
+        public ArrayList<GraphPoint> getDataPerDayOfWeek(){
+            return e;
         }
     }
 }

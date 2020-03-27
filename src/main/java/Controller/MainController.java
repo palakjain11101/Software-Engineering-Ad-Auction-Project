@@ -65,6 +65,8 @@ public class MainController {
     private boolean shouldGraphAvg = true; //Otherwise just sum
     private int timeGranulationValue = SLIDER_DAY;
 
+    private String chartType = "Standard";
+
     private File clickLogCSV;
     private File impressionLogCSV;
     private File serverLogCSV;
@@ -259,7 +261,18 @@ public class MainController {
 
     public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
         if(metricSelected == null){return;}
-        graphData = metricSelected.getMetricOverTimePoints();
+
+        switch (chartType){
+            case "Standard":
+                graphData = metricSelected.getMetricOverTimePoints();
+                break;
+            case "Per Hour of Day":
+                graphData = metricSelected.getDataPerHourOfDay();
+                break;
+            case "Per Day of Week":
+                graphData = metricSelected.getDataPerDayOfWeek();
+                break;
+        }
 
         String id = metricSelected.getID();
         shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
@@ -383,14 +396,15 @@ public class MainController {
     @FXML
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
-        switch (selected){
-            case "Standard":
-                break;
-            case "Per Hour of Day":
-                break;
-            case "Per Day of Week":
-                break;
-        }
+        chartType = selected;
+//        switch (selected){
+//            case "Standard":
+//                break;
+//            case "Per Hour of Day":
+//                break;
+//            case "Per Day of Week":
+//                break;
+//        }
     }
 
     //TEST BUTTON ONLY
