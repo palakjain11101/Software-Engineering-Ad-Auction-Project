@@ -249,18 +249,32 @@ public class AddFilterDialogController<string> {
 
         System.out.println("-------------");
 
+        //lowIncome
         if (lowIncome.isSelected()) {
-            int i = 0;
             message += lowIncome.getText() + "\n";
-            map.get("Income").add(lowIncome.getText());
+            if (list.contains(lowIncome.getText())) {
+                System.out.println("Already added");
+            }
+            else{
+                list.add(lowIncome.getText());
+            }
+            System.out.println("Elements of the list:" );
+            for(Object element: list){
+                System.out.println("" + element);
+
+            }
         }
         if (mediumIncome.isSelected()) {
             message += mediumIncome.getText() + "\n";
-            map.get("Income").add(mediumIncome.getText());
+            if (!list.contains(mediumIncome.getText())) {
+                list.add(mediumIncome.getText());
+            }
         }
         if (highIncome.isSelected()) {
             message += highIncome.getText() + "\n";
-            map.get("Income").add(highIncome.getText());
+            if (!list.contains(highIncome.getText())) {
+                list.add(mediumIncome.getText());
+            }
         }
         if (newsContext.isSelected()) {
             message += newsContext.getText() + "\n";
@@ -317,15 +331,18 @@ public class AddFilterDialogController<string> {
         if (before != null){
             System.out.println("Selected date: " + before);
             String beforeDate = ("") + before;
+            System.out.println(beforeDate);
             map.get("Date Before").add(beforeDate);
+
         }
         if (after != null){
             System.out.println("Selected date: " + after);
             String afterDate = ("") + after;
+            System.out.println(afterDate);
             map.get("Date After").add(afterDate);
         }
 
-
+        System.out.println(map);
 
         return map;
     }
