@@ -25,37 +25,37 @@ public class AddFilterDialogController<string> {
     @FXML
     DatePicker dateAfter;
     @FXML
-    private CheckBox cb1;
+    private CheckBox lowIncome;
     @FXML
-    private CheckBox cb2;
+    private CheckBox mediumIncome;
     @FXML
-    private CheckBox cb3;
+    private CheckBox highIncome;
     @FXML
-    private CheckBox c1;
+    private CheckBox newsContext;
     @FXML
-    private CheckBox c2;
+    private CheckBox blogContext;
     @FXML
-    private CheckBox c3;
+    private CheckBox shoppingContext;
     @FXML
-    private CheckBox c4;
+    private CheckBox hobbiesContext;
     @FXML
-    private CheckBox c5;
+    private CheckBox socialContext;
     @FXML
-    private CheckBox c6;
+    private CheckBox travelContext;
     @FXML
-    private CheckBox cbb1;
+    private CheckBox Age25;
     @FXML
-    private CheckBox cbb2;
+    private CheckBox Age45;
     @FXML
-    private CheckBox cbbb1;
+    private CheckBox Age25To34;
     @FXML
-    private CheckBox cbbb2;
+    private CheckBox Age55;
     @FXML
-    private CheckBox cbbb3;
+    private CheckBox Age35;
     @FXML
-    private CheckBox cbbb4;
+    private CheckBox maleGender;
     @FXML
-    private CheckBox cbbb5;
+    private CheckBox femaleGender;
 
     static String message= "";
 
@@ -240,7 +240,6 @@ public class AddFilterDialogController<string> {
         LocalDate before = dateBefore.getValue();
         LocalDate after  = dateAfter.getValue();
 
-
         map.put("Income", list);
         map.put("Context", list1);
         map.put("Gender", list2);
@@ -250,78 +249,80 @@ public class AddFilterDialogController<string> {
 
         System.out.println("-------------");
 
-        if (cb1.isSelected()) {
+        if (lowIncome.isSelected()) {
             int i = 0;
-            message += cb1.getText() + "\n";
-            map.get("Income").add(cb1.getText());
+            message += lowIncome.getText() + "\n";
+            map.get("Income").add(lowIncome.getText());
         }
-        if (cb2.isSelected()) {
-            message += cb2.getText() + "\n";
-            map.get("Income").add(cb2.getText());
+        if (mediumIncome.isSelected()) {
+            message += mediumIncome.getText() + "\n";
+            map.get("Income").add(mediumIncome.getText());
         }
-        if (cb3.isSelected()) {
-            message += cb3.getText() + "\n";
-            map.get("Income").add(cb3.getText());
+        if (highIncome.isSelected()) {
+            message += highIncome.getText() + "\n";
+            map.get("Income").add(highIncome.getText());
         }
-        if (c1.isSelected()) {
-            message += c1.getText() + "\n";
-            map.get("Income").add(c1.getText());
+        if (newsContext.isSelected()) {
+            message += newsContext.getText() + "\n";
+            map.get("Context").add(newsContext.getText());
         }
-        if (c2.isSelected()) {
-            message += c2.getText() + "\n";
-            map.get("Context").add(c2.getText());
+        if (blogContext.isSelected()) {
+            message += blogContext.getText() + "\n";
+            map.get("Context").add(blogContext.getText());
         }
-        if (c3.isSelected()) {
-            message += c3.getText() + "\n";
-            map.get("Context").add(c3.getText());
+        if (shoppingContext.isSelected()) {
+            message += shoppingContext.getText() + "\n";
+            map.get("Context").add(shoppingContext.getText());
         }
-        if (c4.isSelected()) {
-            message += c4.getText() + "\n";
-            map.get("Context").add(c4.getText());
+        if (hobbiesContext.isSelected()) {
+            message += hobbiesContext.getText() + "\n";
+            map.get("Context").add(hobbiesContext.getText());
         }
-        if (c5.isSelected()) {
-            message += c5.getText() + "\n";
-            map.get("Context").add(c5.getText());
+        if (socialContext.isSelected()) {
+            message += socialContext.getText() + "\n";
+            map.get("Context").add(socialContext.getText());
         }
-        if (c6.isSelected()) {
-            message += c6.getText() + "\n";
-            map.get("Context").add(c6.getText());
+        if (travelContext.isSelected()) {
+            message += travelContext.getText() + "\n";
+            map.get("Context").add(travelContext.getText());
         }
-        if (cbb1.isSelected()) {
-            message += cbb1.getText() + "\n";
-            map.get("Gender").add(cbb1.getText());
+        if (maleGender.isSelected()) {
+            message += maleGender.getText() + "\n";
+            map.get("Gender").add(maleGender.getText());
         }
-        if (cbb2.isSelected()) {
-            message += cbb2.getText() + "\n";
-            map.get("Gender").add(cbb2.getText());
+        if (femaleGender.isSelected()) {
+            message += femaleGender.getText() + "\n";
+            map.get("Gender").add(femaleGender.getText());
         }
-        if (cbbb1.isSelected()) {
-            message += cbbb1.getText() + "\n";
+        if (Age25.isSelected()) {
+            message += Age25.getText() + "\n";
             map.get("Age").add("<25");
         }
-        if (cbbb2.isSelected()) {
-            message += cbbb2.getText() + "\n";
+        if (Age25To34.isSelected()) {
+            message += Age25To34.getText() + "\n";
             map.get("Age").add("25-34");
         }
-        if (cbbb3.isSelected()) {
-            message += cbbb3.getText() + "\n";
+        if (Age35.isSelected()) {
+            message += Age35.getText() + "\n";
             map.get("Age").add("35-44");
         }
-        if (cbbb4.isSelected()) {
-            message += cbbb4.getText() + "\n";
+        if (Age45.isSelected()) {
+            message += Age45.getText() + "\n";
             map.get("Age").add("45-54");
         }
-        if (cbbb5.isSelected()) {
-            message += cbbb5.getText() + "\n";
+        if (Age55.isSelected()) {
+            message += Age55.getText() + "\n";
             map.get("Age").add(">55");
         }
-        if (String.valueOf(before) != null){
-            System.err.println("Selected date: " + before);
-            map.get("Date Before:").add(String.valueOf(before));
+        if (before != null){
+            System.out.println("Selected date: " + before);
+            String beforeDate = ("") + before;
+            map.get("Date Before").add(beforeDate);
         }
-        if (String.valueOf(after) != null){
-            System.err.println("Selected date: " + after);
-            map.get("Date After:").add(String.valueOf(after));
+        if (after != null){
+            System.out.println("Selected date: " + after);
+            String afterDate = ("") + after;
+            map.get("Date After").add(afterDate);
         }
 
 
