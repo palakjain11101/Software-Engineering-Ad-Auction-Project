@@ -6,6 +6,8 @@ import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
 import com.sun.javafx.charts.Legend;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -78,13 +80,23 @@ public class MainController {
     TabPane tabPane;
 
     @FXML
+    Tab defaultTab;
+
+    @FXML
     Slider timeGranulationSlider;
 
     @FXML
     ListView filterListView;
+    @FXML
+    Button filterButton;
+    @FXML
+    Button filterRemoveButton;
 
     @FXML
     Button defineBounceButton;
+
+    @FXML
+    Button displayHistogramButton;
 
     @FXML
     CheckBox customBounceCheckBox;
@@ -93,8 +105,36 @@ public class MainController {
     ComboBox chartTypeComboBox;
 
     public void initialize(){
+        disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
         chartTypeComboBox.getSelectionModel().select(0);
+        tabPane.getSelectionModel().selectedItemProperty().addListener(
+                (ov, t, t1) -> {
+                    if(t1 == defaultTab){
+                        disableCampaignFunctionalityButtons();
+                    }
+                    else {
+                        enableCampaignFunctionalityButtons();
+                    }
+                });
+    }
+
+    private void disableCampaignFunctionalityButtons(){
+        customBounceCheckBox.setDisable(true);
+        chartTypeComboBox.setDisable(true);
+        timeGranulationSlider.setDisable(true);
+        displayHistogramButton.setDisable(true);
+        filterButton.setDisable(true);
+        filterRemoveButton.setDisable(true);
+    }
+
+    private void enableCampaignFunctionalityButtons(){
+        customBounceCheckBox.setDisable(false);
+        chartTypeComboBox.setDisable(false);
+        timeGranulationSlider.setDisable(false);
+        displayHistogramButton.setDisable(false);
+        filterButton.setDisable(false);
+        filterRemoveButton.setDisable(false);
     }
 
     public void setView(MainView view){
