@@ -61,6 +61,8 @@ public class MainController {
     private MainView view;
     private MainModel model;
 
+    private String chartType = "Standard";
+
     private ArrayList<GraphPoint> graphData = new ArrayList<>();
     private boolean shouldGraphAvg = true; //Otherwise just sum
     private int timeGranulationValue = SLIDER_DAY;
@@ -76,7 +78,15 @@ public class MainController {
     TabPane tabPane;
 
     @FXML
+    Tab defaultTab;
+
+    @FXML
     Slider timeGranulationSlider;
+
+    @FXML
+    Button filterButton;
+    @FXML
+    Button filterRemoveButton;
 
     @FXML
     ListView filterListView;
@@ -85,14 +95,45 @@ public class MainController {
     Button defineBounceButton;
 
     @FXML
+    Button displayHistogramButton;
+
+    @FXML
     CheckBox customBounceCheckBox;
 
     @FXML
     ComboBox chartTypeComboBox;
 
     public void initialize(){
+        //disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
         chartTypeComboBox.getSelectionModel().select(0);
+        tabPane.getSelectionModel().selectedItemProperty().addListener(
+                (ov, t, t1) -> {
+                    if(t1 == defaultTab){
+                        disableCampaignFunctionalityButtons();
+                    }
+                    else {
+                        enableCampaignFunctionalityButtons();
+                    }
+                });
+    }
+
+    private void disableCampaignFunctionalityButtons(){
+        customBounceCheckBox.setDisable(true);
+        chartTypeComboBox.setDisable(true);
+        timeGranulationSlider.setDisable(true);
+        displayHistogramButton.setDisable(true);
+        filterButton.setDisable(true);
+        filterRemoveButton.setDisable(true);
+    }
+
+    private void enableCampaignFunctionalityButtons(){
+        customBounceCheckBox.setDisable(false);
+        chartTypeComboBox.setDisable(false);
+        timeGranulationSlider.setDisable(false);
+        displayHistogramButton.setDisable(false);
+        filterButton.setDisable(false);
+        filterRemoveButton.setDisable(false);
     }
 
     public void setView(MainView view){
@@ -259,7 +300,17 @@ public class MainController {
 
     public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
         if(metricSelected == null){return;}
-        graphData = metricSelected.getMetricOverTimePoints();
+        switch (chartType){
+            case "Standard":
+                graphData = metricSelected.getMetricOverTimePoints();
+                break;
+            case "Per Hour of Day":
+                graphData = metricSelected.getDataPerHourOfDay();
+                break;
+            case "Per Day of Week":
+                graphData = metricSelected.getDataPerDayOfWeek();
+                break;
+        }
 
         String id = metricSelected.getID();
         shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
@@ -380,14 +431,9 @@ public class MainController {
     @FXML
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
-        switch (selected){
-            case "Standard":
-                break;
-            case "Per Hour of Day":
-                break;
-            case "Per Day of Week":
-                break;
-        }
+        chartType = selected;
+        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+        tab.retriggerSelectionProperty();
     }
 
     //TEST BUTTON ONLY
