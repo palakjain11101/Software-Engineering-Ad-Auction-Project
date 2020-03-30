@@ -63,6 +63,7 @@
                         <Button fx:id="loadImpressionLogButton" layoutX="91.0" layoutY="130.0" mnemonicParsing="false" onAction="#loadImpressionLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ImpressionLog" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="35.0" />
                         <Button fx:id="loadServerLogButton" layoutX="88.0" layoutY="201.0" mnemonicParsing="false" onAction="#loadServerLogPressed" prefHeight="25.0" prefWidth="140.0" text="Load ServerLog" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="65.0" />
                         <Button fx:id="addCampaignButton" layoutX="74.0" layoutY="230.0" mnemonicParsing="false" onAction="#loadCampaignPressed" prefHeight="40.0" prefWidth="140.0" text="Add Campaign" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="125.0" />
+                        <Button layoutX="23.0" layoutY="222.0" mnemonicParsing="false" onAction="#useCurrentDatabase" text="TEST: Use current DB" />
                      </children></AnchorPane>
             </content>
           </Tab>

@@ -33,8 +33,8 @@ public class MainModel {
         try{
             sql.connection("test");
             sql.createTable();
-            sql.putData(clickLogPath.getPath(),"click");
             sql.putData(impressionLogPath.getPath(),"impressions");
+            sql.putData(clickLogPath.getPath(),"click");
             sql.putData(serverLogPath.getPath(),"server");
         }catch(Exception e){
             return e.getMessage();
@@ -89,7 +89,7 @@ public class MainModel {
 
         double impressions = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
         double clicks = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
-        double uniques = getData("select count(case when " + cases + " then 1 else null end) from (SELECT distinct click.id,gender,ageRange,income from click INNER JOIN person ON click.id = person.id);");
+        double uniques = getData("select count(case when " + cases + " then 1 else null end) from (SELECT distinct click.id,gender,ageRange,income,context from click INNER JOIN person ON click.id = person.id);");
         double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND " + cases + " " + conversionCase + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
         double conversions = getData("SELECT COUNT(case when conversion = 'Yes' AND " + cases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
         double totalCostClick = getData("SELECT SUM(case when " + cases + " then cost else 0 end) FROM click INNER JOIN person ON click.id = person.id;");
@@ -172,5 +172,11 @@ public class MainModel {
 
         }
         return clickCosts;
+    }
+
+
+    //FOR TESTING PURPOSES
+    public void openCurrentDatabase(){
+        sql.connection("test");
     }
 }

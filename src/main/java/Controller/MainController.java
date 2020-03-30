@@ -439,10 +439,10 @@ public class MainController {
     //TEST BUTTON ONLY
     public void onTestButtonPressed(){
         HashMap map = new HashMap<String,List<String>>();
-        List<String> genders = new ArrayList<String>();
-        genders.add("Male");
+        List<String> contexts = new ArrayList<String>();
+        contexts.add("Blog");
         //genders.add("Female");
-        map.put("gender",genders);
+        map.put("context",contexts);
         model.setBounceAttributes(50000,true);
         testUpdateCampaign(map);
     }
@@ -451,6 +451,14 @@ public class MainController {
         ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
         tab.updateData(list);
+    }
+
+    @FXML
+    public void useCurrentDatabase(){
+        model.openCurrentDatabase();
+        CampaignTab tab = new CampaignTab(this,model.queryCampaign(new HashMap<>()));
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
     }
 
 
