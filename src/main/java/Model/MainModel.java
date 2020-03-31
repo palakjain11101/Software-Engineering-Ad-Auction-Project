@@ -5,9 +5,7 @@ import View.CampaignTab;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class MainModel {
 
@@ -54,7 +52,7 @@ public class MainModel {
         return 0.0;
     }
 
-    public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg){
+    public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg, boolean shouldXAxisBeIncrement){
         if(metricOverTimeQuery.equals("")) return null;
         ArrayList<GraphPoint> metricOverTime = new ArrayList<>();
         ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery);
@@ -62,10 +60,10 @@ public class MainModel {
         try {
             while (metricOverTimeSet.next()) {
                 if(shouldGraphAvg) {
-                    metricOverTime.add(new GraphPoint(i, metricOverTimeSet.getDouble(2), metricOverTimeSet.getDouble(3)));
+                    metricOverTime.add(new GraphPoint(shouldXAxisBeIncrement ? i : metricOverTimeSet.getInt(1), metricOverTimeSet.getDouble(2), metricOverTimeSet.getDouble(3)));
                 }
                 else {
-                    metricOverTime.add(new GraphPoint(i, metricOverTimeSet.getDouble(2)));
+                    metricOverTime.add(new GraphPoint(shouldXAxisBeIncrement ? i : metricOverTimeSet.getInt(1), metricOverTimeSet.getDouble(2)));
                 }
                 i++;
             }
@@ -126,7 +124,29 @@ public class MainModel {
     private ArrayList<GraphPoint>[] getAllPointData(String mainStatement, Boolean isAvg){
         String dataPerHourOfDayString = mainStatement.replace("DATE(","strftime('%H',");
         String dataPerDayOfWeekString = mainStatement.replace("DATE(","strftime('%w',");
-        return (ArrayList<GraphPoint>[]) new ArrayList[] {getDataOverTimePoints(mainStatement,isAvg),getDataOverTimePoints(dataPerHourOfDayString,isAvg),getDataOverTimePoints(dataPerDayOfWeekString,isAvg)};
+        ArrayList<GraphPoint> dataOverTimePoints = getDataOverTimePoints(mainStatement,isAvg, true);
+        ArrayList<GraphPoint> dataPerHourOfDayPoints = addZeroPoints(getDataOverTimePoints(dataPerHourOfDayString,isAvg, false), 1, 24);
+        ArrayList<GraphPoint> dataPerDayOfWeekPoints = addZeroPoints(getDataOverTimePoints(dataPerDayOfWeekString,isAvg, false), 0, 6);
+        return (ArrayList<GraphPoint>[]) new ArrayList[] {dataOverTimePoints,dataPerHourOfDayPoints,dataPerDayOfWeekPoints};
+    }
+
+    private ArrayList<GraphPoint> addZeroPoints(ArrayList<GraphPoint> points, int min, int max){
+        for(int x = min;x<=max;x++){
+            if(!doesContainSpecifiedXPoint(points,x)){
+                points.add(new GraphPoint(x,0));
+            }
+        }
+        points.sort((p1, p2) -> (int) (p1.getX() - p2.getX()));
+        return points;
+    }
+
+    private boolean doesContainSpecifiedXPoint(ArrayList<GraphPoint> points, int x){
+        for(GraphPoint point : points){
+            if(point.getX() == x){
+                return true;
+            }
+        }
+        return false;
     }
 
     private String convertFiltersToCase(HashMap<String, List<String>> hashFilters){
