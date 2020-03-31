@@ -17,6 +17,7 @@ public class SQL {
         try {
             Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:"+ databaseName + ".db");
+            this.stmt = this.c.createStatement();
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
@@ -31,6 +32,7 @@ public class SQL {
                 + " exitDate text,\n"
                 + " pagesViewed integer,\n"
                 + " conversion text,\n"
+                + " context text,\n"
                 + " PRIMARY KEY (id,date));";
 
         String impressionsTable = "CREATE TABLE impressions (\n"
@@ -52,10 +54,10 @@ public class SQL {
                 + " id integer ,\n"
                 + " date text,\n"
                 + " cost real,\n"
+                + " context text,\n"
                 + " PRIMARY KEY (id,date));";
 
         try{
-            this.stmt = this.c.createStatement();
             stmt.execute("DROP TABLE IF EXISTS server;");
             stmt.execute("DROP TABLE IF EXISTS click;");
             stmt.execute("DROP TABLE IF EXISTS impressions;");
@@ -89,7 +91,8 @@ public class SQL {
                     if(data.length != 3){
                         throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     }else{
-                        stmt.addBatch("INSERT INTO click VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\");");
+                        //System.out.println("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT \" + data[1] + \" id,\\\"\" + data[0] + \"\\\" date,\\\"\" + data[2] + \"\\\" cost, impressions.context context, abs(strftime('%s',\\\"\" + data[0] + \"\\\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \\\"\" + data[1] + \"\\\" ORDER BY closest LIMIT 1);\\n));");
+                        stmt.addBatch("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" cost, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
 
                 }
@@ -116,7 +119,8 @@ public class SQL {
                     if (data.length != 5) {
                         throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        stmt.addBatch("INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
+                        //stmt.addBatch("INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
+                        stmt.addBatch("INSERT INTO server (id,date,exitDate,pagesViewed,conversion,context) SELECT id, date, exitDate, pagesViewed,conversion,context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" exitDate," + data[3] + " pagesViewed,\"" + data[4] + "\" conversion, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
                 }
             } else {
