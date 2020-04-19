@@ -3,6 +3,8 @@ package Model;
 import View.CampaignTab;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -45,11 +47,19 @@ public class MainModel {
         try {
             ResultSet set = sql.getData(overallMetricQuery);
             Double value = set.getDouble(1);
-            return value;
+            return round(value,2);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0.0;
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg, boolean shouldXAxisBeIncrement){
@@ -99,8 +109,8 @@ public class MainModel {
         ArrayList<GraphPoint>[] uniquesOverTime = getAllPointData("select d1, IFNULL(c1,0) from (select distinct DATE(date) as d1 from click order by d1 asc) left outer join (select DATE(date) as d2, count(case when " + cases + " then 1 end) as c1 from (SELECT * from click INNER JOIN person ON click.id = person.id group by person.id) GROUP BY DATE(date)) on d1=d2;",false);
         ArrayList<GraphPoint>[] bouncesOverTime = getAllPointData("select DATE(date), COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND "+ cases + " " + conversionCase + " then 1 else null end) from (SELECT * from server INNER JOIN person ON server.id = person.id) group by DATE(date);",false);
         ArrayList<GraphPoint>[] conversionsOverTime = getAllPointData("Select DATE(date), COUNT(case when (conversion = 'Yes' AND " + cases + ") then 1 else null end) from (SELECT *  from server INNER JOIN person ON server.id = person.id) group by DATE(date);",false);
-        ArrayList<GraphPoint>[] totalCostOverTime = getAllPointData("SELECT d1, c+i from (SELECT DATE(date) as d1, SUM(case when " + cases + " then cost else 0 end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) INNER JOIN (SELECT DATE(date) as d2, SUM(case when " + cases + " then cost else 0 end) as i from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) ON d1=d2 group by d1;",false);
-        ArrayList<GraphPoint>[] CTROverTime = getAllPointData("SELECT d1, c, i from (SELECT DATE(date) as d1, count(case when " + cases + " then 1 else null end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, count(case when " + cases + " then 1 else null end) as i from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) ON d1=d2 group by d1;",true);
+        ArrayList<GraphPoint>[] totalCostOverTime = getAllPointData("select d1, SUM(c) from (SELECT DATE(date) as d1, SUM(case when " + cases + " then cost else 0 end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date) UNION ALL SELECT DATE(date) as d1, SUM(case when " + cases + " then cost else 0 end) as c from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) group by d1;",false);
+        ArrayList<GraphPoint>[] CTROverTime = getAllPointData("SELECT d, SUM(c), SUM(i) from (SELECT DATE(date) as d, count(case when " + cases + " then 1 else null end) as c, 0 as i from click INNER JOIN person ON click.id = person.id group by DATE(date) UNION ALL SELECT DATE(date) as d, 0 as c, count(case when " + cases + " then 1 else null end) as i from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) group by d;",true);
         ArrayList<GraphPoint>[] CPAOverTime = getAllPointData("SELECT d1, c2, i from (SELECT d1, c+i as c2 from (SELECT DATE(date) as d1, SUM(case when " + cases + " then cost else 0 end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, SUM(case when " + cases + " then cost else 0 end) as i from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date)) ON d1=d2 group by d1) LEFT OUTER JOIN (SELECT DATE(date) as d2, COUNT(case when (conversion = 'Yes' AND " + cases + ") then 1 else null end) as i from server INNER JOIN person ON server.id = person.id group by DATE(date)) ON d1=d2 group by d1;",true);
         ArrayList<GraphPoint>[] CPCOverTime = getAllPointData("SELECT DATE(date), sum(case when " + cases + " then cost else 0 end), count(case when " + cases + " then 1 else null end) from click INNER JOIN person ON click.id = person.id group by DATE(date);",true);
         ArrayList<GraphPoint>[] CPMOverTime = getAllPointData("SELECT DATE(date), sum(case when " + cases + " then cost else 0 end)*1000, count(case when " + cases + " then 1 else null end) from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date);",true);
@@ -112,11 +122,11 @@ public class MainModel {
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime[0],bouncesOverTime[1],bouncesOverTime[2]));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, clicksOverTime[0],conversionsOverTime[1],clicksOverTime[2]));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime[0],totalCostOverTime[1],totalCostOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", clicks/impressions, CTROverTime[0],CTROverTime[1],CTROverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", totalCost/conversions, CPAOverTime[0],CPAOverTime[1],CPAOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  totalCostClick/clicks, CPCOverTime[0],CPCOverTime[1],CPCOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (totalCostImpressions/impressions)*1000, CPMOverTime[0],CPMOverTime[1],CPMOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",bounces/clicks, bounceRateOverTime[0],bounceRateOverTime[1],bounceRateOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", round(clicks/impressions,2), CTROverTime[0],CTROverTime[1],CTROverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", round(totalCost/conversions,2), CPAOverTime[0],CPAOverTime[1],CPAOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  round(totalCostClick/clicks,2), CPCOverTime[0],CPCOverTime[1],CPCOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (round(totalCostImpressions/impressions,2))*1000, CPMOverTime[0],CPMOverTime[1],CPMOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",round(bounces/clicks,2), bounceRateOverTime[0],bounceRateOverTime[1],bounceRateOverTime[2]));
 
         return basicMetrics;
     }

@@ -104,7 +104,7 @@ public class MainController {
     ComboBox chartTypeComboBox;
 
     public void initialize(){
-        //disableCampaignFunctionalityButtons();
+        disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
         chartTypeComboBox.getSelectionModel().select(0);
         tabPane.getSelectionModel().selectedItemProperty().addListener(
@@ -116,6 +116,28 @@ public class MainController {
                         enableCampaignFunctionalityButtons();
                     }
                 });
+
+        //Histogram
+
+        displayHistogramButton.setOnMouseClicked(event -> {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/histogram.fxml"));
+            fxmlLoader.setController(new HistogramController(model));
+//            HistogramController histogramController = (HistogramController) fxmlLoader.getController();
+            try {
+
+                Parent parent = fxmlLoader.load();
+                Scene scene = new Scene(parent, 550, 450);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(scene);
+                stage.setResizable(false);
+                stage.showAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        });
     }
 
     private void disableCampaignFunctionalityButtons(){
@@ -366,8 +388,28 @@ public class MainController {
         filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
     }
 
-    @FXML public void onDisplayHistogramPressed(){
-        System.out.println("Put histogram code here");
+    @FXML
+    public void onDisplayHistogramPressed() throws IOException {
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/histogram.fxml"));
+//        Parent parent = fxmlLoader.load();
+//        HistogramController histogramController = fxmlLoader.getController();
+//        histogramController.clickCostHistogram();
+//        Scene scene = new Scene(parent, 600, 500);
+//        Stage stage = new Stage();
+//        stage.initModality(Modality.APPLICATION_MODAL);
+//        stage.setScene(scene);
+//        stage.setResizable(false);
+//        stage.show();
+//        try {
+//            Stage histogram = new Stage();
+//            histogram.setTitle("Click Cost Histogram");
+//            histogram.setScene(new Scene(fxmlLoader.load()));
+//            histogram.show();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
     }
 
     @FXML public void saveOrPrintSelected(){
