@@ -191,7 +191,7 @@ public class MainModel {
 
     public ArrayList<Double> getAllClickCosts(){
         ArrayList<Double> clickCosts = new ArrayList<>();
-        ResultSet resultSet = sql.getData("SELECT cost FROM click;");
+        ResultSet resultSet = sql.getData("SELECT cost FROM click");
         while (true) {
             try {
                 clickCosts.add(resultSet.getDouble(1));
