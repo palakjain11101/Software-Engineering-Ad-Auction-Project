@@ -24,10 +24,9 @@ public class HistogramController implements Initializable {
 
     HistogramController(MainModel model) {
         this.model = model;
-        this.clickCostList = new ArrayList<Double>();
-        clickCostList = model.getAllClickCosts();
-        this.classWidth = 2.5;
-        Double classes = ((Collections.max(clickCostList))/classWidth);
+        this.clickCostList = model.getAllClickCosts();
+        this.classWidth = 1.0;
+        double classes = ((Collections.max(clickCostList))/classWidth);
         this.numberOfClasses = (int) Math.ceil(classes);
 
 
