@@ -347,9 +347,10 @@ public class MainController {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/addFilterDialog.fxml"));
         //fxmlLoader.setLocation(AddFilterDialogController.class.getResource("target/classes/addFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
-        Scene scene = new Scene(parent, 300, 200);
+        Scene scene = new Scene(parent, 300, 300);
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
         stage.setScene(scene);
         AddFilterDialogController dialogController = fxmlLoader.getController();
         dialogController.setUpDialogController();
