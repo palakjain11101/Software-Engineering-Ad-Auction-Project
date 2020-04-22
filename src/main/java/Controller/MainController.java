@@ -116,28 +116,6 @@ public class MainController {
                         enableCampaignFunctionalityButtons();
                     }
                 });
-
-        //Histogram
-
-        displayHistogramButton.setOnMouseClicked(event -> {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/histogram.fxml"));
-            fxmlLoader.setController(new HistogramController(model));
-//            HistogramController histogramController = (HistogramController) fxmlLoader.getController();
-            try {
-
-                Parent parent = fxmlLoader.load();
-                Scene scene = new Scene(parent, 550, 450);
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.setScene(scene);
-                stage.setResizable(false);
-                stage.showAndWait();
-            } catch (Exception e) {
-                e.printStackTrace();
-
-            }
-        });
     }
 
     private void disableCampaignFunctionalityButtons(){
@@ -345,7 +323,6 @@ public class MainController {
 
     @FXML public void addFilterButtonPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/addFilterDialog.fxml"));
-        //fxmlLoader.setLocation(AddFilterDialogController.class.getResource("target/classes/addFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
         Scene scene = new Scene(parent, 300, 300);
         Stage stage = new Stage();
@@ -353,64 +330,49 @@ public class MainController {
         stage.setResizable(false);
         stage.setScene(scene);
         AddFilterDialogController dialogController = fxmlLoader.getController();
-        dialogController.setUpDialogController();
+        dialogController.init(model.getFilters());
         stage.showAndWait();
-        AddFilterDialogController controller = fxmlLoader.getController();
-        HashMap<String, List<String>>  map = controller.CheckBoxes();
-
-        Set<String> keys = map.keySet();
-
-        for(Object key: keys){
-            List<String> keyList = map.get(key);
-            for(Object o: keyList){
-                if (filterListView.getItems().contains(o)){
-                    System.out.println("Already added");
-                }
-                else{
-                    filterListView.getItems().addAll(""+key + ":" + o);
-                }
-
-            }
+        if(!dialogController.isConfirmPressed()){
+            return;
         }
-
-        model.queryCampaign(map);
-        //get data
-        //change listview
-        //pass data to Model
-
-        //get the data
-        //change the list view
-        //pass data to the Model
-
-        //Register the filter for another event type
+        HashMap<String, List<String>> map = dialogController.getFilters();
+        fillFilterListView(map);
+        testUpdateCampaign(map);
     }
 
     @FXML public void removeFilterButtonPressed(){
-        filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
+        filterListView.getItems().clear();
+        testUpdateCampaign(new HashMap<>());
+    }
+
+    private void fillFilterListView(HashMap<String, List<String>> map){
+        filterListView.getItems().clear();
+        for(String metric : map.keySet()){
+            for(String filter : map.get(metric)) {
+                filterListView.getItems().add(metric + " : " + filter);
+            }
+        }
     }
 
     @FXML
-    public void onDisplayHistogramPressed() throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/histogram.fxml"));
-//        Parent parent = fxmlLoader.load();
-//        HistogramController histogramController = fxmlLoader.getController();
-//        histogramController.clickCostHistogram();
-//        Scene scene = new Scene(parent, 600, 500);
-//        Stage stage = new Stage();
-//        stage.initModality(Modality.APPLICATION_MODAL);
-//        stage.setScene(scene);
-//        stage.setResizable(false);
-//        stage.show();
-//        try {
-//            Stage histogram = new Stage();
-//            histogram.setTitle("Click Cost Histogram");
-//            histogram.setScene(new Scene(fxmlLoader.load()));
-//            histogram.show();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    public void onDisplayHistogramPressed() {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("/histogram.fxml"));
+        fxmlLoader.setController(new HistogramController(model));
+//            HistogramController histogramController = (HistogramController) fxmlLoader.getController();
+        try {
 
+            Parent parent = fxmlLoader.load();
+            Scene scene = new Scene(parent, 550, 450);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
     }
 
     @FXML public void saveOrPrintSelected(){
@@ -467,7 +429,7 @@ public class MainController {
 
         if(controller.getIsConfirmPressed()) {
             model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getNeedToConvert());
-            testUpdateCampaign(new HashMap<>());
+            testUpdateCampaign(model.getFilters());
         }
     }
 
@@ -479,7 +441,10 @@ public class MainController {
         tab.retriggerSelectionProperty();
     }
 
-    //TEST BUTTON ONLY
+
+
+
+    //TEST BUTTONS ONLY
     public void onTestButtonPressed(){
         HashMap map = new HashMap<String,List<String>>();
         List<String> contexts = new ArrayList<String>();
@@ -491,6 +456,7 @@ public class MainController {
     }
 
     public void testUpdateCampaign(HashMap<String,List<String>> map){
+        model.setFilters(map);
         ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
         tab.updateData(list);

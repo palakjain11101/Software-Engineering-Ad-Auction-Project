@@ -14,13 +14,14 @@ public class MainModel {
     private SQL sql = new SQL();
     private int bounceTime;
     private boolean bounceConversion;
+    private HashMap<String,List<String>> filters;
     private String chartTypeTime = "DATE(";
 
     public MainModel(){
         // Set default bounce values
         bounceTime = 30;
         bounceConversion = false;
-
+        generateEmptyFilters();
     }
 
     public void setBounceAttributes(int time, boolean conversion){
@@ -62,6 +63,10 @@ public class MainModel {
         return bd.doubleValue();
     }
 
+    private double safeDivide(double v1, double v2){
+        return v2 == 0 ? 0 : v1/v2;
+    }
+
     public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg, boolean shouldXAxisBeIncrement){
         if(metricOverTimeQuery.equals("")) return null;
         ArrayList<GraphPoint> metricOverTime = new ArrayList<>();
@@ -80,6 +85,24 @@ public class MainModel {
         }
         catch (SQLException e){e.printStackTrace();}
         return metricOverTime;
+    }
+
+    private void generateEmptyFilters(){
+        filters = new HashMap<>();
+//        filters.put("beforeDate",new ArrayList<>());
+//        filters.put("afterDate",new ArrayList<>());
+//        filters.put("income",new ArrayList<>());
+//        filters.put("context",new ArrayList<>());
+//        filters.put("age",new ArrayList<>());
+//        filters.put("gender",new ArrayList<>());
+    }
+
+    public void setFilters(HashMap<String,List<String>> filters){
+        this.filters = filters;
+    }
+
+    public HashMap<String,List<String>> getFilters(){
+        return filters;
     }
 
     public ArrayList<CampaignTab.CampaignDataPackage> queryCampaign(HashMap<String, List<String>> hashFilters){
@@ -122,11 +145,11 @@ public class MainModel {
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Bounces", bounces, bouncesOverTime[0],bouncesOverTime[1],bouncesOverTime[2]));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Number of Conversions", conversions, clicksOverTime[0],conversionsOverTime[1],clicksOverTime[2]));
         basicMetrics.add(new CampaignTab.CampaignDataPackage("Total Cost", totalCost, totalCostOverTime[0],totalCostOverTime[1],totalCostOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", round(clicks/impressions,2), CTROverTime[0],CTROverTime[1],CTROverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", round(totalCost/conversions,2), CPAOverTime[0],CPAOverTime[1],CPAOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  round(totalCostClick/clicks,2), CPCOverTime[0],CPCOverTime[1],CPCOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (round(totalCostImpressions/impressions,2))*1000, CPMOverTime[0],CPMOverTime[1],CPMOverTime[2]));
-        basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",round(bounces/clicks,2), bounceRateOverTime[0],bounceRateOverTime[1],bounceRateOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CTR", round(safeDivide(clicks,impressions),2), CTROverTime[0],CTROverTime[1],CTROverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPA", round(safeDivide(totalCost,conversions),2), CPAOverTime[0],CPAOverTime[1],CPAOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPC",  round(safeDivide(totalCostClick,clicks),2), CPCOverTime[0],CPCOverTime[1],CPCOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("CPM", (round(safeDivide(totalCostImpressions,impressions),2))*1000, CPMOverTime[0],CPMOverTime[1],CPMOverTime[2]));
+        basicMetrics.add(new CampaignTab.CampaignDataPackage("Bounce Rate",round(safeDivide(bounces,clicks),2), bounceRateOverTime[0],bounceRateOverTime[1],bounceRateOverTime[2]));
 
         return basicMetrics;
     }
@@ -183,10 +206,6 @@ public class MainModel {
             holdFilters += " OR " + filter + " = \"" + filterValue + "\"";
         }
         return holdFilters;
-    }
-
-    private void setChartTypeStrfTime(String chartTypeTime){
-        this.chartTypeTime = chartTypeTime;
     }
 
     public ArrayList<Double> getAllClickCosts(){

@@ -16,6 +16,8 @@ public class CampaignTab extends Tab {
     private MainController controller;
 
     private ArrayList<CampaignDataPackage> basicMetrics;
+    private CampaignDataPackage selectedMetric;
+
 
     private VBox pane;
     private TableView table;
@@ -64,8 +66,11 @@ public class CampaignTab extends Tab {
     }
 
     public void updateData(ArrayList<CampaignTab.CampaignDataPackage> newBasicMetrics){
+        int index = table.getSelectionModel().getSelectedIndex();
         this.basicMetrics = newBasicMetrics;
         addItems();
+        controller.metricSelectedOnCampaignTab(basicMetrics.get(index),"test");
+        table.getSelectionModel().select(index);
     }
 
     private void addItems(){
