@@ -111,6 +111,14 @@ public class AddFilterDialogController<string> {
     @FXML public void dateAfterChanged(){
         setDate("dateAfter",dateAfter);
     }
+    @FXML public void dateBeforeClear(){
+        dateBefore.setValue(null);
+        filters.remove("dateBefore");
+    }
+    @FXML public void dateAfterClear(){
+        dateAfter.setValue(null);
+        filters.remove("dateAfter");
+    }
 
     private void setDate(String type, DatePicker picker){
         LocalDate date = picker.getValue();
