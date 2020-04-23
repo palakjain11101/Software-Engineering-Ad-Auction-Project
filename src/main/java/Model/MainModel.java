@@ -120,7 +120,7 @@ public class MainModel {
 
         double impressions = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
         double clicks = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
-        double uniques = getData("select count(case when " + cases + " then 1 else null end) from (SELECT distinct click.id,gender,ageRange,income,context from click INNER JOIN person ON click.id = person.id);");
+        double uniques = getData("select count(case when " + cases + " then 1 else null end) from (SELECT distinct date,click.id,gender,ageRange,income,context from click INNER JOIN person ON click.id = person.id);");
         double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND " + cases + " " + conversionCase + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
         double conversions = getData("SELECT COUNT(case when conversion = 'Yes' AND " + cases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
         double totalCostClick = getData("SELECT SUM(case when " + cases + " then cost else 0 end) FROM click INNER JOIN person ON click.id = person.id;");
@@ -188,10 +188,10 @@ public class MainModel {
         }
         String holdCase = "1";
         for(String filter : hashFilters.keySet()){
-            if(filter == "beforeDate"){
-                holdCase += " AND date" + " < \"" + hashFilters.get(0) + "\"";
-            }else if (filter == "afterDate"){
-                holdCase += " AND date" + " > \"" + hashFilters.get(0) + "\"";
+            if(filter == "dateBefore"){
+                holdCase += " AND date" + " < \"" + hashFilters.get(filter).get(0) + "\"";
+            }else if (filter == "dateAfter"){
+                holdCase += " AND date" + " > \"" + hashFilters.get(filter).get(0) + "\"";
             }else{
                 holdCase += " AND (" + convertFilterListToString(filter, hashFilters.get(filter)) + ")";
             }

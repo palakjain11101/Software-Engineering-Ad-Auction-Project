@@ -6,6 +6,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -54,6 +56,12 @@ public class AddFilterDialogController<string> {
 
     public void init(HashMap<String,List<String>> filters){
         this.filters = filters;
+        if(isDateSet("dateBefore")){
+            dateBefore.setValue(getDate("dateBefore"));
+        }
+        if(isDateSet("dateAfter")){
+            dateAfter.setValue(getDate("dateAfter"));
+        }
 
         lowIncome.setSelected(isFilterSelected("income","Low"));
         mediumIncome.setSelected(isFilterSelected("income","Medium"));
@@ -82,8 +90,42 @@ public class AddFilterDialogController<string> {
         return filtersForMetric.contains(filter);
     }
 
-    @FXML public void dateBeforeChanged(){}
-    @FXML public void dateAfterChanged(){}
+    private boolean isDateSet(String metric){
+        List<String> filtersForMetric = filters.get(metric);
+        return !(filtersForMetric == null);
+    }
+
+    private LocalDate getDate(String metric){
+        List<String> filtersForMetric = filters.get(metric);
+        String dateString = filtersForMetric.get(0).split(" ")[0];
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateString, formatter);
+    }
+
+
+
+    @FXML public void dateBeforeChanged(){
+        setDate("dateBefore",dateBefore);
+    }
+    @FXML public void dateAfterChanged(){
+        setDate("dateAfter",dateAfter);
+    }
+
+    private void setDate(String type, DatePicker picker){
+        LocalDate date = picker.getValue();
+        if(date == null){
+            filters.remove(type);
+        }
+        else {
+            List<String> dateList = new ArrayList<>();
+            String dateString = date.toString() + " 00:00:00";
+            dateList.add(dateString);
+            filters.put(type,dateList);
+        }
+    }
+
+
     @FXML public void lowIncomeChanged(){onSelected("income","Low");}
     @FXML public void mediumIncomeChanged(){onSelected("income","Medium");}
     @FXML public void highIncomeChanged(){onSelected("income","High");}
