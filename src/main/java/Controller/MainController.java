@@ -264,7 +264,7 @@ public class MainController {
                 protected ArrayList<CampaignTab.CampaignDataPackage> call() {
                     error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
                     if(error[0] == null){
-                        return model.queryCampaign(new HashMap<>());
+                        return model.queryOverallMetrics();
                     }
                     else {
                         return null;
@@ -298,27 +298,20 @@ public class MainController {
         }
     }
 
-    public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
+    public void metricSelectedOnCampaignTab(String metricSelected, String database){
         if(metricSelected == null){return;}
-        switch (chartType){
-            case "Standard":
-                graphData = metricSelected.getMetricOverTimePoints();
-                break;
-            case "Per Hour of Day":
-                graphData = metricSelected.getDataPerHourOfDay();
-                break;
-            case "Per Day of Week":
-                graphData = metricSelected.getDataPerDayOfWeek();
-                break;
-        }
 
-        String id = metricSelected.getID();
-        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
+        shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
 
-        lineChart.getYAxis().setLabel(id);
-        lineChart.setTitle(id + " Over Time");
+        lineChart.getYAxis().setLabel(metricSelected);
+        lineChart.setTitle(metricSelected + " Over Time");
 
         recreateGraph(timeGranulationValue);
+    }
+
+    public void updateGraphData(String metricSelected, String database){
+        if(metricSelected == null){return;}
+        graphData = model.queryCampaign(metricSelected);
     }
 
     @FXML public void addFilterButtonPressed() throws IOException {
@@ -436,10 +429,24 @@ public class MainController {
     @FXML
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
-        chartType = selected;
+        model.setChartType(selected);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
-        tab.retriggerSelectionProperty();
+
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                updateGraphData(tab.getSelected(),tab.getDatabaseID());
+                return null;
+            }
+        };
+
+        task = setBasicLoadingTaskMethods(task,tab);
+
+        new Thread(task).start();
     }
+
+
+
 
 
 
@@ -456,16 +463,49 @@ public class MainController {
     }
 
     public void testUpdateCampaign(HashMap<String,List<String>> map){
-        model.setFilters(map);
-        ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
-        tab.updateData(list);
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                model.setFilters(map);
+                ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
+                tab.updateData(list);
+                updateGraphData(tab.getSelected(),tab.getDatabaseID());
+                return null;
+            }
+        };
+
+        task = setBasicLoadingTaskMethods(task,tab);
+
+        new Thread(task).start();
+
+
+//        model.setFilters(map);
+//        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+//
+//
+//        ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
+//        tab.updateData(list);
+//        tab.retriggerSelectionProperty();
+
+    }
+
+    public Task<Void> setBasicLoadingTaskMethods(Task<Void> task, CampaignTab tab){
+        task.setOnRunning((e) -> {
+            view.showLoadingDialog();
+        });
+
+        task.setOnSucceeded((e) -> {
+            view.hideLoadingDialog();
+            metricSelectedOnCampaignTab(tab.getSelected(),tab.getDatabaseID());
+        });
+        return task;
     }
 
     @FXML
     public void useCurrentDatabase(){
         model.openCurrentDatabase();
-        CampaignTab tab = new CampaignTab(this,model.queryCampaign(new HashMap<>()));
+        CampaignTab tab = new CampaignTab(this,model.queryOverallMetrics());
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }
