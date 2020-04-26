@@ -25,6 +25,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -39,6 +41,8 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.printing.Orientation;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -103,6 +107,11 @@ public class MainController {
     @FXML
     ComboBox chartTypeComboBox;
 
+    @FXML Button loadClickLogButton;
+    @FXML Button loadImpressionLogButton;
+    @FXML Button loadServerLogButton;
+    @FXML Button addCampaignButton;
+
     public void initialize(){
         disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
@@ -116,6 +125,11 @@ public class MainController {
                         enableCampaignFunctionalityButtons();
                     }
                 });
+
+        setFileButtonBorder(loadClickLogButton,Color.RED);
+        setFileButtonBorder(loadImpressionLogButton,Color.RED);
+        setFileButtonBorder(loadServerLogButton,Color.RED);
+        addCampaignButton.setDisable(true);
     }
 
     private void disableCampaignFunctionalityButtons(){
@@ -220,22 +234,41 @@ public class MainController {
     }
 
     @FXML public void loadClickLogPressed(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
-        clickLogCSV = fileChooser.showOpenDialog(view.getWindow());
+        clickLogCSV = openFileChooser();
+        setFileButtonBorder(loadClickLogButton, clickLogCSV == null ? Color.RED : Color.GREEN);
+        shouldEnableLoadCampaignButton();
     }
 
     @FXML public void loadImpressionLogPressed(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
-        impressionLogCSV = fileChooser.showOpenDialog(view.getWindow());
-
+        impressionLogCSV = openFileChooser();
+        setFileButtonBorder(loadImpressionLogButton, impressionLogCSV == null ? Color.RED : Color.GREEN);
+        shouldEnableLoadCampaignButton();
     }
 
     @FXML public void loadServerLogPressed(){
+        serverLogCSV = openFileChooser();
+        setFileButtonBorder(loadServerLogButton, serverLogCSV == null ? Color.RED : Color.GREEN);
+        shouldEnableLoadCampaignButton();
+    }
+
+    private File openFileChooser(){
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
-        serverLogCSV = fileChooser.showOpenDialog(view.getWindow());
+        return fileChooser.showOpenDialog(view.getWindow());
+    }
+
+    private void shouldEnableLoadCampaignButton(){
+        if(clickLogCSV != null && impressionLogCSV != null && serverLogCSV != null){
+            addCampaignButton.setDisable(false);
+        }
+        else {
+            addCampaignButton.setDisable(true);
+        }
+    }
+
+    private void setFileButtonBorder(Button button, Color color){
+        button.setBorder(new Border(new BorderStroke(color,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
     }
 
     @FXML public void loadCampaignPressed(){
