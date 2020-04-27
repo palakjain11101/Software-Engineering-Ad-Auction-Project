@@ -69,9 +69,163 @@ public class AddFilterDialogController<string> {
     public AddFilterDialogController(){
     }
 
+    public void setUpDialogController() {
+    }
+
+    /*public void setUpDialogController(){
+        DatePicker dateBeforePicker = new DatePicker();
+        DatePicker dateAfterPicker = new DatePicker();
+        ComboBox ageComboBox = new ComboBox();
+        ComboBox genderComboBox = new ComboBox();
+        ComboBox contextComboBox = new ComboBox();
+        ComboBox incomeComboBox = new ComboBox();
+
+        addFilterDialogListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        ageComboBox.getItems().addAll("<25","25-34","35-44","45-54",">55");
+        genderComboBox.getItems().addAll("Male","Female");
+        contextComboBox.getItems().addAll("News","Shopping","Social Media","Blog","Hobbies","Travel");
+        incomeComboBox.getItems().addAll("Low","Medium","High");
+
+
+        addFilterDialogListView.getItems().add(dateBeforePicker);
+        addFilterDialogListView.getItems().add(dateAfterPicker);
+        addFilterDialogListView.getItems().add(ageComboBox);
+        addFilterDialogListView.getItems().add(genderComboBox);
+        addFilterDialogListView.getItems().add(contextComboBox);
+        addFilterDialogListView.getItems().add(incomeComboBox);
+
+        addFilterDialogListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+
+        });
+
+    }*/
 
 
 
+
+
+    @FXML public void AddFilterDialogListViewElement(ActionEvent actionEvent) throws IOException {
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
+//        Parent parent = fxmlLoader.load();
+//        Scene scene = new Scene(parent, 300, 200);
+//        Stage stage = new Stage();
+//        stage.initModality(Modality.APPLICATION_MODAL);
+//        stage.setScene(scene);
+//        AddFilterDialogController dialogController = fxmlLoader.getController();
+//        dialogController.setUpDialogController();
+//        stage.showAndWait();
+//
+//        addFilterDialogListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+//        ObservableList selectedIndices = addFilterDialogListView.getSelectionModel().getSelectedIndices();
+//
+//        for(Object o : selectedIndices){
+//            System.out.println("o = " + o + " (" + o.getClass() + ")");
+//        }
+//
+//        // Register the filter for another event type
+//
+
+    }
+    /*
+    public void CheckBoxes(CheckBox checkbox) {
+        int month = 8;
+        String monthString;
+        switch (checkbox) {
+            case 0:
+                cb1.isSelected();
+                message += cb1.getText() + "\n";
+                list.add(cb1.getText());
+            case 1:
+                cb2.isSelected();
+                message += cb2.getText() + "\n";
+                list.add(cb2.getText());
+            case 2:
+                cb3.isSelected();
+                message += cb3.getText() + "\n";
+                list.add(cb3.getText());
+                break;
+        }
+
+    }
+
+    public void CheckBoxes1() {
+        int month = 8;
+        String monthString;
+        switch (month) {
+            case 1:
+                c1.isSelected();
+                message += c1.getText() + "\n";
+                list.add(c1.getText());
+            case 2:
+                c2.isSelected();
+                message += c2.getText() + "\n";
+                list.add(c2.getText());
+            case 3:
+                c3.isSelected();
+                message += c3.getText() + "\n";
+                list.add(c3.getText());
+            case 4:
+                c4.isSelected();
+                message += c4.getText() + "\n";
+                list.add(c4.getText());
+            case 5:
+                c5.isSelected();
+                message += c5.getText() + "\n";
+                list.add(c5.getText());
+            case 6:
+                c6.isSelected();
+                message += c6.getText() + "\n";
+                list.add(c6.getText());
+        }
+
+    }
+
+
+    public void CheckBoxes2() {
+        int month = 8;
+        String monthString;
+        switch (month) {
+            case 1:
+                cbb1.isSelected();
+                message += cbb1.getText() + "\n";
+                list.add(cbb1.getText());
+            case 2:
+                cbb2.isSelected();
+                message += cbb2.getText() + "\n";
+                list.add(cbb2.getText());
+        }
+
+    }
+
+
+    public void CheckBoxes3() {
+        int month = 8;
+        String monthString;
+        switch (month) {
+            case 1:
+                cbbb1.isSelected();
+                message += cbbb1.getText() + "\n";
+                list.add(cbbb1.getText());
+            case 2:
+                cbbb2.isSelected();
+                message += cbbb2.getText() + "\n";
+                list.add(cbbb2.getText());
+            case 3:
+                cbbb3.isSelected();
+                message += cbbb3.getText() + "\n";
+                list.add(cbbb3.getText());
+            case 4:
+                cbbb4.isSelected();
+                message += cbbb4.getText() + "\n";
+                list.add(cbbb4.getText());
+            case 5:
+                cbbb5.isSelected();
+                message += cbbb5.getText() + "\n";
+                list.add(cbbb5.getText());
+
+        }
+    } */
 
 
     public HashMap<String, List<String>> CheckBoxes() {
@@ -200,6 +354,15 @@ public class AddFilterDialogController<string> {
 
 
     }
+
+
+        /*
+        string[] row = { "Hello" };
+        var listViewItem = new ListViewItem(row);
+        Then you need to add that row into listview like below-
+
+        listView1.Items.Add(listViewItem);
+         */
 
 
 
