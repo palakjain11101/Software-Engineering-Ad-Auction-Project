@@ -6,7 +6,6 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -14,11 +13,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane fx:id="borderpane" prefHeight="400.0" prefWidth="245.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.AddFilterDialogController">
+<BorderPane fx:id="borderpane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.AddFilterDialogController">
    <bottom>
       <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="confirmFilter" mnemonicParsing="false" onAction="#CheckBoxes" text="Confirm" />
+            <Button fx:id="confirmFilter" mnemonicParsing="false" onAction="#confirmPressed" text="Confirm" />
          </children>
       </HBox>
    </bottom>
@@ -29,41 +28,73 @@
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <DatePicker fx:id="dateBefore" layoutX="45.0" layoutY="65.0" />
-                        <TextField layoutX="45.0" layoutY="27.0" text="Date Before:" />
-                        <DatePicker fx:id="dateAfter" layoutX="45.0" layoutY="181.0" />
-                        <TextField layoutX="45.0" layoutY="147.0" text="Date After:" />
+                        <GridPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#dateBeforeClear" text="Clear" GridPane.columnIndex="1" />
+                              <DatePicker fx:id="dateBefore" onAction="#dateBeforeChanged" promptText="Date Before">
+                                 <GridPane.margin>
+                                    <Insets left="10.0" />
+                                 </GridPane.margin>
+                              </DatePicker>
+                              <DatePicker fx:id="dateAfter" onAction="#dateAfterChanged" promptText="Date After" GridPane.rowIndex="1">
+                                 <GridPane.margin>
+                                    <Insets left="10.0" />
+                                 </GridPane.margin>
+                              </DatePicker>
+                              <Button mnemonicParsing="false" onAction="#dateAfterClear" text="Clear" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
                      </children></AnchorPane>
                </content>
             </Tab>
             <Tab text="Income">
                <content>
-                  <GridPane prefHeight="269.0" prefWidth="170.0">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints maxHeight="110.33334350585938" minHeight="10.0" prefHeight="60.33334732055664" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="219.66665410995483" minHeight="10.0" prefHeight="58.000015258789034" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="198.66664123535156" minHeight="10.0" prefHeight="197.99998474121094" vgrow="SOMETIMES" />
-                    </rowConstraints>
+                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <CheckBox mnemonicParsing="false" text="Low" />
-                        <CheckBox mnemonicParsing="false" text="Medium" GridPane.columnIndex="1" />
-                        <CheckBox mnemonicParsing="false" text="High" GridPane.rowIndex="1" />
-                     </children>
-                     <padding>
-                        <Insets left="10.0" right="10.0" />
-                     </padding>
-                  </GridPane>
+                        <GridPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <CheckBox fx:id="lowIncome" mnemonicParsing="false" onAction="#lowIncomeChanged" text="Low">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </CheckBox>
+                              <CheckBox fx:id="mediumIncome" mnemonicParsing="false" onAction="#mediumIncomeChanged" text="Medium" GridPane.rowIndex="1">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </CheckBox>
+                              <CheckBox fx:id="highIncome" mnemonicParsing="false" onAction="#highIncomeChanged" text="High" GridPane.rowIndex="2">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </CheckBox>
+                           </children>
+                        </GridPane>
+                     </children></AnchorPane>
                </content>
             </Tab>
-            <Tab fx:id="filter1" text="Context">
+            <Tab text="Context">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane layoutX="14.0" layoutY="48.0">
+                        <GridPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -74,12 +105,30 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <CheckBox mnemonicParsing="false" text="News" />
-                              <CheckBox mnemonicParsing="false" text="Shopping" GridPane.rowIndex="1" />
-                              <CheckBox mnemonicParsing="false" text="Social Media" GridPane.rowIndex="2" />
-                              <CheckBox mnemonicParsing="false" text="Blog" GridPane.columnIndex="1" />
-                              <CheckBox mnemonicParsing="false" text="Hobbies" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <CheckBox mnemonicParsing="false" text="Travel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <CheckBox fx:id="newsContext" mnemonicParsing="false" onAction="#newsContextChanged" text="News">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="shoppingContext" mnemonicParsing="false" onAction="#shoppingContextChanged" text="Shopping" GridPane.rowIndex="1">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="socialContext" mnemonicParsing="false" onAction="#socialContextChanged" text="Social Media" GridPane.rowIndex="2">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="blogContext" mnemonicParsing="false" onAction="#blogContextChanged" text="Blog" GridPane.columnIndex="1">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="hobbiesContext" mnemonicParsing="false" onAction="#hobbiesContextChanged" text="Hobbies" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="travelContext" mnemonicParsing="false" onAction="#travelContextChanged" text="Travel" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
                            </children>
                         </GridPane>
                      </children></AnchorPane>
@@ -89,9 +138,8 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane layoutX="23.0" layoutY="91.0">
+                        <GridPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
@@ -100,8 +148,14 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <CheckBox mnemonicParsing="false" text="Male" />
-                              <CheckBox mnemonicParsing="false" text="Female" GridPane.columnIndex="1" />
+                              <CheckBox fx:id="genderMale" mnemonicParsing="false" onAction="#genderMaleChanged" text="Male">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="genderFemale" mnemonicParsing="false" onAction="#genderFemaleChanged" text="Female" GridPane.rowIndex="1">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
                            </children>
                         </GridPane>
                      </children></AnchorPane>
@@ -111,7 +165,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane layoutX="30.0" layoutY="54.0">
+                        <GridPane AnchorPane.bottomAnchor="152.8" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -122,11 +176,26 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <CheckBox mnemonicParsing="false" text="25-34" GridPane.rowIndex="1" />
-                              <CheckBox mnemonicParsing="false" text="35-44" GridPane.rowIndex="2" />
-                              <CheckBox mnemonicParsing="false" text="45-54" GridPane.columnIndex="1" />
-                              <CheckBox mnemonicParsing="false" prefHeight="35.0" prefWidth="185.0" text="&lt;25" />
-                              <CheckBox mnemonicParsing="false" text="&gt;55" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <CheckBox fx:id="age25To34" mnemonicParsing="false" onAction="#age25To34Changed" text="25-34" GridPane.rowIndex="1">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="age35To44" mnemonicParsing="false" onAction="#age35To44Changed" text="35-44" GridPane.rowIndex="2">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
+                              <CheckBox fx:id="age45to54" mnemonicParsing="false" onAction="#age45to54Changed" text="45-54" GridPane.columnIndex="1">
+                                 <GridPane.margin>
+                                    <Insets left="10.0" />
+                                 </GridPane.margin></CheckBox>
+                              <CheckBox fx:id="ageLT25" mnemonicParsing="false" onAction="#ageLT25Changed" prefHeight="35.0" prefWidth="185.0" text="&lt;25">
+                                 <GridPane.margin>
+                                    <Insets left="10.0" />
+                                 </GridPane.margin></CheckBox>
+                              <CheckBox fx:id="ageGT54" mnemonicParsing="false" onAction="#ageGT54Changed" text="&gt;55" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></CheckBox>
                            </children>
                         </GridPane>
                      </children></AnchorPane>

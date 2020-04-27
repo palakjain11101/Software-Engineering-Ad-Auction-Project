@@ -1,24 +1,17 @@
 package Controller;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
+import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
 public class AddFilterDialogController<string> {
-
-    //protected ListProperty<String> listProperty = new SimpleListProperty<>();
-
-    MainController controller;
-
-    Map<String,String> mymap = new HashMap<String, String>();
 
     @FXML
     DatePicker dateBefore;
@@ -43,326 +36,158 @@ public class AddFilterDialogController<string> {
     @FXML
     private CheckBox travelContext;
     @FXML
-    private CheckBox Age25;
+    private CheckBox ageLT25;
     @FXML
-    private CheckBox Age45;
+    private CheckBox age25To34;
     @FXML
-    private CheckBox Age25To34;
+    private CheckBox age35To44;
     @FXML
-    private CheckBox Age55;
+    private CheckBox age45to54;
     @FXML
-    private CheckBox Age35;
+    private CheckBox ageGT54;
     @FXML
-    private CheckBox maleGender;
+    private CheckBox genderMale;
     @FXML
-    private CheckBox femaleGender;
+    private CheckBox genderFemale;
 
-    static String message= "";
+    private HashMap<String,List<String>> filters;
 
+    private boolean isConfirmPressed = false;
 
-
-    ObservableList<String> data = FXCollections.observableArrayList();
-
-
-    Set<String> hashSet = new HashSet<String>();
-
-    public AddFilterDialogController(){
-    }
-
-    public void setUpDialogController() {
-    }
-
-    /*public void setUpDialogController(){
-        DatePicker dateBeforePicker = new DatePicker();
-        DatePicker dateAfterPicker = new DatePicker();
-        ComboBox ageComboBox = new ComboBox();
-        ComboBox genderComboBox = new ComboBox();
-        ComboBox contextComboBox = new ComboBox();
-        ComboBox incomeComboBox = new ComboBox();
-
-        addFilterDialogListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-        ageComboBox.getItems().addAll("<25","25-34","35-44","45-54",">55");
-        genderComboBox.getItems().addAll("Male","Female");
-        contextComboBox.getItems().addAll("News","Shopping","Social Media","Blog","Hobbies","Travel");
-        incomeComboBox.getItems().addAll("Low","Medium","High");
-
-
-        addFilterDialogListView.getItems().add(dateBeforePicker);
-        addFilterDialogListView.getItems().add(dateAfterPicker);
-        addFilterDialogListView.getItems().add(ageComboBox);
-        addFilterDialogListView.getItems().add(genderComboBox);
-        addFilterDialogListView.getItems().add(contextComboBox);
-        addFilterDialogListView.getItems().add(incomeComboBox);
-
-        addFilterDialogListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-
-        });
-
-    }*/
-
-
-
-
-
-    @FXML public void AddFilterDialogListViewElement(ActionEvent actionEvent) throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/AddFilterDialog.fxml"));
-//        Parent parent = fxmlLoader.load();
-//        Scene scene = new Scene(parent, 300, 200);
-//        Stage stage = new Stage();
-//        stage.initModality(Modality.APPLICATION_MODAL);
-//        stage.setScene(scene);
-//        AddFilterDialogController dialogController = fxmlLoader.getController();
-//        dialogController.setUpDialogController();
-//        stage.showAndWait();
-//
-//        addFilterDialogListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-//        ObservableList selectedIndices = addFilterDialogListView.getSelectionModel().getSelectedIndices();
-//
-//        for(Object o : selectedIndices){
-//            System.out.println("o = " + o + " (" + o.getClass() + ")");
-//        }
-//
-//        // Register the filter for another event type
-//
-
-    }
-    /*
-    public void CheckBoxes(CheckBox checkbox) {
-        int month = 8;
-        String monthString;
-        switch (checkbox) {
-            case 0:
-                cb1.isSelected();
-                message += cb1.getText() + "\n";
-                list.add(cb1.getText());
-            case 1:
-                cb2.isSelected();
-                message += cb2.getText() + "\n";
-                list.add(cb2.getText());
-            case 2:
-                cb3.isSelected();
-                message += cb3.getText() + "\n";
-                list.add(cb3.getText());
-                break;
+    public void init(HashMap<String,List<String>> filters){
+        this.filters = filters;
+        if(isDateSet("dateBefore")){
+            dateBefore.setValue(getDate("dateBefore"));
         }
+        if(isDateSet("dateAfter")){
+            dateAfter.setValue(getDate("dateAfter"));
+        }
+
+        lowIncome.setSelected(isFilterSelected("income","Low"));
+        mediumIncome.setSelected(isFilterSelected("income","Medium"));
+        highIncome.setSelected(isFilterSelected("income","High"));
+        newsContext.setSelected(isFilterSelected("context","News"));
+        blogContext.setSelected(isFilterSelected("context","Blog"));
+        shoppingContext.setSelected(isFilterSelected("context","Shopping"));
+        hobbiesContext.setSelected(isFilterSelected("context","Hobbies"));
+        socialContext.setSelected(isFilterSelected("context","Social Media"));
+        travelContext.setSelected(isFilterSelected("context","Travel"));
+        ageLT25.setSelected(isFilterSelected("ageRange","<25"));
+        age25To34.setSelected(isFilterSelected("ageRange","25-34"));
+        age35To44.setSelected(isFilterSelected("ageRange","35-44"));
+        age45to54.setSelected(isFilterSelected("ageRange","45-54"));
+        ageGT54.setSelected(isFilterSelected("ageRange",">54"));
+        genderMale.setSelected(isFilterSelected("gender","Male"));
+        genderFemale.setSelected(isFilterSelected("gender","Female"));
 
     }
 
-    public void CheckBoxes1() {
-        int month = 8;
-        String monthString;
-        switch (month) {
-            case 1:
-                c1.isSelected();
-                message += c1.getText() + "\n";
-                list.add(c1.getText());
-            case 2:
-                c2.isSelected();
-                message += c2.getText() + "\n";
-                list.add(c2.getText());
-            case 3:
-                c3.isSelected();
-                message += c3.getText() + "\n";
-                list.add(c3.getText());
-            case 4:
-                c4.isSelected();
-                message += c4.getText() + "\n";
-                list.add(c4.getText());
-            case 5:
-                c5.isSelected();
-                message += c5.getText() + "\n";
-                list.add(c5.getText());
-            case 6:
-                c6.isSelected();
-                message += c6.getText() + "\n";
-                list.add(c6.getText());
+    private boolean isFilterSelected(String metric, String filter){
+        List<String> filtersForMetric = filters.get(metric);
+        if(filtersForMetric == null){
+            return false;
         }
-
+        return filtersForMetric.contains(filter);
     }
 
-
-    public void CheckBoxes2() {
-        int month = 8;
-        String monthString;
-        switch (month) {
-            case 1:
-                cbb1.isSelected();
-                message += cbb1.getText() + "\n";
-                list.add(cbb1.getText());
-            case 2:
-                cbb2.isSelected();
-                message += cbb2.getText() + "\n";
-                list.add(cbb2.getText());
-        }
-
+    private boolean isDateSet(String metric){
+        List<String> filtersForMetric = filters.get(metric);
+        return !(filtersForMetric == null);
     }
 
+    private LocalDate getDate(String metric){
+        List<String> filtersForMetric = filters.get(metric);
+        String dateString = filtersForMetric.get(0).split(" ")[0];
 
-    public void CheckBoxes3() {
-        int month = 8;
-        String monthString;
-        switch (month) {
-            case 1:
-                cbbb1.isSelected();
-                message += cbbb1.getText() + "\n";
-                list.add(cbbb1.getText());
-            case 2:
-                cbbb2.isSelected();
-                message += cbbb2.getText() + "\n";
-                list.add(cbbb2.getText());
-            case 3:
-                cbbb3.isSelected();
-                message += cbbb3.getText() + "\n";
-                list.add(cbbb3.getText());
-            case 4:
-                cbbb4.isSelected();
-                message += cbbb4.getText() + "\n";
-                list.add(cbbb4.getText());
-            case 5:
-                cbbb5.isSelected();
-                message += cbbb5.getText() + "\n";
-                list.add(cbbb5.getText());
-
-        }
-    } */
-
-
-    public HashMap<String, List<String>> CheckBoxes() {
-        HashMap<String, List<String>> map = new HashMap<>();
-        List<String> list = new ArrayList<String>();
-        List<String> list1 = new ArrayList<String>();
-        List<String> list2 = new ArrayList<String>();
-        List<String> list3 = new ArrayList<String>();
-        List<String> list4 = new ArrayList<String>();
-        List<String> list5 = new ArrayList<String>();
-
-        LocalDate before = dateBefore.getValue();
-        LocalDate after  = dateAfter.getValue();
-
-        map.put("Income", list);
-        map.put("Context", list1);
-        map.put("Gender", list2);
-        map.put("Age", list3);
-        map.put("Date Before:", list4);
-        map.put("Date After:", list5);
-
-        System.out.println("-------------");
-
-        //lowIncome
-        if (lowIncome.isSelected()) {
-            message += lowIncome.getText() + "\n";
-            if (list.contains(lowIncome.getText())) {
-                System.out.println("Already added");
-            }
-            else{
-                list.add(lowIncome.getText());
-            }
-            System.out.println("Elements of the list:" );
-            for(Object element: list){
-                System.out.println("" + element);
-
-            }
-        }
-        if (mediumIncome.isSelected()) {
-            message += mediumIncome.getText() + "\n";
-            if (!list.contains(mediumIncome.getText())) {
-                list.add(mediumIncome.getText());
-            }
-        }
-        if (highIncome.isSelected()) {
-            message += highIncome.getText() + "\n";
-            if (!list.contains(highIncome.getText())) {
-                list.add(highIncome.getText());
-            }
-        }
-        if (newsContext.isSelected()) {
-            message += newsContext.getText() + "\n";
-            map.get("Context").add(newsContext.getText());
-        }
-        if (blogContext.isSelected()) {
-            message += blogContext.getText() + "\n";
-            map.get("Context").add(blogContext.getText());
-        }
-        if (shoppingContext.isSelected()) {
-            message += shoppingContext.getText() + "\n";
-            map.get("Context").add(shoppingContext.getText());
-        }
-        if (hobbiesContext.isSelected()) {
-            message += hobbiesContext.getText() + "\n";
-            map.get("Context").add(hobbiesContext.getText());
-        }
-        if (socialContext.isSelected()) {
-            message += socialContext.getText() + "\n";
-            map.get("Context").add(socialContext.getText());
-        }
-        if (travelContext.isSelected()) {
-            message += travelContext.getText() + "\n";
-            map.get("Context").add(travelContext.getText());
-        }
-        if (maleGender.isSelected()) {
-            message += maleGender.getText() + "\n";
-            map.get("Gender").add(maleGender.getText());
-        }
-        if (femaleGender.isSelected()) {
-            message += femaleGender.getText() + "\n";
-            map.get("Gender").add(femaleGender.getText());
-        }
-        if (Age25.isSelected()) {
-            message += Age25.getText() + "\n";
-            map.get("Age").add("<25");
-        }
-        if (Age25To34.isSelected()) {
-            message += Age25To34.getText() + "\n";
-            map.get("Age").add("25-34");
-        }
-        if (Age35.isSelected()) {
-            message += Age35.getText() + "\n";
-            map.get("Age").add("35-44");
-        }
-        if (Age45.isSelected()) {
-            message += Age45.getText() + "\n";
-            map.get("Age").add("45-54");
-        }
-        if (Age55.isSelected()) {
-            message += Age55.getText() + "\n";
-            map.get("Age").add(">55");
-        }
-        if (before != null){
-            System.out.println("Selected date: " + before);
-            String beforeDate = ("") + before;
-            System.out.println(beforeDate);
-            map.get("Date Before").add(beforeDate);
-
-        }
-        if (after != null){
-            System.out.println("Selected date: " + after);
-            String afterDate = ("") + after;
-            System.out.println(afterDate);
-            map.get("Date After").add(afterDate);
-        }
-
-        System.out.println(map);
-
-        return map;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateString, formatter);
     }
 
 
 
+    @FXML public void dateBeforeChanged(){
+        setDate("dateBefore",dateBefore);
+    }
+    @FXML public void dateAfterChanged(){
+        setDate("dateAfter",dateAfter);
+    }
+    @FXML public void dateBeforeClear(){
+        dateBefore.setValue(null);
+        filters.remove("dateBefore");
+    }
+    @FXML public void dateAfterClear(){
+        dateAfter.setValue(null);
+        filters.remove("dateAfter");
+    }
 
-
-
-
+    private void setDate(String type, DatePicker picker){
+        LocalDate date = picker.getValue();
+        if(date == null){
+            filters.remove(type);
+        }
+        else {
+            List<String> dateList = new ArrayList<>();
+            String dateString = date.toString() + " 00:00:00";
+            dateList.add(dateString);
+            filters.put(type,dateList);
+        }
     }
 
 
-        /*
-        string[] row = { "Hello" };
-        var listViewItem = new ListViewItem(row);
-        Then you need to add that row into listview like below-
+    @FXML public void lowIncomeChanged(){onSelected("income","Low");}
+    @FXML public void mediumIncomeChanged(){onSelected("income","Medium");}
+    @FXML public void highIncomeChanged(){onSelected("income","High");}
+    @FXML public void newsContextChanged(){onSelected("context","News");}
+    @FXML public void blogContextChanged(){onSelected("context","Blog");}
+    @FXML public void shoppingContextChanged(){onSelected("context","Shopping");}
+    @FXML public void hobbiesContextChanged(){onSelected("context","Hobbies");}
+    @FXML public void socialContextChanged(){onSelected("context","Social Media");}
+    @FXML public void travelContextChanged(){onSelected("context","Travel");}
+    @FXML public void ageLT25Changed(){onSelected("ageRange","<25");}
+    @FXML public void age25To34Changed(){onSelected("ageRange","25-34");}
+    @FXML public void age35To44Changed(){onSelected("ageRange","35-44");}
+    @FXML public void age45to54Changed(){onSelected("ageRange","45-54");}
+    @FXML public void ageGT54Changed(){onSelected("ageRange",">54");}
+    @FXML public void genderMaleChanged(){onSelected("gender","Male");}
+    @FXML public void genderFemaleChanged(){onSelected("gender","Female");}
 
-        listView1.Items.Add(listViewItem);
-         */
+    private void onSelected(String metric, String filter){
+        boolean isSelected = isFilterSelected(metric,filter);
+        List<String> filterList = filters.get(metric);
+        filterList = filterList == null ? new ArrayList<>() : filterList;
+        if(isSelected){
+            filterList.remove(filter);
+        }
+        else {
+            filterList.add(filter);
+        }
+
+        if(filterList.size()==0){
+            filters.remove(metric);
+        }
+        else {
+            filters.put(metric, filterList);
+        }
+    }
+
+    @FXML public void confirmPressed(){
+        isConfirmPressed = true;
+        Stage stage = (Stage) lowIncome.getScene().getWindow();
+        stage.close();
+    }
+
+    public boolean isConfirmPressed(){
+        return isConfirmPressed;
+    }
+
+    public HashMap<String,List<String>> getFilters(){
+        return filters;
+    }
+
+
+}
+
+
 
 
 

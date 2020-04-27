@@ -25,6 +25,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -39,6 +41,8 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.printing.Orientation;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -103,6 +107,11 @@ public class MainController {
     @FXML
     ComboBox chartTypeComboBox;
 
+    @FXML Button loadClickLogButton;
+    @FXML Button loadImpressionLogButton;
+    @FXML Button loadServerLogButton;
+    @FXML Button addCampaignButton;
+
     public void initialize(){
         disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
@@ -117,27 +126,10 @@ public class MainController {
                     }
                 });
 
-        //Histogram
-
-        displayHistogramButton.setOnMouseClicked(event -> {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/histogram.fxml"));
-            fxmlLoader.setController(new HistogramController(model));
-//            HistogramController histogramController = (HistogramController) fxmlLoader.getController();
-            try {
-
-                Parent parent = fxmlLoader.load();
-                Scene scene = new Scene(parent, 550, 450);
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.setScene(scene);
-                stage.setResizable(false);
-                stage.showAndWait();
-            } catch (Exception e) {
-                e.printStackTrace();
-
-            }
-        });
+        setFileButtonBorder(loadClickLogButton,Color.RED);
+        setFileButtonBorder(loadImpressionLogButton,Color.RED);
+        setFileButtonBorder(loadServerLogButton,Color.RED);
+        addCampaignButton.setDisable(true);
     }
 
     private void disableCampaignFunctionalityButtons(){
@@ -242,22 +234,41 @@ public class MainController {
     }
 
     @FXML public void loadClickLogPressed(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
-        clickLogCSV = fileChooser.showOpenDialog(view.getWindow());
+        clickLogCSV = openFileChooser();
+        setFileButtonBorder(loadClickLogButton, clickLogCSV == null ? Color.RED : Color.GREEN);
+        shouldEnableLoadCampaignButton();
     }
 
     @FXML public void loadImpressionLogPressed(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
-        impressionLogCSV = fileChooser.showOpenDialog(view.getWindow());
-
+        impressionLogCSV = openFileChooser();
+        setFileButtonBorder(loadImpressionLogButton, impressionLogCSV == null ? Color.RED : Color.GREEN);
+        shouldEnableLoadCampaignButton();
     }
 
     @FXML public void loadServerLogPressed(){
+        serverLogCSV = openFileChooser();
+        setFileButtonBorder(loadServerLogButton, serverLogCSV == null ? Color.RED : Color.GREEN);
+        shouldEnableLoadCampaignButton();
+    }
+
+    private File openFileChooser(){
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV File", "*.csv"));
-        serverLogCSV = fileChooser.showOpenDialog(view.getWindow());
+        return fileChooser.showOpenDialog(view.getWindow());
+    }
+
+    private void shouldEnableLoadCampaignButton(){
+        if(clickLogCSV != null && impressionLogCSV != null && serverLogCSV != null){
+            addCampaignButton.setDisable(false);
+        }
+        else {
+            addCampaignButton.setDisable(true);
+        }
+    }
+
+    private void setFileButtonBorder(Button button, Color color){
+        button.setBorder(new Border(new BorderStroke(color,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
     }
 
     @FXML public void loadCampaignPressed(){
@@ -286,7 +297,7 @@ public class MainController {
                 protected ArrayList<CampaignTab.CampaignDataPackage> call() {
                     error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
                     if(error[0] == null){
-                        return model.queryCampaign(new HashMap<>());
+                        return model.queryOverallMetrics();
                     }
                     else {
                         return null;
@@ -320,96 +331,74 @@ public class MainController {
         }
     }
 
-    public void metricSelectedOnCampaignTab(CampaignTab.CampaignDataPackage metricSelected, String database){
+    public void metricSelectedOnCampaignTab(String metricSelected, String database){
         if(metricSelected == null){return;}
-        switch (chartType){
-            case "Standard":
-                graphData = metricSelected.getMetricOverTimePoints();
-                break;
-            case "Per Hour of Day":
-                graphData = metricSelected.getDataPerHourOfDay();
-                break;
-            case "Per Day of Week":
-                graphData = metricSelected.getDataPerDayOfWeek();
-                break;
-        }
 
-        String id = metricSelected.getID();
-        shouldGraphAvg = !id.equals("Number of Impressions") && !id.equals("Number of Clicks") && !id.equals("Number of Uniques") && !id.equals("Number of Bounces") && !id.equals("Number of Conversions") && !id.equals("Total Cost");
+        shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
 
-        lineChart.getYAxis().setLabel(id);
-        lineChart.setTitle(id + " Over Time");
+        lineChart.getYAxis().setLabel(metricSelected);
+        lineChart.setTitle(metricSelected + " Over Time");
 
         recreateGraph(timeGranulationValue);
     }
 
+    public void updateGraphData(String metricSelected, String database){
+        if(metricSelected == null){return;}
+        graphData = model.queryCampaign(metricSelected);
+    }
+
     @FXML public void addFilterButtonPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/addFilterDialog.fxml"));
-        //fxmlLoader.setLocation(AddFilterDialogController.class.getResource("target/classes/addFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
-        Scene scene = new Scene(parent, 300, 200);
+        Scene scene = new Scene(parent, 300, 300);
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
         stage.setScene(scene);
         AddFilterDialogController dialogController = fxmlLoader.getController();
-        dialogController.setUpDialogController();
+        dialogController.init(model.getFilters());
         stage.showAndWait();
-        AddFilterDialogController controller = fxmlLoader.getController();
-        HashMap<String, List<String>>  map = controller.CheckBoxes();
-
-        Set<String> keys = map.keySet();
-
-        for(Object key: keys){
-            List<String> keyList = map.get(key);
-            for(Object o: keyList){
-                if (filterListView.getItems().contains(o)){
-                    System.out.println("Already added");
-                }
-                else{
-                    filterListView.getItems().addAll(""+key + ":" + o);
-                }
-
-            }
+        if(!dialogController.isConfirmPressed()){
+            return;
         }
-
-        model.queryCampaign(map);
-        //get data
-        //change listview
-        //pass data to Model
-
-        //get the data
-        //change the list view
-        //pass data to the Model
-
-        //Register the filter for another event type
+        HashMap<String, List<String>> map = dialogController.getFilters();
+        fillFilterListView(map);
+        testUpdateCampaign(map);
     }
 
     @FXML public void removeFilterButtonPressed(){
-        filterListView.getItems().remove(filterListView.getSelectionModel().getSelectedItem());
+        filterListView.getItems().clear();
+        testUpdateCampaign(new HashMap<>());
+    }
+
+    private void fillFilterListView(HashMap<String, List<String>> map){
+        filterListView.getItems().clear();
+        for(String metric : map.keySet()){
+            for(String filter : map.get(metric)) {
+                filterListView.getItems().add(metric + " : " + filter);
+            }
+        }
     }
 
     @FXML
-    public void onDisplayHistogramPressed() throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/histogram.fxml"));
-//        Parent parent = fxmlLoader.load();
-//        HistogramController histogramController = fxmlLoader.getController();
-//        histogramController.clickCostHistogram();
-//        Scene scene = new Scene(parent, 600, 500);
-//        Stage stage = new Stage();
-//        stage.initModality(Modality.APPLICATION_MODAL);
-//        stage.setScene(scene);
-//        stage.setResizable(false);
-//        stage.show();
-//        try {
-//            Stage histogram = new Stage();
-//            histogram.setTitle("Click Cost Histogram");
-//            histogram.setScene(new Scene(fxmlLoader.load()));
-//            histogram.show();
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    public void onDisplayHistogramPressed() {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("/histogram.fxml"));
+        fxmlLoader.setController(new HistogramController(model));
+//            HistogramController histogramController = (HistogramController) fxmlLoader.getController();
+        try {
 
+            Parent parent = fxmlLoader.load();
+            Scene scene = new Scene(parent, 550, 450);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
     }
 
     @FXML public void saveOrPrintSelected(){
@@ -466,19 +455,36 @@ public class MainController {
 
         if(controller.getIsConfirmPressed()) {
             model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getNeedToConvert());
-            testUpdateCampaign(new HashMap<>());
+            testUpdateCampaign(model.getFilters());
         }
     }
 
     @FXML
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
-        chartType = selected;
+        model.setChartType(selected);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
-        tab.retriggerSelectionProperty();
+
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                updateGraphData(tab.getSelected(),tab.getDatabaseID());
+                return null;
+            }
+        };
+
+        task = setBasicLoadingTaskMethods(task,tab);
+
+        new Thread(task).start();
     }
 
-    //TEST BUTTON ONLY
+
+
+
+
+
+
+    //TEST BUTTONS ONLY
     public void onTestButtonPressed(){
         HashMap map = new HashMap<String,List<String>>();
         List<String> contexts = new ArrayList<String>();
@@ -490,15 +496,49 @@ public class MainController {
     }
 
     public void testUpdateCampaign(HashMap<String,List<String>> map){
-        ArrayList<CampaignTab.CampaignDataPackage> list = model.queryCampaign(map);
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
-        tab.updateData(list);
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                model.setFilters(map);
+                ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
+                tab.updateData(list);
+                updateGraphData(tab.getSelected(),tab.getDatabaseID());
+                return null;
+            }
+        };
+
+        task = setBasicLoadingTaskMethods(task,tab);
+
+        new Thread(task).start();
+
+
+//        model.setFilters(map);
+//        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+//
+//
+//        ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
+//        tab.updateData(list);
+//        tab.retriggerSelectionProperty();
+
+    }
+
+    public Task<Void> setBasicLoadingTaskMethods(Task<Void> task, CampaignTab tab){
+        task.setOnRunning((e) -> {
+            view.showLoadingDialog();
+        });
+
+        task.setOnSucceeded((e) -> {
+            view.hideLoadingDialog();
+            metricSelectedOnCampaignTab(tab.getSelected(),tab.getDatabaseID());
+        });
+        return task;
     }
 
     @FXML
     public void useCurrentDatabase(){
         model.openCurrentDatabase();
-        CampaignTab tab = new CampaignTab(this,model.queryCampaign(new HashMap<>()));
+        CampaignTab tab = new CampaignTab(this,model.queryOverallMetrics());
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }

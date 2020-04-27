@@ -2,6 +2,7 @@ package View;
 
 import Controller.MainController;
 import Model.GraphPoint;
+import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
@@ -19,6 +20,7 @@ public class CampaignTab extends Tab {
 
     private VBox pane;
     private TableView table;
+    private boolean listenerEnabled = true;
 
     public CampaignTab(MainController controller, ArrayList<CampaignDataPackage> basicMetrics){
         this.controller = controller;
@@ -63,9 +65,25 @@ public class CampaignTab extends Tab {
         pane.getChildren().add(button);
     }
 
-    public void updateData(ArrayList<CampaignTab.CampaignDataPackage> newBasicMetrics){
+    public void updateData(ArrayList<CampaignDataPackage> newBasicMetrics){
+        int index = table.getSelectionModel().getSelectedIndex();
         this.basicMetrics = newBasicMetrics;
+        listenerEnabled = false;
         addItems();
+        table.getSelectionModel().select(index);
+        listenerEnabled = true;
+
+    }
+
+    private void setItems(){
+        int i = 0;
+        for(CampaignDataPackage data : basicMetrics){
+            table.getItems().set(i,data);
+            i++;
+        }
+
+        //table.getSelectionModel().selectFirst();
+
     }
 
     private void addItems(){
@@ -73,34 +91,51 @@ public class CampaignTab extends Tab {
         for(CampaignDataPackage data : basicMetrics){
             table.getItems().add(data);
         }
-
-        //table.getSelectionModel().selectFirst();
-
     }
 
     private void setSelectionModel(){
+
         table.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            controller.metricSelectedOnCampaignTab((CampaignDataPackage) newValue,"test");
+            CampaignDataPackage v = (CampaignDataPackage) newValue;
+            if(v==null || !listenerEnabled){
+                return;
+            }
+
+            Task task = new Task<Void>() {
+                @Override
+                protected Void call() {
+                    controller.updateGraphData(v.getID(),"test");
+                    return null;
+                }
+            };
+
+            task = controller.setBasicLoadingTaskMethods(task,this);
+
+            new Thread(task).start();
+            //controller.updateGraphData(v.getID(),"test");
         });
     }
 
-    public void retriggerSelectionProperty(){
-        CampaignDataPackage dataPackage = (CampaignDataPackage) table.getSelectionModel().getSelectedItem();
-        controller.metricSelectedOnCampaignTab(dataPackage,"test");
+    public String getSelected(){
+        return ((CampaignDataPackage) table.getSelectionModel().getSelectedItem()).getID();
     }
+
+    public String getDatabaseID(){
+        return "test";
+    }
+
+//    public void retriggerSelectionProperty(){
+//        CampaignDataPackage dataPackage = (CampaignDataPackage) table.getSelectionModel().getSelectedItem();
+//        controller.metricSelectedOnCampaignTab(dataPackage.getID(),"test");
+//    }
 
     public static class CampaignDataPackage{
         private final String a;
         private final Double b;
-        private final ArrayList<GraphPoint> c;
-        private final ArrayList<GraphPoint> d;
-        private final ArrayList<GraphPoint> e;
-        public CampaignDataPackage(String metricType, Double overallMetric, ArrayList<GraphPoint> dataOverTime,ArrayList<GraphPoint> dataPerHourOfDay,ArrayList<GraphPoint> dataPerDayOfWeek){
+
+        public CampaignDataPackage(String metricType, Double overallMetric){
             this.a = metricType;
             this.b = overallMetric;
-            this.c = dataOverTime;
-            this.d = dataPerHourOfDay;
-            this.e = dataPerDayOfWeek;
         }
         public String getID(){
             return a;
@@ -108,14 +143,6 @@ public class CampaignTab extends Tab {
         public Double getOverallMetric(){
             return b;
         }
-        public ArrayList<GraphPoint> getMetricOverTimePoints(){
-            return c;
-        }
-        public ArrayList<GraphPoint> getDataPerHourOfDay(){
-            return d;
-        }
-        public ArrayList<GraphPoint> getDataPerDayOfWeek(){
-            return e;
-        }
+
     }
 }

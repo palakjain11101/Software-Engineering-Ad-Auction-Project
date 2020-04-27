@@ -100,6 +100,7 @@ public class MainView extends Application {
 
     public void showLoadingDialog(){
         waitingBox = new Alert(Alert.AlertType.NONE,"Please wait...");
+        waitingBox.initOwner(this.getWindow());
         waitingBox.show();
     }
 
