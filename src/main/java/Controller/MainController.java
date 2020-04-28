@@ -184,7 +184,6 @@ public class MainController {
                 xAxis.setUpperBound(Math.round(graphData.size()/365.0));
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Year of Campaign");
-                return;
         }
     }
 
@@ -473,6 +472,8 @@ public class MainController {
             }
         };
 
+
+
         task = setBasicLoadingTaskMethods(task,tab);
 
         new Thread(task).start();
@@ -511,16 +512,6 @@ public class MainController {
         task = setBasicLoadingTaskMethods(task,tab);
 
         new Thread(task).start();
-
-
-//        model.setFilters(map);
-//        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
-//
-//
-//        ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
-//        tab.updateData(list);
-//        tab.retriggerSelectionProperty();
-
     }
 
     public Task<Void> setBasicLoadingTaskMethods(Task<Void> task, CampaignTab tab){

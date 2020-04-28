@@ -58,11 +58,6 @@ public class CampaignTab extends Tab {
         setSelectionModel();
 
         pane.getChildren().add(table);
-
-        //TEMPORARY
-        Button button = new Button("TEST");
-        button.setOnMouseClicked(mouseEvent -> controller.onTestButtonPressed());
-        pane.getChildren().add(button);
     }
 
     public void updateData(ArrayList<CampaignDataPackage> newBasicMetrics){
