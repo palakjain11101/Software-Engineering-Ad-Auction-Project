@@ -164,27 +164,42 @@ public class MainController {
         xAxis.setLowerBound(1);
         lineChart.getData().clear();
         lineChart.getData().add(createSeries(timeGranularityValue));
+        if(model.getGraphType().equals("Per Hour of Day")){
+            xAxis.setUpperBound(24);
+            xAxis.setTickUnit(1);
+            xAxis.setLabel("Hour of Day");
+            lineChart.autosize();
+            return;
+        }
+        if(model.getGraphType().equals("Per Day of Week")){
+            xAxis.setUpperBound(7);
+            xAxis.setTickUnit(1);
+            xAxis.setLabel("Day of Week");
+            lineChart.autosize();
+            return;
+        }
         switch (timeGranularityValue){
             case SLIDER_DAY:
                 xAxis.setUpperBound(graphData.size());
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Day of Campaign");
-                return;
+                break;
             case SLIDER_WEEK:
                 xAxis.setUpperBound(Math.round(graphData.size()/7.0));
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Week of Campaign");
-                return;
+                break;
             case SLIDER_MONTH:
                 xAxis.setUpperBound(Math.round(graphData.size()/30.0));
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Month of Campaign");
-                return;
+                break;
             case SLIDER_YEAR:
                 xAxis.setUpperBound(Math.round(graphData.size()/365.0));
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Year of Campaign");
         }
+        lineChart.autosize();
     }
 
     private XYChart.Series<Number, Number> createSeries(int value){
@@ -202,6 +217,9 @@ public class MainController {
             case SLIDER_YEAR:
                 divider = 365;
                 break;
+        }
+        if(!model.getGraphType().equals("Standard")){
+            divider = 1;
         }
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();

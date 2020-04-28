@@ -101,6 +101,8 @@ public class MainModel {
         graphType = type;
     }
 
+    public String getGraphType(){return graphType;}
+
     public ArrayList<CampaignTab.CampaignDataPackage> queryOverallMetrics() {
         ArrayList<CampaignTab.CampaignDataPackage> mertics = new ArrayList<>();
         String cases = convertFiltersToCase(filters);
