@@ -472,7 +472,7 @@ public class MainController {
         }
         else {
             defineBounceButton.setDisable(true);
-            model.setBounceAttributes(30,false);
+            model.setBounceAttributes(30,10);
             testUpdateCampaign(new HashMap<>());
         }
     }
@@ -490,7 +490,7 @@ public class MainController {
         stage.showAndWait();
 
         if(controller.getIsConfirmPressed()) {
-            model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getNeedToConvert());
+            model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getMaxPagesVisited());
             testUpdateCampaign(model.getFilters());
         }
     }
@@ -514,23 +514,6 @@ public class MainController {
         task = setBasicLoadingTaskMethods(task,tab);
 
         new Thread(task).start();
-    }
-
-
-
-
-
-
-
-    //TEST BUTTONS ONLY
-    public void onTestButtonPressed(){
-        HashMap map = new HashMap<String,List<String>>();
-        List<String> contexts = new ArrayList<String>();
-        contexts.add("Blog");
-        //genders.add("Female");
-        map.put("context",contexts);
-        model.setBounceAttributes(50000,true);
-        testUpdateCampaign(map);
     }
 
     public void testUpdateCampaign(HashMap<String,List<String>> map){
