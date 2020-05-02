@@ -15,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.print.*;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -33,6 +34,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.util.Duration;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -163,7 +165,11 @@ public class MainController {
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
         xAxis.setLowerBound(1);
         lineChart.getData().clear();
-        lineChart.getData().add(createSeries(timeGranularityValue));
+
+        XYChart.Series<Number, Number> series = createSeries(timeGranularityValue);
+        lineChart.getData().add(series);
+        addToolTips(series);
+
         if(model.getGraphType().equals("Per Hour of Day")){
             xAxis.setUpperBound(24);
             xAxis.setTickUnit(1);
@@ -229,12 +235,16 @@ public class MainController {
         double holdTotal;
         double total = 0;
         double totalDenom = 0;
+        XYChart.Data<Number,Number> graphElement;
 
         for(GraphPoint point : graphData){
             nextX = (int) Math.floor(point.getX()/divider);
             if(previousX < nextX){
                 holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
-                series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
+
+                graphElement = new XYChart.Data<>(previousX+1, holdTotal);
+                series.getData().add(graphElement);
+
                 total = point.getYnum();
                 totalDenom = point.getYdenom();
                 previousX = nextX;
@@ -248,6 +258,15 @@ public class MainController {
         series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
         series.setName("Data");
         return series;
+    }
+
+    private void addToolTips(XYChart.Series<Number, Number> series){
+        Tooltip tooltip;
+        for (XYChart.Data<Number, Number> entry : series.getData()) {
+            tooltip = new Tooltip(entry.getYValue().toString());
+            tooltip.setShowDelay(Duration.millis(50));
+            Tooltip.install(entry.getNode(), tooltip);
+        }
     }
 
     @FXML public void loadClickLogPressed(){

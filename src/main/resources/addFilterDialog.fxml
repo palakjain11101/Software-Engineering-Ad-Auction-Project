@@ -40,12 +40,12 @@
                           </rowConstraints>
                            <children>
                               <Button mnemonicParsing="false" onAction="#dateBeforeClear" text="Clear" GridPane.columnIndex="1" />
-                              <DatePicker fx:id="dateBefore" onAction="#dateBeforeChanged" promptText="Date Before">
+                              <DatePicker fx:id="dateBefore" onAction="#dateBeforeChanged" promptText="Latest Date">
                                  <GridPane.margin>
                                     <Insets left="10.0" />
                                  </GridPane.margin>
                               </DatePicker>
-                              <DatePicker fx:id="dateAfter" onAction="#dateAfterChanged" promptText="Date After" GridPane.rowIndex="1">
+                              <DatePicker fx:id="dateAfter" onAction="#dateAfterChanged" promptText="Earliest Date" GridPane.rowIndex="1">
                                  <GridPane.margin>
                                     <Insets left="10.0" />
                                  </GridPane.margin>

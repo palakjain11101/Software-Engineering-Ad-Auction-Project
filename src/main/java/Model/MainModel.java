@@ -253,9 +253,13 @@ public class MainModel {
     public ArrayList<Double> getAllClickCosts() {
         ArrayList<Double> clickCosts = new ArrayList<>();
         ResultSet resultSet = sql.getData("SELECT cost FROM click");
+        double d;
         while (true) {
             try {
-                clickCosts.add(resultSet.getDouble(1));
+                d = resultSet.getDouble(1);
+                if(!(d == 0.0)){
+                    clickCosts.add(d);
+                }
                 if (!resultSet.next()) break;
             } catch (SQLException e) {
                 e.printStackTrace();
