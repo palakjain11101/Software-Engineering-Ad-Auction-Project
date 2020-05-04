@@ -15,8 +15,8 @@ public class SQL {
         this.c = null;
 
         try {
-            Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:"+ databaseName + ".db");
+            Class.forName("org.h2.Driver");
+            c = DriverManager.getConnection("jdbc:h2:"+ databaseName + ".db");
             this.stmt = this.c.createStatement();
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
