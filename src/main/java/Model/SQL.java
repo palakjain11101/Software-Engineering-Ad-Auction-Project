@@ -16,7 +16,7 @@ public class SQL {
 
         try {
             Class.forName("org.h2.Driver");
-            c = DriverManager.getConnection("jdbc:h2:"+ databaseName + ".db");
+            c = DriverManager.getConnection("jdbc:h2:~/"+ databaseName + ".db");
             this.stmt = this.c.createStatement();
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -67,7 +67,7 @@ public class SQL {
             stmt.execute(personTable);
             stmt.execute(clickTable);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
     }
