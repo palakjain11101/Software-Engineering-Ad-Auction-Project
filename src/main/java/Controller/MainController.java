@@ -450,6 +450,11 @@ public class MainController {
         }
     }
 
+    @FXML
+    public void openNewWindowForChartSelected(){
+
+    }
+
     @FXML public void saveOrPrintSelected(){
         WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
         BufferedImage awtImage = SwingFXUtils.fromFXImage(image, null);

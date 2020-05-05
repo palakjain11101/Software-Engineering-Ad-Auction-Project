@@ -119,7 +119,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </BorderPane>
-      <Button fx:id="displayHistogramButton" mnemonicParsing="false" onAction="#onDisplayHistogramPressed" text="Display Histogram" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+      <Button fx:id="displayHistogramButton" mnemonicParsing="false" onAction="#onDisplayHistogramPressed" text="Display Histogram" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
@@ -148,5 +148,6 @@
          </children>
       </VBox>
       <ComboBox fx:id="chartTypeComboBox" onAction="#onChartTypeComboBoxChanges" prefWidth="150.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <Button mnemonicParsing="false" onAction="#openNewWindowForChartSelected" text="Open New Window For Chart" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
    </children>
 </GridPane>
