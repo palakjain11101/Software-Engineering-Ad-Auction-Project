@@ -1,22 +1,15 @@
 package Controller;
 
-import Model.BounceDefinition;
 import Model.GraphPoint;
 import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
-import com.sun.javafx.charts.Legend;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.print.*;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -28,26 +21,13 @@ import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.printing.Orientation;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import java.awt.*;
-import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -56,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class MainController {
@@ -70,6 +49,7 @@ public class MainController {
     private MainModel model;
 
     private String chartType = "Standard";
+    private NewChartWindowDialogController newChartWindowDialogController;
 
     private ArrayList<GraphPoint> graphData = new ArrayList<>();
     private boolean shouldGraphAvg = true; //Otherwise just sum
@@ -270,7 +250,7 @@ public class MainController {
         }
         holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
         series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
-        series.setName("Data");
+        series.setName(lineChart.getTitle());
         return series;
     }
 
@@ -454,37 +434,36 @@ public class MainController {
     @FXML
     public void openNewWindowForChartSelected(){
 
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("/newChartWindowDialog.fxml"));
+        if(newChartWindowDialogController == null) {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/newChartWindowDialog.fxml"));
 
-        try {
-            Parent parent = fxmlLoader.load();
-            Scene scene = new Scene(parent, 900, 400);
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                Parent parent = fxmlLoader.load();
+                Scene scene = new Scene(parent, 900, 400);
+                Stage stage = new Stage();
+                stage.setScene(scene);
+                stage.setOnCloseRequest(windowEvent -> newChartWindowDialogController = null);
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            newChartWindowDialogController = fxmlLoader.getController();
+            NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
+            NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
+            newChartWindowDialogController.setChartAttributes(xAxis, yAxis, lineChart.getTitle());
+
         }
-
-
-        NewChartWindowDialogController controller = fxmlLoader.getController();
-        NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
-        NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
-
         XYChart.Series<Number, Number> series = copySeries(lineChart.getData().get(0));
-
-        addToolTips(series);
-
-        controller.setChartAttributes(xAxis,yAxis,series);
+        newChartWindowDialogController.addSeries(series);
     }
 
     //Taken from https://stackoverflow.com/questions/53807176/javafx-clone-xychart-series-doesnt-dork
     public static XYChart.Series<Number, Number> copySeries(XYChart.Series<Number, Number> series) {
         XYChart.Series<Number, Number> copy = new XYChart.Series<>(series.getName(),
-                series.getData().stream()
-                        .map(data -> new XYChart.Data<>(data.getXValue(), data.getYValue()))
-                        .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+                FXCollections.observableArrayList(series.getData()));
         return copy;
     }
 

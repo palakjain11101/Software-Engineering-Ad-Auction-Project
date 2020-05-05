@@ -14,7 +14,7 @@ public class NewChartWindowDialogController {
     @FXML
     LineChart<Number,Number> lineChart;
 
-    public void setChartAttributes(NumberAxis xAxis, NumberAxis yAxis, XYChart.Series<Number, Number> series){
+    public void setChartAttributes(NumberAxis xAxis, NumberAxis yAxis, String title){
         NumberAxis thisXAxis = (NumberAxis) lineChart.getXAxis();
         NumberAxis thisYAxis = (NumberAxis) lineChart.getYAxis();
 
@@ -24,8 +24,13 @@ public class NewChartWindowDialogController {
         thisXAxis.setUpperBound(xAxis.getUpperBound());
         thisXAxis.setTickUnit(1);
 
-       lineChart.getData().addAll(series);
+       lineChart.setTitle(title);
     }
+
+    public void addSeries(XYChart.Series<Number, Number> series){
+        lineChart.getData().add(series);
+    }
+
 
 
 }
