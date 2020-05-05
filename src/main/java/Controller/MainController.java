@@ -35,6 +35,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -169,7 +170,7 @@ public class MainController {
         XYChart.Series<Number, Number> series = createSeries(timeGranularityValue);
         lineChart.getData().add(series);
         addToolTips(series);
-
+        xAxis.setTickLabelFormatter(null);
         if(model.getGraphType().equals("Per Hour of Day")){
             xAxis.setUpperBound(24);
             xAxis.setTickUnit(1);
@@ -182,6 +183,18 @@ public class MainController {
             xAxis.setTickUnit(1);
             xAxis.setLabel("Day of Week");
             lineChart.autosize();
+            xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+                @Override
+                public String toString(Number number) {
+                    String[] days = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
+                    return days[number.intValue()-1];
+                }
+
+                @Override
+                public Number fromString(String s) {
+                    return null;
+                }
+            });
             return;
         }
         switch (timeGranularityValue){
@@ -499,6 +512,9 @@ public class MainController {
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
         model.setChartType(selected);
+
+        timeGranulationSlider.setDisable(!selected.equals("Standard"));
+
         CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
 
         Task task = new Task<Void>() {
