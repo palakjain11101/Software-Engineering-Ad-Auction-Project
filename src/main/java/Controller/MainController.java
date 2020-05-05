@@ -56,6 +56,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class MainController {
@@ -453,6 +454,38 @@ public class MainController {
     @FXML
     public void openNewWindowForChartSelected(){
 
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("/newChartWindowDialog.fxml"));
+
+        try {
+            Parent parent = fxmlLoader.load();
+            Scene scene = new Scene(parent, 900, 400);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        NewChartWindowDialogController controller = fxmlLoader.getController();
+        NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
+        NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
+
+        XYChart.Series<Number, Number> series = copySeries(lineChart.getData().get(0));
+
+        addToolTips(series);
+
+        controller.setChartAttributes(xAxis,yAxis,series);
+    }
+
+    //Taken from https://stackoverflow.com/questions/53807176/javafx-clone-xychart-series-doesnt-dork
+    public static XYChart.Series<Number, Number> copySeries(XYChart.Series<Number, Number> series) {
+        XYChart.Series<Number, Number> copy = new XYChart.Series<>(series.getName(),
+                series.getData().stream()
+                        .map(data -> new XYChart.Data<>(data.getXValue(), data.getYValue()))
+                        .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+        return copy;
     }
 
     @FXML public void saveOrPrintSelected(){
