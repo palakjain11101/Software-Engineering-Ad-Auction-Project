@@ -11,9 +11,12 @@ import java.util.*;
 
 public class MainModel {
 
+    private String currentcampaignId = "";
+
     private SQL sql = new SQL();
     private int bounceTime;
     private int bouncePages;
+
     private HashMap<String, List<String>> filters;
     private String graphType;
     //private String chartTypeTime = "DATE(";
@@ -32,13 +35,13 @@ public class MainModel {
     }
 
 
-    public String createNewCampaign(File clickLogPath, File impressionLogPath, File serverLogPath) {
+    public String createNewCampaign(File clickLogPath, File impressionLogPath, File serverLogPath, String campaignId) {
         try {
-            sql.connection("test");
-            sql.createTable();
-            sql.putData(impressionLogPath.getPath(), "impressions");
-            sql.putData(clickLogPath.getPath(), "click");
-            sql.putData(serverLogPath.getPath(), "server");
+            sql.connection(campaignId);
+            sql.createTable(campaignId);
+            sql.putData(impressionLogPath.getPath(), "impressions",campaignId);
+            sql.putData(clickLogPath.getPath(), "click",campaignId);
+            sql.putData(serverLogPath.getPath(), "server",campaignId);
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -48,7 +51,7 @@ public class MainModel {
 
     public Double getData(String overallMetricQuery) {
         try {
-            ResultSet set = sql.getData(overallMetricQuery);
+            ResultSet set = sql.getData(overallMetricQuery, currentcampaignId);
             Double value = set.getDouble(1);
             return round(value, 2);
         } catch (SQLException e) {
@@ -72,7 +75,7 @@ public class MainModel {
     public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg, boolean shouldXAxisBeIncrement) {
         if (metricOverTimeQuery.equals("")) return null;
         ArrayList<GraphPoint> metricOverTime = new ArrayList<>();
-        ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery);
+        ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery, currentcampaignId);
         int i = 0;
         try {
             while (metricOverTimeSet.next()) {
@@ -103,7 +106,10 @@ public class MainModel {
 
     public String getGraphType(){return graphType;}
 
-    public ArrayList<CampaignTab.CampaignDataPackage> queryOverallMetrics() {
+    public ArrayList<CampaignTab.CampaignDataPackage> queryOverallMetrics(String campaignId) {
+
+        currentcampaignId = campaignId;
+
         ArrayList<CampaignTab.CampaignDataPackage> mertics = new ArrayList<>();
         String cases = convertFiltersToCase(filters);
 
@@ -131,7 +137,9 @@ public class MainModel {
         return mertics;
     }
 
-    public ArrayList<GraphPoint> queryCampaign(String metric) {
+    public ArrayList<GraphPoint> queryCampaign(String metric, String campaignId) {
+
+        currentcampaignId = campaignId;
 
         String cases = convertFiltersToCase(filters);
 
@@ -172,15 +180,6 @@ public class MainModel {
         }
         return null;
     }
-
-//    private ArrayList<GraphPoint>[] getAllPointData(String mainStatement, Boolean isAvg) {
-//        String dataPerHourOfDayString = mainStatement.replace("DATE(", "strftime('%H',");
-//        String dataPerDayOfWeekString = mainStatement.replace("DATE(", "strftime('%w',");
-//        ArrayList<GraphPoint> dataOverTimePoints = getDataOverTimePoints(mainStatement, isAvg, true);
-//        ArrayList<GraphPoint> dataPerHourOfDayPoints = addZeroPoints(getDataOverTimePoints(dataPerHourOfDayString, isAvg, false), 1, 24);
-//        ArrayList<GraphPoint> dataPerDayOfWeekPoints = addZeroPoints(getDataOverTimePoints(dataPerDayOfWeekString, isAvg, false), 0, 6);
-//        return (ArrayList<GraphPoint>[]) new ArrayList[]{dataOverTimePoints, dataPerHourOfDayPoints, dataPerDayOfWeekPoints};
-//    }
 
     private ArrayList<GraphPoint> getDataPoints(String query, Boolean isAvg) {
         ArrayList<GraphPoint> dataPoints;
@@ -239,9 +238,9 @@ public class MainModel {
         return holdFilters;
     }
 
-    public ArrayList<Double> getAllClickCosts() {
+    public ArrayList<Double> getAllClickCosts(String campaignId) {
         ArrayList<Double> clickCosts = new ArrayList<>();
-        ResultSet resultSet = sql.getData("SELECT cost FROM click");
+        ResultSet resultSet = sql.getData("SELECT cost FROM click", campaignId);
         double d;
         while (true) {
             try {

@@ -6,26 +6,34 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.List;
 
 public class SQL {
-    private Connection c;
-    private Statement stmt;
+    //private Connection c;
+    //private Statement stmt;
 
-    public void connection(String databaseName){
-        this.c = null;
+    private HashMap<String,Statement> statements = new HashMap<>();
+    private HashMap<String,Connection> connections = new HashMap<>();
+
+    public void connection(String campaignId){
+        Connection c;
+        Statement stmt;
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:"+ databaseName + ".db");
-            this.stmt = this.c.createStatement();
+            c = DriverManager.getConnection("jdbc:sqlite:"+ campaignId + ".db");
+            stmt = c.createStatement();
+            statements.put(campaignId,stmt);
+            connections.put(campaignId,c);
+
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Opened database successfully");
     }
 
-    public void createTable(){
+    public void createTable(String campaignId){
         String serverTable = "CREATE TABLE server (\n"
                 + " id integer,\n"
                 + " date text,\n" //This means entry date
@@ -58,6 +66,7 @@ public class SQL {
                 + " PRIMARY KEY (id,date));";
 
         try{
+            Statement stmt = statements.get(campaignId);
             stmt.execute("DROP TABLE IF EXISTS server;");
             stmt.execute("DROP TABLE IF EXISTS click;");
             stmt.execute("DROP TABLE IF EXISTS impressions;");
@@ -72,10 +81,12 @@ public class SQL {
 
     }
 
-    public void putData(String file, String table) throws Exception {
+    public void putData(String file, String table, String campaignId) throws Exception {
 
         String line;
         String cvsSplitBy = ",";
+        Connection c = connections.get(campaignId);
+        Statement stmt = statements.get(campaignId);
         c.setAutoCommit(false);
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -138,10 +149,10 @@ public class SQL {
 
     }
 
-    public ResultSet getData(String query){
+    public ResultSet getData(String query, String campaignId){
         ResultSet rs = null;
         try{
-            rs = stmt.executeQuery(query);
+            rs = statements.get(campaignId).executeQuery(query);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

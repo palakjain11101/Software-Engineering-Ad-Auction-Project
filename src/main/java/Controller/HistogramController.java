@@ -24,7 +24,7 @@ public class HistogramController implements Initializable {
 
     HistogramController(MainModel model) {
         this.model = model;
-        this.clickCostList = model.getAllClickCosts();
+        this.clickCostList = model.getAllClickCosts("test");
         this.classWidth = 2.5;
         double classes = ((Collections.max(clickCostList))/classWidth);
         this.numberOfClasses = (int) Math.ceil(classes);
@@ -47,7 +47,7 @@ public class HistogramController implements Initializable {
         ArrayList<Integer> clickCostFrequencies = new ArrayList<>(Collections.nCopies(numberOfClasses+1, 0));
         ArrayList<Double> clickCostFreqDens = new ArrayList<>();
 
-        for ( Double clickCost : model.getAllClickCosts()) {
+        for ( Double clickCost : clickCostList) {
             int classID = (int) Math.ceil(clickCost/classWidth);
             clickCostFrequencies.set(classID, (clickCostFrequencies.get(classID))+1);
 

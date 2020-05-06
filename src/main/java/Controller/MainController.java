@@ -325,9 +325,9 @@ public class MainController {
             Task task = new Task<ArrayList<CampaignTab.CampaignDataPackage>>() {
                 @Override
                 protected ArrayList<CampaignTab.CampaignDataPackage> call() {
-                    error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
+                    error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV,"test");
                     if(error[0] == null){
-                        return model.queryOverallMetrics();
+                        return model.queryOverallMetrics("test");
                     }
                     else {
                         return null;
@@ -372,9 +372,9 @@ public class MainController {
         recreateGraph(timeGranulationValue);
     }
 
-    public void updateGraphData(String metricSelected, String database){
+    public void updateGraphData(String metricSelected, String campaignId){
         if(metricSelected == null){return;}
-        graphData = model.queryCampaign(metricSelected);
+        graphData = model.queryCampaign(metricSelected, campaignId);
     }
 
     @FXML public void addFilterButtonPressed() throws IOException {
@@ -532,7 +532,7 @@ public class MainController {
 
         timeGranulationSlider.setDisable(!selected.equals("Standard"));
 
-        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(tabPane.getSelectionModel().getSelectedIndex());
 
         Task task = new Task<Void>() {
             @Override
@@ -550,12 +550,12 @@ public class MainController {
     }
 
     public void testUpdateCampaign(HashMap<String,List<String>> map){
-        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(tabPane.getSelectionModel().getSelectedIndex());
         Task task = new Task<Void>() {
             @Override
             protected Void call() {
                 model.setFilters(map);
-                ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
+                ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics(tab.getDatabaseID());
                 tab.updateData(list);
                 updateGraphData(tab.getSelected(),tab.getDatabaseID());
                 return null;
@@ -582,7 +582,7 @@ public class MainController {
     @FXML
     public void useCurrentDatabase(){
         model.openCurrentDatabase();
-        CampaignTab tab = new CampaignTab(this,model.queryOverallMetrics());
+        CampaignTab tab = new CampaignTab(this,model.queryOverallMetrics("test"));
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }

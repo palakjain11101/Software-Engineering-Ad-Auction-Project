@@ -119,11 +119,6 @@ public class CampaignTab extends Tab {
         return "test";
     }
 
-//    public void retriggerSelectionProperty(){
-//        CampaignDataPackage dataPackage = (CampaignDataPackage) table.getSelectionModel().getSelectedItem();
-//        controller.metricSelectedOnCampaignTab(dataPackage.getID(),"test");
-//    }
-
     public static class CampaignDataPackage{
         private final String a;
         private final Double b;
