@@ -24,11 +24,14 @@ public class NewChartWindowDialogController {
         thisXAxis.setUpperBound(xAxis.getUpperBound());
         thisXAxis.setTickUnit(1);
 
-       lineChart.setTitle(title);
+       //lineChart.setTitle(title);
     }
 
     public void addSeries(XYChart.Series<Number, Number> series){
-        lineChart.getData().add(series);
+        try {
+            lineChart.getData().add(series);
+        }
+        catch (Exception ignored){ }
     }
 
 
