@@ -266,6 +266,14 @@ public class MainController {
                 graphElement = new XYChart.Data<>(previousX+1, holdTotal);
                 series.getData().add(graphElement);
 
+                if(point.getOutlier()){
+                    graphElement.nodeProperty().addListener((observable, oldValue, newValue) -> {
+                        if (newValue != null) {
+                            newValue.setStyle("-fx-background-color: RED");
+                        }
+                    });
+                }
+
                 total = point.getYnum();
                 totalDenom = point.getYdenom();
                 previousX = nextX;
