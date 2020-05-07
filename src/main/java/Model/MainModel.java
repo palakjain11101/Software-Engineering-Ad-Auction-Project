@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static java.lang.Math.sqrt;
+
 public class MainModel {
 
     private String currentcampaignId = "";
@@ -186,6 +188,7 @@ public class MainModel {
         ArrayList<GraphPoint> dataPoints;
         if (graphType.equals("Standard")) {
             dataPoints = getDataOverTimePoints(query, isAvg, true);
+            dataPoints = setOutliers(dataPoints);
 
         } else if (graphType.equals("Per Hour of Day")) {
             dataPoints = addZeroPoints(getDataOverTimePoints(query.replace("DATE(", "strftime('%H',"), isAvg, false),1,24);
@@ -196,6 +199,61 @@ public class MainModel {
         }
         return dataPoints;
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public ArrayList<GraphPoint> setOutliers(ArrayList<GraphPoint> dataPoints) {
+        double mean = this.computeMean(dataPoints);
+        double stdDev = this.getStdDev(dataPoints , mean);
+
+
+        for (GraphPoint x : dataPoints) {
+            double distance = Math.abs(x.getY() - mean);
+            if (distance > (2.0 * stdDev)) {
+                //System.out.println("Value " + x.getY() + " is an outlier");
+                x.setOutlier();
+            }
+        }
+
+        return dataPoints;
+    }
+
+
+    public Double getStdDev(ArrayList<GraphPoint> dataPoints, double mean) {
+        double sigma = 0.0;
+
+        for (GraphPoint x : dataPoints) {
+            sigma = sigma + ((mean - x.getY())*(mean - x.getY()));
+        }
+
+        //System.out.printf("Sigma: %f\n", sigma);
+        double inv = 1.0 / ((double)dataPoints.size() - 1.0);
+
+        double variance = inv * sigma;
+        //System.out.printf("Variance: %f\n", variance);
+
+        return sqrt(variance);
+    }
+
+    public Double computeMean(ArrayList<GraphPoint> dataPoints) {
+
+        double mean = 0.0;
+
+        double sum = 0.0;
+
+        for (GraphPoint x : dataPoints) {
+            sum = sum + x.getY();
+        }
+
+        mean = sum / dataPoints.size();
+        //System.out.printf("Mean: %f\n", mean);
+
+        return mean;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     private ArrayList<GraphPoint> addZeroPoints(ArrayList<GraphPoint> points, int min, int max) {
         for (int x = min; x <= max; x++) {
