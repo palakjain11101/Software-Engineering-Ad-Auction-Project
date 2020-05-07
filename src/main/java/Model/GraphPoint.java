@@ -39,4 +39,5 @@ public class GraphPoint {
     public double getYdenom() {return Ydenom;}
 
     public double getYnum() {return Ynum;}
+
 }
