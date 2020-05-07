@@ -16,15 +16,18 @@ public class CampaignTab extends Tab {
 
     private MainController controller;
 
+    private String campaignID;
+
     private ArrayList<CampaignDataPackage> basicMetrics;
 
     private VBox pane;
     private TableView table;
     private boolean listenerEnabled = true;
 
-    public CampaignTab(MainController controller, ArrayList<CampaignDataPackage> basicMetrics){
+    public CampaignTab(MainController controller, ArrayList<CampaignDataPackage> basicMetrics, String campaignID){
         this.controller = controller;
         this.basicMetrics = basicMetrics;
+        this.campaignID = campaignID;
         initCampaignTab();
     }
 
@@ -99,12 +102,12 @@ public class CampaignTab extends Tab {
             Task task = new Task<Void>() {
                 @Override
                 protected Void call() {
-                    controller.updateGraphData(v.getID(),"test");
+                    controller.updateGraphData(v.getID(),campaignID);
                     return null;
                 }
             };
 
-            task = controller.setBasicLoadingTaskMethods(task,this);
+            task = controller.setBasicLoadingTaskMethods(task);
 
             new Thread(task).start();
             //controller.updateGraphData(v.getID(),"test");
@@ -116,7 +119,7 @@ public class CampaignTab extends Tab {
     }
 
     public String getDatabaseID(){
-        return "test";
+        return campaignID;
     }
 
     public static class CampaignDataPackage{

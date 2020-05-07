@@ -17,7 +17,7 @@ public class MainModel {
     private int bounceTime;
     private int bouncePages;
 
-    private HashMap<String, List<String>> filters;
+    private HashMap<String, HashMap<String, List<String>>> allFilters;
     private String graphType;
     //private String chartTypeTime = "DATE(";
 
@@ -26,7 +26,7 @@ public class MainModel {
         bounceTime = 30;
         bouncePages = 10;
         graphType = "Standard";
-        filters = new HashMap<>();
+        allFilters = new HashMap<>();
     }
 
     public void setBounceAttributes(int time, int pages) {
@@ -42,6 +42,7 @@ public class MainModel {
             sql.putData(impressionLogPath.getPath(), "impressions",campaignId);
             sql.putData(clickLogPath.getPath(), "click",campaignId);
             sql.putData(serverLogPath.getPath(), "server",campaignId);
+            allFilters.put(campaignId,new HashMap<>());
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -92,12 +93,12 @@ public class MainModel {
         return metricOverTime;
     }
 
-    public void setFilters(HashMap<String, List<String>> filters) {
-        this.filters = filters;
+    public void setFilters(HashMap<String, List<String>> filters, String campaignID) {
+        allFilters.put(campaignID,filters);
     }
 
-    public HashMap<String, List<String>> getFilters() {
-        return filters;
+    public HashMap<String, List<String>> getFilters(String campaignID) {
+        return allFilters.get(campaignID);
     }
 
     public void setChartType(String type){
@@ -111,7 +112,7 @@ public class MainModel {
         currentcampaignId = campaignId;
 
         ArrayList<CampaignTab.CampaignDataPackage> mertics = new ArrayList<>();
-        String cases = convertFiltersToCase(filters);
+        String cases = convertFiltersToCase(allFilters.get(campaignId));
 
         double impressions = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
         double clicks = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
@@ -141,7 +142,7 @@ public class MainModel {
 
         currentcampaignId = campaignId;
 
-        String cases = convertFiltersToCase(filters);
+        String cases = convertFiltersToCase(allFilters.get(campaignId));
 
         switch (metric) {
             case "Number of Impressions":
@@ -185,10 +186,13 @@ public class MainModel {
         ArrayList<GraphPoint> dataPoints;
         if (graphType.equals("Standard")) {
             dataPoints = getDataOverTimePoints(query, isAvg, true);
+
         } else if (graphType.equals("Per Hour of Day")) {
             dataPoints = addZeroPoints(getDataOverTimePoints(query.replace("DATE(", "strftime('%H',"), isAvg, false),1,24);
+
         } else {
             dataPoints = addZeroPoints(getDataOverTimePoints(query.replace("DATE(", "strftime('%w',"), isAvg, false),0,6);
+
         }
         return dataPoints;
     }
