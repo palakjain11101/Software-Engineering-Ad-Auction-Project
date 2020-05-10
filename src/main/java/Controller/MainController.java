@@ -386,7 +386,9 @@ public class MainController {
                         impressionLogCSV = null;
                         serverLogCSV = null;
                         tab.setOnClosed(arg0 -> {
-                            model.deleteCampaign(((CampaignTab) arg0.getTarget()).getDatabaseID());
+                            String id = ((CampaignTab) arg0.getTarget()).getDatabaseID();
+                            model.deleteCampaign(id);
+                            graphPoints.remove(id);
                             recreateGraph(timeGranulationValue);
                         });
                         tabPane.getTabs().add(tab);

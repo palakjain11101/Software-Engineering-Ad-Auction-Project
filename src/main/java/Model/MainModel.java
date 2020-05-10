@@ -29,6 +29,8 @@ public class MainModel {
         bouncePages = 10;
         graphType = "Standard";
         allFilters = new HashMap<>();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::deleteAllCampaigns, "Shutdown-thread"));
     }
 
     public void setBounceAttributes(int time, int pages) {
@@ -50,6 +52,12 @@ public class MainModel {
         }
 
         return null;
+    }
+
+    private void deleteAllCampaigns(){
+        for(String id : allFilters.keySet()){
+            deleteCampaign(id);
+        }
     }
 
     public void deleteCampaign(String campaignID){
