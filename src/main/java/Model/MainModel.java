@@ -52,6 +52,14 @@ public class MainModel {
         return null;
     }
 
+    public void deleteCampaign(String campaignID){
+        sql.deleteDatabase(campaignID);
+        allFilters.remove(campaignID);
+        if(currentcampaignId.equals(campaignID)){
+            currentcampaignId = "";
+        }
+    }
+
     public Double getData(String overallMetricQuery) {
         try {
             ResultSet set = sql.getData(overallMetricQuery, currentcampaignId);

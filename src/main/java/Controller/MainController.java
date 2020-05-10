@@ -7,6 +7,7 @@ import View.MainView;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -384,6 +385,10 @@ public class MainController {
                         clickLogCSV = null;
                         impressionLogCSV = null;
                         serverLogCSV = null;
+                        tab.setOnClosed(arg0 -> {
+                            model.deleteCampaign(((CampaignTab) arg0.getTarget()).getDatabaseID());
+                            recreateGraph(timeGranulationValue);
+                        });
                         tabPane.getTabs().add(tab);
                         tabPane.getSelectionModel().select(tab);
                     }
@@ -499,8 +504,10 @@ public class MainController {
             newChartWindowDialogController.setChartAttributes(xAxis, yAxis, lineChart.getTitle());
 
         }
-        XYChart.Series<Number, Number> series = copySeries(lineChart.getData().get(0));
-        newChartWindowDialogController.addSeries(series);
+        for(XYChart.Series<Number, Number> series : lineChart.getData()) {
+            XYChart.Series<Number, Number> copySeries = copySeries(series);
+            newChartWindowDialogController.addSeries(copySeries);
+        }
     }
 
     //Taken from https://stackoverflow.com/questions/53807176/javafx-clone-xychart-series-doesnt-dork

@@ -159,6 +159,19 @@ public class SQL {
         return rs;
     }
 
+    public void deleteDatabase(String id){
+        try {
+            statements.get(id).close();
+            statements.remove(id);
+            connections.get(id).close();
+            connections.remove(id);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        new File(id+".db").delete();
+    }
+
     public static void main( String args[] ) {
         SQL sql = new SQL();
     }
