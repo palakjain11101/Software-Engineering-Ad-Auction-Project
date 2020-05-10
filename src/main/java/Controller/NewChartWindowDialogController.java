@@ -30,6 +30,7 @@ public class NewChartWindowDialogController {
     public void addSeries(XYChart.Series<Number, Number> series){
         try {
             lineChart.getData().add(series);
+            series.getNode().lookup(".chart-series-line").setStyle("");
         }
         catch (Exception ignored){ }
     }
