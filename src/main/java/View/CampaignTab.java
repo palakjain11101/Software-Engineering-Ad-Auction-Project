@@ -32,7 +32,7 @@ public class CampaignTab extends Tab {
     }
 
     private void initCampaignTab() {
-        setText("Campaign 1");
+        setText(campaignID);
         pane = new VBox();
         pane.getStylesheets().add("styles.css");
         setContent(pane);
@@ -61,6 +61,8 @@ public class CampaignTab extends Tab {
         setSelectionModel();
 
         pane.getChildren().add(table);
+
+        table.getSelectionModel().select(0);
     }
 
     public void updateData(ArrayList<CampaignDataPackage> newBasicMetrics){
@@ -70,17 +72,6 @@ public class CampaignTab extends Tab {
         addItems();
         table.getSelectionModel().select(index);
         listenerEnabled = true;
-
-    }
-
-    private void setItems(){
-        int i = 0;
-        for(CampaignDataPackage data : basicMetrics){
-            table.getItems().set(i,data);
-            i++;
-        }
-
-        //table.getSelectionModel().selectFirst();
 
     }
 
@@ -110,7 +101,6 @@ public class CampaignTab extends Tab {
             task = controller.setBasicLoadingTaskMethods(task);
 
             new Thread(task).start();
-            //controller.updateGraphData(v.getID(),"test");
         });
     }
 

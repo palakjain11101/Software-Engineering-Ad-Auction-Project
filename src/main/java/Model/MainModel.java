@@ -55,9 +55,13 @@ public class MainModel {
     }
 
     private void deleteAllCampaigns(){
-        for(String id : allFilters.keySet()){
-            deleteCampaign(id);
+        Iterator<String> i = allFilters.keySet().iterator();
+        String campaignID;
+        while(i.hasNext()){
+            campaignID = i.next();
+            sql.deleteDatabase(campaignID);
         }
+
     }
 
     public void deleteCampaign(String campaignID){

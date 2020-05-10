@@ -168,7 +168,7 @@ public class MainController {
         for(CampaignTab tab : getTabs()) {
             metricSelected = tab.getSelected();
             shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
-            XYChart.Series<Number, Number> series = createSeries(timeGranularityValue,graphPoints.get(tab.getDatabaseID()),shouldGraphAvg);
+            XYChart.Series<Number, Number> series = createSeries(timeGranularityValue,graphPoints.get(tab.getDatabaseID()),shouldGraphAvg,tab.getDatabaseID());
             lineChart.getData().add(series);
             addToolTips(series);
             allSeries.put(tab.getDatabaseID(),series);
@@ -233,7 +233,7 @@ public class MainController {
         return days;
     }
 
-    private XYChart.Series<Number, Number> createSeries(int value, ArrayList<GraphPoint> graphData, boolean shouldGraphAvg){
+    private XYChart.Series<Number, Number> createSeries(int value, ArrayList<GraphPoint> graphData, boolean shouldGraphAvg, String id){
         double divider = 1;
         switch (value){
             case SLIDER_DAY:
@@ -289,7 +289,7 @@ public class MainController {
         }
         holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
         series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
-        series.setName(lineChart.getTitle());
+        series.setName(id);
         return series;
     }
 
@@ -508,6 +508,7 @@ public class MainController {
     public static XYChart.Series<Number, Number> copySeries(XYChart.Series<Number, Number> series) {
         XYChart.Series<Number, Number> copy = new XYChart.Series<>(series.getName(),
                 FXCollections.observableArrayList(series.getData()));
+
         return copy;
     }
 
