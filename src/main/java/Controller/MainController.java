@@ -51,6 +51,7 @@ public class MainController {
 
     private int campaignNumber = 1;
     private NewChartWindowDialogController newChartWindowDialogController;
+    private HashMap<String,XYChart.Series<Number,Number>> allSeries;
 
     private HashMap<String, ArrayList<GraphPoint>> graphPoints = new HashMap<>();
     //private boolean shouldGraphAvg = true; //Otherwise just sum
@@ -163,12 +164,14 @@ public class MainController {
         boolean shouldGraphAvg;
         String metricSelected;
 
+        allSeries = new HashMap<>();
         for(CampaignTab tab : getTabs()) {
             metricSelected = tab.getSelected();
             shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
             XYChart.Series<Number, Number> series = createSeries(timeGranularityValue,graphPoints.get(tab.getDatabaseID()),shouldGraphAvg);
             lineChart.getData().add(series);
             addToolTips(series);
+            allSeries.put(tab.getDatabaseID(),series);
         }
 
         xAxis.setTickLabelFormatter(null);
@@ -406,18 +409,8 @@ public class MainController {
         }
     }
 
-//    public void metricSelectedOnCampaignTab(String metricSelected){
-//        if(metricSelected == null){return;}
-//
-//        lineChart.getYAxis().setLabel(metricSelected);
-//        lineChart.setTitle(metricSelected + " Over Time");
-//
-//        recreateGraph(timeGranulationValue);
-//    }
-
     public void updateGraphData(String metricSelected, String campaignId){
         if(metricSelected == null){return;}
-        //graphData = model.queryCampaign(metricSelected, campaignId);
         graphPoints.put(campaignId,model.queryCampaign(metricSelected, campaignId));
     }
 
@@ -506,10 +499,9 @@ public class MainController {
             newChartWindowDialogController.setChartAttributes(xAxis, yAxis, lineChart.getTitle());
 
         }
-        for(XYChart.Series<Number, Number> series : lineChart.getData()) {
-            XYChart.Series<Number, Number> copySeries = copySeries(series);
-            newChartWindowDialogController.addSeries(copySeries);
-        }
+        XYChart.Series<Number, Number> copySeries = copySeries(allSeries.get(getCurrentTab().getDatabaseID()));
+        newChartWindowDialogController.addSeries(copySeries);
+
     }
 
     //Taken from https://stackoverflow.com/questions/53807176/javafx-clone-xychart-series-doesnt-dork
