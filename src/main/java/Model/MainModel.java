@@ -208,7 +208,7 @@ public class MainModel {
         ArrayList<GraphPoint> dataPoints;
         if (graphType.equals("Standard")) {
             dataPoints = getDataOverTimePoints(query, isAvg, true);
-            dataPoints = setOutliers(dataPoints);
+            //dataPoints = setOutliers(dataPoints);
 
         } else if (graphType.equals("Per Hour of Day")) {
             dataPoints = addZeroPoints(getDataOverTimePoints(query.replace("DATE(", "strftime('%H',"), isAvg, false),1,24);
@@ -230,7 +230,7 @@ public class MainModel {
         for (GraphPoint x : dataPoints) {
             double distance = Math.abs(x.getY() - mean);
             if (distance > (2.0 * stdDev)) {
-                //System.out.println("Value " + x.getY() + " is an outlier");
+                System.out.println("Value " + x.getY() + " is an outlier");
                 x.setOutlier();
             }
         }

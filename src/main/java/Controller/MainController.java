@@ -11,6 +11,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -263,21 +264,18 @@ public class MainController {
         double totalDenom = 0;
         XYChart.Data<Number,Number> graphElement;
 
+        ArrayList<GraphPoint> newPoints = new ArrayList<>();
+
         for(GraphPoint point : graphData){
             nextX = (int) Math.floor(point.getX()/divider);
             if(previousX < nextX){
                 holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
 
-                graphElement = new XYChart.Data<>(previousX+1, holdTotal);
-                series.getData().add(graphElement);
+//                graphElement = new XYChart.Data<>(previousX+1, holdTotal);
+//                series.getData().add(graphElement);
+//                isOutlier(point,graphElement);
 
-                if(point.getOutlier()){
-                    graphElement.nodeProperty().addListener((observable, oldValue, newValue) -> {
-                        if (newValue != null) {
-                            newValue.setStyle("-fx-background-color: RED");
-                        }
-                    });
-                }
+                newPoints.add(new GraphPoint(previousX+1,holdTotal));
 
                 total = point.getYnum();
                 totalDenom = point.getYdenom();
@@ -289,9 +287,27 @@ public class MainController {
             }
         }
         holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
-        series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
+        newPoints.add(new GraphPoint(previousX+1,holdTotal));
+
+        newPoints = model.setOutliers(newPoints);
+        for(GraphPoint point : newPoints){
+            graphElement = new XYChart.Data<>(point.getX(),point.getY());
+            series.getData().add(graphElement);
+            isOutlier(point,graphElement);
+        }
+
         series.setName(id + " : " + selected);
         return series;
+    }
+
+    private void isOutlier(GraphPoint point,  XYChart.Data<Number,Number> graphElement){
+        if(point.getOutlier()){
+            graphElement.nodeProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    newValue.setStyle("-fx-background-color: RED");
+                }
+            });
+        }
     }
 
     private void addToolTips(XYChart.Series<Number, Number> series){
