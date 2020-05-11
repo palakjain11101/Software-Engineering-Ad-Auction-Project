@@ -656,12 +656,10 @@ public class MainController {
 
     //Taken from https://stackoverflow.com/questions/53807176/javafx-clone-xychart-series-doesnt-dork
     private static XYChart.Series<Number, Number> copySeries(XYChart.Series<Number, Number> series) {
-        XYChart.Series<Number, Number> copy = new XYChart.Series<>(series.getName(),
+        return new XYChart.Series<>(series.getName(),
                 series.getData().stream()
                         .map(data -> new XYChart.Data<>(data.getXValue(), data.getYValue()))
                         .collect(Collectors.toCollection(FXCollections::observableArrayList)));
-
-        return copy;
     }
 
     /*
