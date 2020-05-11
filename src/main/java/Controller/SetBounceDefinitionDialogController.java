@@ -13,13 +13,19 @@ import java.awt.*;
 public class SetBounceDefinitionDialogController {
 
     @FXML
-    TextField secondsAfterEntryInput;
+    private TextField secondsAfterEntryInput;
 
     @FXML
-    CheckBox needToConverseCheckBox;
+    private TextField pagesVisitedInput;
 
     @FXML
-    Button confirmButton;
+    private CheckBox secondsAfterEntryCheckbox;
+
+    @FXML
+    private CheckBox pagesVisitedCheckbox;
+
+    @FXML
+    private Button confirmButton;
 
     private boolean isConfirmPressed = false;
 
@@ -29,6 +35,33 @@ public class SetBounceDefinitionDialogController {
                 secondsAfterEntryInput.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
+        pagesVisitedInput.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                pagesVisitedInput.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
+
+    @FXML
+    public void secondsAfterEntryCheckboxSelected(){
+        if(secondsAfterEntryCheckbox.isSelected()){
+            secondsAfterEntryInput.setDisable(false);
+        }
+        else {
+            secondsAfterEntryInput.setDisable(true);
+            secondsAfterEntryInput.clear();
+        }
+    }
+
+    @FXML
+    public void pagesVisitedCheckboxSelected(){
+        if(pagesVisitedCheckbox.isSelected()){
+            pagesVisitedInput.setDisable(false);
+        }
+        else {
+            pagesVisitedInput.setDisable(true);
+            pagesVisitedInput.clear();
+        }
     }
 
     public void confirmButtonPressed(){
@@ -46,8 +79,13 @@ public class SetBounceDefinitionDialogController {
         }
     }
 
-    public boolean getNeedToConvert(){
-        return needToConverseCheckBox.isSelected();
+    public int getMaxPagesVisited(){
+        try {
+            return Integer.parseInt(pagesVisitedInput.getText());
+        }
+        catch (NumberFormatException e){
+            return Integer.MAX_VALUE;
+        }
     }
 
     public boolean getIsConfirmPressed(){

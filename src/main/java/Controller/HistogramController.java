@@ -22,10 +22,10 @@ public class HistogramController implements Initializable {
     private int numberOfClasses;
     private Double classWidth;
 
-    HistogramController(MainModel model) {
+    HistogramController(MainModel model, String campaignId) {
         this.model = model;
-        this.clickCostList = model.getAllClickCosts();
-        this.classWidth = 1.0;
+        this.clickCostList = model.getAllClickCosts(campaignId);
+        this.classWidth = 2.5;
         double classes = ((Collections.max(clickCostList))/classWidth);
         this.numberOfClasses = (int) Math.ceil(classes);
 
@@ -47,7 +47,7 @@ public class HistogramController implements Initializable {
         ArrayList<Integer> clickCostFrequencies = new ArrayList<>(Collections.nCopies(numberOfClasses+1, 0));
         ArrayList<Double> clickCostFreqDens = new ArrayList<>();
 
-        for ( Double clickCost : model.getAllClickCosts()) {
+        for ( Double clickCost : clickCostList) {
             int classID = (int) Math.ceil(clickCost/classWidth);
             clickCostFrequencies.set(classID, (clickCostFrequencies.get(classID))+1);
 

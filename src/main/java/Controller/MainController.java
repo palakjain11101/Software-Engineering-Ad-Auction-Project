@@ -1,20 +1,16 @@
 package Controller;
 
-import Model.BounceDefinition;
 import Model.GraphPoint;
 import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
-import com.sun.javafx.charts.Legend;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.print.*;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,24 +23,13 @@ import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.printing.Orientation;
+import javafx.stage.WindowEvent;
+import javafx.util.Duration;
+import javafx.util.StringConverter;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import java.awt.*;
-import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -65,10 +50,12 @@ public class MainController {
     private MainView view;
     private MainModel model;
 
-    private String chartType = "Standard";
+    private int campaignNumber = 1;
+    private NewChartWindowDialogController newChartWindowDialogController;
+    private HashMap<String,XYChart.Series<Number,Number>> allSeries;
 
-    private ArrayList<GraphPoint> graphData = new ArrayList<>();
-    private boolean shouldGraphAvg = true; //Otherwise just sum
+    private HashMap<String, ArrayList<GraphPoint>> graphPoints = new HashMap<>();
+    //private boolean shouldGraphAvg = true; //Otherwise just sum
     private int timeGranulationValue = SLIDER_DAY;
 
     private File clickLogCSV;
@@ -110,6 +97,7 @@ public class MainController {
     @FXML Button loadClickLogButton;
     @FXML Button loadImpressionLogButton;
     @FXML Button loadServerLogButton;
+    @FXML TextField campaignIDInput;
     @FXML Button addCampaignButton;
 
     public void initialize(){
@@ -120,9 +108,11 @@ public class MainController {
                 (ov, t, t1) -> {
                     if(t1 == defaultTab){
                         disableCampaignFunctionalityButtons();
+                        filterListView.getItems().clear();
                     }
                     else {
                         enableCampaignFunctionalityButtons();
+                        fillFilterListView(model.getFilters(getCurrentTab().getDatabaseID()));
                     }
                 });
 
@@ -130,6 +120,8 @@ public class MainController {
         setFileButtonBorder(loadImpressionLogButton,Color.RED);
         setFileButtonBorder(loadServerLogButton,Color.RED);
         addCampaignButton.setDisable(true);
+
+        campaignIDInput.textProperty().addListener((observable, oldValue, newValue) -> shouldEnableLoadCampaignButton());
     }
 
     private void disableCampaignFunctionalityButtons(){
@@ -150,6 +142,16 @@ public class MainController {
         filterRemoveButton.setDisable(false);
     }
 
+    private List<CampaignTab> getTabs(){
+        List<CampaignTab> tabs = new ArrayList<>();
+        for(Tab tab : tabPane.getTabs()){
+            if(!(tab == defaultTab)){
+                tabs.add((CampaignTab) tab);
+            }
+        }
+        return tabs;
+    }
+
     public void setView(MainView view){
         this.view = view;
     }
@@ -158,37 +160,91 @@ public class MainController {
         this.model = model;
     }
 
+    public void recreateGraph(){
+        recreateGraph(timeGranulationValue);
+    }
+
     public void recreateGraph(int timeGranularityValue){
         timeGranulationValue = timeGranularityValue;
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
         xAxis.setLowerBound(1);
         lineChart.getData().clear();
-        lineChart.getData().add(createSeries(timeGranularityValue));
+
+        boolean shouldGraphAvg;
+        String metricSelected;
+
+        allSeries = new HashMap<>();
+        for(CampaignTab tab : getTabs()) {
+            if(tab.getShouldShowCampaign()) {
+                metricSelected = tab.getSelected();
+                shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
+                XYChart.Series<Number, Number> series = createSeries(timeGranularityValue, graphPoints.get(tab.getDatabaseID()), shouldGraphAvg, tab.getDatabaseID(), metricSelected);
+                lineChart.getData().add(series);
+                addToolTips(series);
+                allSeries.put(tab.getDatabaseID(), series);
+            }
+        }
+
+        xAxis.setTickLabelFormatter(null);
+        if(model.getGraphType().equals("Per Hour of Day")){
+            xAxis.setUpperBound(24);
+            xAxis.setTickUnit(1);
+            xAxis.setLabel("Hour of Day");
+            lineChart.autosize();
+            return;
+        }
+        if(model.getGraphType().equals("Per Day of Week")){
+            xAxis.setUpperBound(7);
+            xAxis.setTickUnit(1);
+            xAxis.setLabel("Day of Week");
+            lineChart.autosize();
+            xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+                @Override
+                public String toString(Number number) {
+                    String[] days = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
+                    return days[number.intValue()-1];
+                }
+
+                @Override
+                public Number fromString(String s) {
+                    return null;
+                }
+            });
+            return;
+        }
         switch (timeGranularityValue){
             case SLIDER_DAY:
-                xAxis.setUpperBound(graphData.size());
+                xAxis.setUpperBound(getMostDaysInACampaign());
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Day of Campaign");
-                return;
+                break;
             case SLIDER_WEEK:
-                xAxis.setUpperBound(Math.round(graphData.size()/7.0));
+                xAxis.setUpperBound(Math.round(getMostDaysInACampaign()/7.0));
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Week of Campaign");
-                return;
+                break;
             case SLIDER_MONTH:
-                xAxis.setUpperBound(Math.round(graphData.size()/30.0));
+                xAxis.setUpperBound(Math.round(getMostDaysInACampaign()/30.0));
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Month of Campaign");
-                return;
+                break;
             case SLIDER_YEAR:
-                xAxis.setUpperBound(Math.round(graphData.size()/365.0));
+                xAxis.setUpperBound(Math.round(getMostDaysInACampaign()/365.0));
                 xAxis.setTickUnit(1);
                 xAxis.setLabel("Year of Campaign");
-                return;
         }
+        lineChart.autosize();
     }
 
-    private XYChart.Series<Number, Number> createSeries(int value){
+    private int getMostDaysInACampaign(){
+        int days = 0;
+        for(ArrayList<GraphPoint> list : graphPoints.values()){
+            days = list.size() > days ? list.size() : days;
+        }
+        return days;
+    }
+
+    private XYChart.Series<Number, Number> createSeries(int value, ArrayList<GraphPoint> graphData, boolean shouldGraphAvg, String id, String selected){
         double divider = 1;
         switch (value){
             case SLIDER_DAY:
@@ -204,6 +260,9 @@ public class MainController {
                 divider = 365;
                 break;
         }
+        if(!model.getGraphType().equals("Standard")){
+            divider = 1;
+        }
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
 
@@ -212,12 +271,21 @@ public class MainController {
         double holdTotal;
         double total = 0;
         double totalDenom = 0;
+        XYChart.Data<Number,Number> graphElement;
+
+        ArrayList<GraphPoint> newPoints = new ArrayList<>();
 
         for(GraphPoint point : graphData){
             nextX = (int) Math.floor(point.getX()/divider);
             if(previousX < nextX){
                 holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
-                series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
+
+//                graphElement = new XYChart.Data<>(previousX+1, holdTotal);
+//                series.getData().add(graphElement);
+//                isOutlier(point,graphElement);
+
+                newPoints.add(new GraphPoint(previousX+1,holdTotal));
+
                 total = point.getYnum();
                 totalDenom = point.getYdenom();
                 previousX = nextX;
@@ -228,9 +296,36 @@ public class MainController {
             }
         }
         holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
-        series.getData().add(new XYChart.Data<>(previousX+1, holdTotal));
-        series.setName("Data");
+        newPoints.add(new GraphPoint(previousX+1,holdTotal));
+
+        newPoints = model.setOutliers(newPoints);
+        for(GraphPoint point : newPoints){
+            graphElement = new XYChart.Data<>(point.getX(),point.getY());
+            series.getData().add(graphElement);
+            isOutlier(point,graphElement);
+        }
+
+        series.setName(id + " : " + selected);
         return series;
+    }
+
+    private void isOutlier(GraphPoint point,  XYChart.Data<Number,Number> graphElement){
+        if(point.getOutlier()){
+            graphElement.nodeProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    newValue.setStyle("-fx-background-color: RED");
+                }
+            });
+        }
+    }
+
+    private void addToolTips(XYChart.Series<Number, Number> series){
+        Tooltip tooltip;
+        for (XYChart.Data<Number, Number> entry : series.getData()) {
+            tooltip = new Tooltip(entry.getYValue().toString());
+            tooltip.setShowDelay(Duration.millis(50));
+            Tooltip.install(entry.getNode(), tooltip);
+        }
     }
 
     @FXML public void loadClickLogPressed(){
@@ -258,7 +353,7 @@ public class MainController {
     }
 
     private void shouldEnableLoadCampaignButton(){
-        if(clickLogCSV != null && impressionLogCSV != null && serverLogCSV != null){
+        if(clickLogCSV != null && impressionLogCSV != null && serverLogCSV != null && !campaignIDInput.getText().equals("")){
             addCampaignButton.setDisable(false);
         }
         else {
@@ -291,13 +386,18 @@ public class MainController {
         else if(!serverLogCSV.getName().endsWith(".csv")){
             view.showErrorMessage("Server Log file must be a CSV file");
         }
+        else if(doesCampaignExist(campaignIDInput.getText())){
+            view.showErrorMessage("That campaign ID is already in use");
+        }
         else{
+            String campaignID = campaignIDInput.getText();
+
             Task task = new Task<ArrayList<CampaignTab.CampaignDataPackage>>() {
                 @Override
                 protected ArrayList<CampaignTab.CampaignDataPackage> call() {
-                    error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV);
+                    error[0] = model.createNewCampaign(clickLogCSV,impressionLogCSV,serverLogCSV,campaignID);
                     if(error[0] == null){
-                        return model.queryOverallMetrics();
+                        return model.queryOverallMetrics(campaignID);
                     }
                     else {
                         return null;
@@ -312,10 +412,17 @@ public class MainController {
                 view.hideLoadingDialog();
                 try {
                     if(error[0] == null) {
-                        CampaignTab tab = new CampaignTab(this,((Task<ArrayList<CampaignTab.CampaignDataPackage>>) task).getValue());
+                        CampaignTab tab = new CampaignTab(this,((Task<ArrayList<CampaignTab.CampaignDataPackage>>) task).getValue(), campaignID);
                         clickLogCSV = null;
                         impressionLogCSV = null;
                         serverLogCSV = null;
+                        campaignIDInput.setText("");
+                        tab.setOnClosed(arg0 -> {
+                            String id = ((CampaignTab) arg0.getTarget()).getDatabaseID();
+                            model.deleteCampaign(id);
+                            graphPoints.remove(id);
+                            recreateGraph(timeGranulationValue);
+                        });
                         tabPane.getTabs().add(tab);
                         tabPane.getSelectionModel().select(tab);
                     }
@@ -328,23 +435,24 @@ public class MainController {
             });
 
             new Thread(task).start();
+
+            setFileButtonBorder(loadClickLogButton,Color.RED);
+            setFileButtonBorder(loadImpressionLogButton,Color.RED);
+            setFileButtonBorder(loadServerLogButton,Color.RED);
         }
     }
 
-    public void metricSelectedOnCampaignTab(String metricSelected, String database){
-        if(metricSelected == null){return;}
-
-        shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
-
-        lineChart.getYAxis().setLabel(metricSelected);
-        lineChart.setTitle(metricSelected + " Over Time");
-
-        recreateGraph(timeGranulationValue);
+    private boolean doesCampaignExist(String campaignID){
+        return graphPoints.keySet().contains(campaignID);
     }
 
-    public void updateGraphData(String metricSelected, String database){
+    public void updateGraphData(String metricSelected, String campaignId){
         if(metricSelected == null){return;}
-        graphData = model.queryCampaign(metricSelected);
+        graphPoints.put(campaignId,model.queryCampaign(metricSelected, campaignId));
+    }
+
+    private CampaignTab getCurrentTab(){
+        return (CampaignTab) tabPane.getTabs().get(tabPane.getSelectionModel().getSelectedIndex());
     }
 
     @FXML public void addFilterButtonPressed() throws IOException {
@@ -356,7 +464,7 @@ public class MainController {
         stage.setResizable(false);
         stage.setScene(scene);
         AddFilterDialogController dialogController = fxmlLoader.getController();
-        dialogController.init(model.getFilters());
+        dialogController.init(model.getFilters(getCurrentTab().getDatabaseID()));
         stage.showAndWait();
         if(!dialogController.isConfirmPressed()){
             return;
@@ -382,9 +490,11 @@ public class MainController {
 
     @FXML
     public void onDisplayHistogramPressed() {
+        CampaignTab tab = getCurrentTab();
+
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("/histogram.fxml"));
-        fxmlLoader.setController(new HistogramController(model));
+        fxmlLoader.setController(new HistogramController(model, tab.getDatabaseID()));
 //            HistogramController histogramController = (HistogramController) fxmlLoader.getController();
         try {
 
@@ -399,6 +509,44 @@ public class MainController {
             e.printStackTrace();
 
         }
+    }
+
+    @FXML
+    public void openNewWindowForChartSelected(){
+
+        if(newChartWindowDialogController == null) {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/newChartWindowDialog.fxml"));
+
+            try {
+                Parent parent = fxmlLoader.load();
+                Scene scene = new Scene(parent, 900, 400);
+                Stage stage = new Stage();
+                stage.setScene(scene);
+                stage.setOnCloseRequest(windowEvent -> newChartWindowDialogController = null);
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            newChartWindowDialogController = fxmlLoader.getController();
+            NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
+            NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
+            newChartWindowDialogController.setChartAttributes(xAxis, yAxis, lineChart.getTitle());
+
+        }
+        XYChart.Series<Number, Number> series = allSeries.get(getCurrentTab().getDatabaseID());
+        XYChart.Series<Number, Number> copySeries = copySeries(series);
+        newChartWindowDialogController.addSeries(copySeries);
+
+    }
+
+    //Taken from https://stackoverflow.com/questions/53807176/javafx-clone-xychart-series-doesnt-dork
+    public static XYChart.Series<Number, Number> copySeries(XYChart.Series<Number, Number> series) {
+        XYChart.Series<Number, Number> copy = new XYChart.Series<>(series.getName(),
+                FXCollections.observableArrayList(series.getData()));
+        return copy;
     }
 
     @FXML public void saveOrPrintSelected(){
@@ -436,7 +584,7 @@ public class MainController {
         }
         else {
             defineBounceButton.setDisable(true);
-            model.setBounceAttributes(30,false);
+            model.setBounceAttributes(30,10);
             testUpdateCampaign(new HashMap<>());
         }
     }
@@ -454,8 +602,8 @@ public class MainController {
         stage.showAndWait();
 
         if(controller.getIsConfirmPressed()) {
-            model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getNeedToConvert());
-            testUpdateCampaign(model.getFilters());
+            model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getMaxPagesVisited());
+            testUpdateCampaign(model.getFilters(getCurrentTab().getDatabaseID()));
         }
     }
 
@@ -463,74 +611,57 @@ public class MainController {
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
         model.setChartType(selected);
-        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+
+        timeGranulationSlider.setDisable(!selected.equals("Standard"));
+
 
         Task task = new Task<Void>() {
             @Override
             protected Void call() {
-                updateGraphData(tab.getSelected(),tab.getDatabaseID());
+                CampaignTab campaignTab;
+                for(Tab tab : tabPane.getTabs()) {
+                    if(!(tab == defaultTab)) {
+                        campaignTab = (CampaignTab) tab;
+                        updateGraphData(campaignTab.getSelected(), campaignTab.getDatabaseID());
+                    }
+                }
                 return null;
             }
         };
 
-        task = setBasicLoadingTaskMethods(task,tab);
+
+
+        task = setBasicLoadingTaskMethods(task);
 
         new Thread(task).start();
     }
 
-
-
-
-
-
-
-    //TEST BUTTONS ONLY
-    public void onTestButtonPressed(){
-        HashMap map = new HashMap<String,List<String>>();
-        List<String> contexts = new ArrayList<String>();
-        contexts.add("Blog");
-        //genders.add("Female");
-        map.put("context",contexts);
-        model.setBounceAttributes(50000,true);
-        testUpdateCampaign(map);
-    }
-
     public void testUpdateCampaign(HashMap<String,List<String>> map){
-        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
+        CampaignTab tab = getCurrentTab();
         Task task = new Task<Void>() {
             @Override
             protected Void call() {
-                model.setFilters(map);
-                ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
+                model.setFilters(map,tab.getDatabaseID());
+                ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics(tab.getDatabaseID());
                 tab.updateData(list);
                 updateGraphData(tab.getSelected(),tab.getDatabaseID());
                 return null;
             }
         };
 
-        task = setBasicLoadingTaskMethods(task,tab);
+        task = setBasicLoadingTaskMethods(task);
 
         new Thread(task).start();
-
-
-//        model.setFilters(map);
-//        CampaignTab tab = (CampaignTab) tabPane.getTabs().get(1);
-//
-//
-//        ArrayList<CampaignTab.CampaignDataPackage> list = model.queryOverallMetrics();
-//        tab.updateData(list);
-//        tab.retriggerSelectionProperty();
-
     }
 
-    public Task<Void> setBasicLoadingTaskMethods(Task<Void> task, CampaignTab tab){
+    public Task<Void> setBasicLoadingTaskMethods(Task<Void> task){
         task.setOnRunning((e) -> {
             view.showLoadingDialog();
         });
 
         task.setOnSucceeded((e) -> {
             view.hideLoadingDialog();
-            metricSelectedOnCampaignTab(tab.getSelected(),tab.getDatabaseID());
+            recreateGraph(timeGranulationValue);
         });
         return task;
     }
@@ -538,7 +669,7 @@ public class MainController {
     @FXML
     public void useCurrentDatabase(){
         model.openCurrentDatabase();
-        CampaignTab tab = new CampaignTab(this,model.queryOverallMetrics());
+        CampaignTab tab = new CampaignTab(this,model.queryOverallMetrics("1"),"1");
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }

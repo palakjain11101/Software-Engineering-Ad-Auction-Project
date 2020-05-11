@@ -6,26 +6,34 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.List;
 
 public class SQL {
-    private Connection c;
-    private Statement stmt;
+    //private Connection c;
+    //private Statement stmt;
 
-    public void connection(String databaseName){
-        this.c = null;
+    private HashMap<String,Statement> statements = new HashMap<>();
+    private HashMap<String,Connection> connections = new HashMap<>();
+
+    public void connection(String campaignId){
+        Connection c;
+        Statement stmt;
 
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:"+ databaseName + ".db");
-            this.stmt = this.c.createStatement();
+            c = DriverManager.getConnection("jdbc:sqlite:"+ campaignId + ".db");
+            stmt = c.createStatement();
+            statements.put(campaignId,stmt);
+            connections.put(campaignId,c);
+
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Opened database successfully");
     }
 
-    public void createTable(){
+    public void createTable(String campaignId){
         String serverTable = "CREATE TABLE server (\n"
                 + " id integer,\n"
                 + " date text,\n" //This means entry date
@@ -44,7 +52,7 @@ public class SQL {
 
 
         String personTable = "CREATE TABLE person (\n"
-                + " id integer UNIQUE,\n"
+                + " id integer,\n"
                 + " gender text,\n"
                 + " ageRange text,\n"
                 + " income text,\n"
@@ -58,6 +66,7 @@ public class SQL {
                 + " PRIMARY KEY (id,date));";
 
         try{
+            Statement stmt = statements.get(campaignId);
             stmt.execute("DROP TABLE IF EXISTS server;");
             stmt.execute("DROP TABLE IF EXISTS click;");
             stmt.execute("DROP TABLE IF EXISTS impressions;");
@@ -72,54 +81,55 @@ public class SQL {
 
     }
 
-    public void putData(String file, String table) throws Exception {
+    public void putData(String file, String table, String campaignId) throws Exception {
 
         String line;
         String cvsSplitBy = ",";
+        Connection c = connections.get(campaignId);
+        Statement stmt = statements.get(campaignId);
         c.setAutoCommit(false);
 
+        System.out.println(table);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            int x = 1;
+            int lineNumber = 1;
             line = br.readLine();
 
             if(table.equals("click") && line.equals("Date,ID,Click Cost")){
                 while ((line = br.readLine()) != null) {
-                    x+=1;
+                    lineNumber+=1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
                     if(data.length != 3){
-                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
                     }else{
-                        //System.out.println("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT \" + data[1] + \" id,\\\"\" + data[0] + \"\\\" date,\\\"\" + data[2] + \"\\\" cost, impressions.context context, abs(strftime('%s',\\\"\" + data[0] + \"\\\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \\\"\" + data[1] + \"\\\" ORDER BY closest LIMIT 1);\\n));");
                         stmt.addBatch("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" cost, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
 
                 }
             } else if(table.equals("impressions") && line.equals("Date,ID,Gender,Age,Income,Context,Impression Cost")){
                 while ((line = br.readLine()) != null) {
-                    x += 1;
-                    // use comma as separator
+                    lineNumber += 1;
                     String[] data = line.split(cvsSplitBy);
 
                     if (data.length != 7) {
-                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
                     } else {
+
                         stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
                         stmt.addBatch("INSERT OR IGNORE INTO person VALUES (" + data[1] + ",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                     }
                 }
             } else if(table.equals("server") && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
                 while ((line = br.readLine()) != null) {
-                    x += 1;
+                    lineNumber += 1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
 
                     if (data.length != 5) {
-                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
                     } else {
-                        //stmt.addBatch("INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                         stmt.addBatch("INSERT INTO server (id,date,exitDate,pagesViewed,conversion,context) SELECT id, date, exitDate, pagesViewed,conversion,context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" exitDate," + data[3] + " pagesViewed,\"" + data[4] + "\" conversion, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
                 }
@@ -136,16 +146,30 @@ public class SQL {
             System.out.println(e.getMessage());
         }
 
+        System.out.println(table + "END");
     }
 
-    public ResultSet getData(String query){
+    public ResultSet getData(String query, String campaignId){
         ResultSet rs = null;
         try{
-            rs = stmt.executeQuery(query);
+            rs = statements.get(campaignId).executeQuery(query);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return rs;
+    }
+
+    public void deleteDatabase(String id){
+        try {
+            statements.get(id).close();
+            statements.remove(id);
+            connections.get(id).close();
+            connections.remove(id);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        new File(id+".db").delete();
     }
 
     public static void main( String args[] ) {

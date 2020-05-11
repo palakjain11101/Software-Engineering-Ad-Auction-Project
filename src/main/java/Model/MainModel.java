@@ -9,36 +9,44 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static java.lang.Math.sqrt;
+
 public class MainModel {
+
+    private String currentcampaignId = "";
 
     private SQL sql = new SQL();
     private int bounceTime;
-    private boolean bounceConversion;
-    private HashMap<String, List<String>> filters;
+    private int bouncePages;
+
+    private HashMap<String, HashMap<String, List<String>>> allFilters;
     private String graphType;
     //private String chartTypeTime = "DATE(";
 
     public MainModel() {
         // Set default values
         bounceTime = 30;
-        bounceConversion = false;
+        bouncePages = 10;
         graphType = "Standard";
-        filters = new HashMap<>();
+        allFilters = new HashMap<>();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::deleteAllCampaigns, "Shutdown-thread"));
     }
 
-    public void setBounceAttributes(int time, boolean conversion) {
+    public void setBounceAttributes(int time, int pages) {
         bounceTime = time;
-        bounceConversion = conversion;
+        bouncePages = pages;
     }
 
 
-    public String createNewCampaign(File clickLogPath, File impressionLogPath, File serverLogPath) {
+    public String createNewCampaign(File clickLogPath, File impressionLogPath, File serverLogPath, String campaignId) {
         try {
-            sql.connection("test");
-            sql.createTable();
-            sql.putData(impressionLogPath.getPath(), "impressions");
-            sql.putData(clickLogPath.getPath(), "click");
-            sql.putData(serverLogPath.getPath(), "server");
+            sql.connection(campaignId);
+            sql.createTable(campaignId);
+            sql.putData(impressionLogPath.getPath(), "impressions",campaignId);
+            sql.putData(clickLogPath.getPath(), "click",campaignId);
+            sql.putData(serverLogPath.getPath(), "server",campaignId);
+            allFilters.put(campaignId,new HashMap<>());
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -46,9 +54,27 @@ public class MainModel {
         return null;
     }
 
+    private void deleteAllCampaigns(){
+        Iterator<String> i = allFilters.keySet().iterator();
+        String campaignID;
+        while(i.hasNext()){
+            campaignID = i.next();
+            sql.deleteDatabase(campaignID);
+        }
+
+    }
+
+    public void deleteCampaign(String campaignID){
+        sql.deleteDatabase(campaignID);
+        allFilters.remove(campaignID);
+        if(currentcampaignId.equals(campaignID)){
+            currentcampaignId = "";
+        }
+    }
+
     public Double getData(String overallMetricQuery) {
         try {
-            ResultSet set = sql.getData(overallMetricQuery);
+            ResultSet set = sql.getData(overallMetricQuery, currentcampaignId);
             Double value = set.getDouble(1);
             return round(value, 2);
         } catch (SQLException e) {
@@ -72,7 +98,7 @@ public class MainModel {
     public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg, boolean shouldXAxisBeIncrement) {
         if (metricOverTimeQuery.equals("")) return null;
         ArrayList<GraphPoint> metricOverTime = new ArrayList<>();
-        ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery);
+        ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery, currentcampaignId);
         int i = 0;
         try {
             while (metricOverTimeSet.next()) {
@@ -89,34 +115,41 @@ public class MainModel {
         return metricOverTime;
     }
 
-    public void setFilters(HashMap<String, List<String>> filters) {
-        this.filters = filters;
+    public void setFilters(HashMap<String, List<String>> filters, String campaignID) {
+        allFilters.put(campaignID,filters);
     }
 
-    public HashMap<String, List<String>> getFilters() {
-        return filters;
+    public HashMap<String, List<String>> getFilters(String campaignID) {
+        return allFilters.get(campaignID);
     }
 
     public void setChartType(String type){
         graphType = type;
     }
 
-    public ArrayList<CampaignTab.CampaignDataPackage> queryOverallMetrics() {
-        ArrayList<CampaignTab.CampaignDataPackage> mertics = new ArrayList<>();
-        String cases = convertFiltersToCase(filters);
+    public String getGraphType(){return graphType;}
 
-        String conversionCase = "";
-        if (bounceConversion) {
-            conversionCase = " AND Conversion = \"Yes\"";
-        }
+    public ArrayList<CampaignTab.CampaignDataPackage> queryOverallMetrics(String campaignId) {
+
+        currentcampaignId = campaignId;
+
+        ArrayList<CampaignTab.CampaignDataPackage> mertics = new ArrayList<>();
+        String cases = convertFiltersToCase(allFilters.get(campaignId));
 
         double impressions = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
+
         double clicks = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
+
         double uniques = getData("select count(case when " + cases + " then 1 else null end) from (SELECT distinct date,click.id,gender,ageRange,income,context from click INNER JOIN person ON click.id = person.id);");
-        double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND " + cases + " " + conversionCase + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
+
+        double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND pagesViewed <= " + bouncePages + " AND " + cases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
+
         double conversions = getData("SELECT COUNT(case when conversion = 'Yes' AND " + cases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
+
         double totalCostClick = getData("SELECT SUM(case when " + cases + " then cost else 0 end) FROM click INNER JOIN person ON click.id = person.id;");
+
         double totalCostImpressions = getData("SELECT SUM(case when " + cases + " then cost else 0 end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
+
         double totalCost = totalCostClick + totalCostImpressions;
 
         mertics.add(new CampaignTab.CampaignDataPackage("Number of Impressions",impressions));
@@ -134,15 +167,11 @@ public class MainModel {
         return mertics;
     }
 
-    public ArrayList<GraphPoint> queryCampaign(String metric) {
+    public ArrayList<GraphPoint> queryCampaign(String metric, String campaignId) {
 
-        String cases = convertFiltersToCase(filters);
+        currentcampaignId = campaignId;
 
-        //Set the conversion variable if needed
-        String conversionCase = "";
-        if (bounceConversion) {
-            conversionCase = " AND Conversion = \"Yes\"";
-        }
+        String cases = convertFiltersToCase(allFilters.get(campaignId));
 
         switch (metric) {
             case "Number of Impressions":
@@ -155,7 +184,7 @@ public class MainModel {
                 return getDataPoints("select d1, IFNULL(c1,0) from (select distinct DATE(date) as d1 from click order by d1 asc) left outer join (select DATE(date) as d2, count(case when " + cases + " then 1 end) as c1 from (SELECT * from click INNER JOIN person ON click.id = person.id group by person.id) GROUP BY DATE(date)) on d1=d2;", false);
 
             case "Number of Bounces":
-                return getDataPoints("select DATE(date), COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND " + cases + " " + conversionCase + " then 1 else null end) from (SELECT * from server INNER JOIN person ON server.id = person.id) group by DATE(date);", false);
+                return getDataPoints("select DATE(date), COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND pagesViewed <= " + bouncePages + " AND " + cases + " then 1 else null end) from (SELECT * from server INNER JOIN person ON server.id = person.id) group by DATE(date);", false);
 
             case "Number of Conversions":
                 return getDataPoints("Select DATE(date), COUNT(case when (conversion = 'Yes' AND " + cases + ") then 1 else null end) from (SELECT *  from server INNER JOIN person ON server.id = person.id) group by DATE(date);", false);
@@ -176,32 +205,82 @@ public class MainModel {
                 return getDataPoints("SELECT DATE(date), sum(case when " + cases + " then cost else 0 end)*1000, count(case when " + cases + " then 1 else null end) from impressions INNER JOIN person ON impressions.id = person.id group by DATE(date);", true);
 
             case "Bounce Rate":
-                return getDataPoints("SELECT d1, i, c from (SELECT DATE(date) as d1, count(case when " + cases + " then 1 else null end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, COUNT(case when (strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND " + cases + " " + conversionCase + ") then 1 else null end) as i from server INNER JOIN person ON server.id = person.id group by DATE(date)) ON d1=d2 GROUP BY d1;", true);
+                return getDataPoints("SELECT d1, i, c from (SELECT DATE(date) as d1, count(case when " + cases + " then 1 else null end) as c from click INNER JOIN person ON click.id = person.id group by DATE(date)) LEFT OUTER JOIN (SELECT DATE(date) as d2, COUNT(case when (strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND pagesViewed <= " + bouncePages + " AND " + cases + ") then 1 else null end) as i from server INNER JOIN person ON server.id = person.id group by DATE(date)) ON d1=d2 GROUP BY d1;", true);
 
         }
         return null;
     }
 
-//    private ArrayList<GraphPoint>[] getAllPointData(String mainStatement, Boolean isAvg) {
-//        String dataPerHourOfDayString = mainStatement.replace("DATE(", "strftime('%H',");
-//        String dataPerDayOfWeekString = mainStatement.replace("DATE(", "strftime('%w',");
-//        ArrayList<GraphPoint> dataOverTimePoints = getDataOverTimePoints(mainStatement, isAvg, true);
-//        ArrayList<GraphPoint> dataPerHourOfDayPoints = addZeroPoints(getDataOverTimePoints(dataPerHourOfDayString, isAvg, false), 1, 24);
-//        ArrayList<GraphPoint> dataPerDayOfWeekPoints = addZeroPoints(getDataOverTimePoints(dataPerDayOfWeekString, isAvg, false), 0, 6);
-//        return (ArrayList<GraphPoint>[]) new ArrayList[]{dataOverTimePoints, dataPerHourOfDayPoints, dataPerDayOfWeekPoints};
-//    }
-
     private ArrayList<GraphPoint> getDataPoints(String query, Boolean isAvg) {
         ArrayList<GraphPoint> dataPoints;
         if (graphType.equals("Standard")) {
             dataPoints = getDataOverTimePoints(query, isAvg, true);
+            //dataPoints = setOutliers(dataPoints);
+
         } else if (graphType.equals("Per Hour of Day")) {
             dataPoints = addZeroPoints(getDataOverTimePoints(query.replace("DATE(", "strftime('%H',"), isAvg, false),1,24);
+
         } else {
             dataPoints = addZeroPoints(getDataOverTimePoints(query.replace("DATE(", "strftime('%w',"), isAvg, false),0,6);
+
         }
         return dataPoints;
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public ArrayList<GraphPoint> setOutliers(ArrayList<GraphPoint> dataPoints) {
+        double mean = this.computeMean(dataPoints);
+        double stdDev = this.getStdDev(dataPoints , mean);
+
+
+        for (GraphPoint x : dataPoints) {
+            double distance = Math.abs(x.getY() - mean);
+            if (distance > (2.0 * stdDev)) {
+                //System.out.println("Value " + x.getY() + " is an outlier");
+                x.setOutlier();
+            }
+        }
+
+        return dataPoints;
+    }
+
+
+    public Double getStdDev(ArrayList<GraphPoint> dataPoints, double mean) {
+        double sigma = 0.0;
+
+        for (GraphPoint x : dataPoints) {
+            sigma = sigma + ((mean - x.getY())*(mean - x.getY()));
+        }
+
+        //System.out.printf("Sigma: %f\n", sigma);
+        double inv = 1.0 / ((double)dataPoints.size() - 1.0);
+
+        double variance = inv * sigma;
+        //System.out.printf("Variance: %f\n", variance);
+
+        return sqrt(variance);
+    }
+
+    public Double computeMean(ArrayList<GraphPoint> dataPoints) {
+
+        double mean = 0.0;
+
+        double sum = 0.0;
+
+        for (GraphPoint x : dataPoints) {
+            sum = sum + x.getY();
+        }
+
+        mean = sum / dataPoints.size();
+        //System.out.printf("Mean: %f\n", mean);
+
+        return mean;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     private ArrayList<GraphPoint> addZeroPoints(ArrayList<GraphPoint> points, int min, int max) {
         for (int x = min; x <= max; x++) {
@@ -248,12 +327,16 @@ public class MainModel {
         return holdFilters;
     }
 
-    public ArrayList<Double> getAllClickCosts() {
+    public ArrayList<Double> getAllClickCosts(String campaignId) {
         ArrayList<Double> clickCosts = new ArrayList<>();
-        ResultSet resultSet = sql.getData("SELECT cost FROM click");
+        ResultSet resultSet = sql.getData("SELECT cost FROM click", campaignId);
+        double d;
         while (true) {
             try {
-                clickCosts.add(resultSet.getDouble(1));
+                d = resultSet.getDouble(1);
+                if(!(d == 0.0)){
+                    clickCosts.add(d);
+                }
                 if (!resultSet.next()) break;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -268,4 +351,6 @@ public class MainModel {
     public void openCurrentDatabase() {
         sql.connection("test");
     }
+
+
 }
