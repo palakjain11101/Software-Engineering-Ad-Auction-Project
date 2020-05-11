@@ -110,8 +110,6 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.18</version>
         </dependency>
-        implementation 'com.itextpdf:itext-pdfa:5.5.9'
-
     </dependencies>
 
     <build>
