@@ -10,6 +10,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
@@ -32,8 +33,8 @@
       <ColumnConstraints maxWidth="350.0" minWidth="342.0" percentWidth="20.0" prefWidth="342.0" />
       <ColumnConstraints minWidth="76.0" percentWidth="30.0" prefWidth="84.0" />
       <ColumnConstraints percentWidth="15.0" />
-      <ColumnConstraints percentWidth="20.0" />
-      <ColumnConstraints percentWidth="5.0" />
+      <ColumnConstraints percentWidth="15.0" />
+      <ColumnConstraints percentWidth="10.0" />
        <ColumnConstraints percentWidth="10.0" />
       <ColumnConstraints />
    </columnConstraints>
@@ -92,7 +93,7 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.columnSpan="2147483647">
           <Pane HBox.hgrow="ALWAYS" />
           <Button mnemonicParsing="false" onAction="#saveOrPrintSelected" text="Save/Print" />
-         <Button mnemonicParsing="false" onAction="#getHelp" text="Help" />
+         <Button mnemonicParsing="false" text="Help" />
          <MenuButton mnemonicParsing="false" text="Settings">
            <items>
              <MenuItem mnemonicParsing="false" text="Action 1" />
@@ -100,13 +101,13 @@
            </items>
          </MenuButton>
       </ToolBar>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="2">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time Granularity" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="15.0" />
             <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="15.0" />
          </children>
       </AnchorPane>
-      <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1">
+      <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="1">
         <xAxis>
           <NumberAxis autoRanging="false" minorTickCount="1" side="BOTTOM" upperBound="364.0" />
         </xAxis>
@@ -150,9 +151,6 @@
                <padding>
                   <Insets bottom="30.0" top="30.0" />
                </padding>
-               <font>
-                  <Font size="18.0" />
-               </font>
             </CheckBox>
             <Button fx:id="defineBounceButton" disable="true" mnemonicParsing="false" onAction="#defineCustomBounceClicked" text="Define Bounce">
                <padding>
@@ -164,7 +162,20 @@
             </Button>
          </children>
       </VBox>
-      <ComboBox fx:id="chartTypeComboBox" onAction="#onChartTypeComboBoxChanges" prefWidth="150.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <Button mnemonicParsing="false" onAction="#openNewWindowForChartSelected" text="Open New Window For Chart" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <ComboBox fx:id="chartTypeComboBox" onAction="#onChartTypeComboBoxChanges" prefWidth="150.0" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <Button mnemonicParsing="false" onAction="#openNewWindowForChartSelected" text="Open New Window For Chart" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Outlier Strictness" />
+            <Spinner fx:id="outlierStrictnessSpinner">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Spinner>
+         </children>
+      </HBox>
    </children>
 </GridPane>

@@ -4,6 +4,8 @@ import Model.GraphPoint;
 import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -89,6 +91,9 @@ public class MainController {
     Button displayHistogramButton;
 
     @FXML
+    Spinner<Double> outlierStrictnessSpinner;
+
+    @FXML
     CheckBox customBounceCheckBox;
 
     @FXML
@@ -122,6 +127,26 @@ public class MainController {
         addCampaignButton.setDisable(true);
 
         campaignIDInput.textProperty().addListener((observable, oldValue, newValue) -> shouldEnableLoadCampaignButton());
+
+        outlierStrictnessSpinner.setValueFactory(new SpinnerValueFactory<Double>() {
+            @Override
+            public void decrement(int i) {
+                if(getValue() > 0.5){
+                    setValue(getValue()-0.5);
+                }
+            }
+
+            @Override
+            public void increment(int i) {
+                if(getValue() < 10){
+                    setValue(getValue()+0.5);
+                }
+            }
+        });
+        outlierStrictnessSpinner.getValueFactory().setValue(2.0);
+        outlierStrictnessSpinner.getValueFactory().valueProperty().addListener((observableValue, aDouble, t1) -> {
+            recreateGraph();
+        });
     }
 
     private void disableCampaignFunctionalityButtons(){
@@ -280,10 +305,6 @@ public class MainController {
             if(previousX < nextX){
                 holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
 
-//                graphElement = new XYChart.Data<>(previousX+1, holdTotal);
-//                series.getData().add(graphElement);
-//                isOutlier(point,graphElement);
-
                 newPoints.add(new GraphPoint(previousX+1,holdTotal));
 
                 total = point.getYnum();
@@ -298,7 +319,7 @@ public class MainController {
         holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
         newPoints.add(new GraphPoint(previousX+1,holdTotal));
 
-        newPoints = model.setOutliers(newPoints);
+        newPoints = model.setOutliers(newPoints, outlierStrictnessSpinner.getValue());
         for(GraphPoint point : newPoints){
             graphElement = new XYChart.Data<>(point.getX(),point.getY());
             series.getData().add(graphElement);
