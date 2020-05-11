@@ -52,8 +52,6 @@ public class MainController {
     private MainView view;
     private MainModel model;
 
-    private int campaignNumber = 1;
-    private NewChartWindowDialogController newChartWindowDialogController;
     private HashMap<String,XYChart.Series<Number,Number>> allSeries;
 
     private HashMap<String, ArrayList<GraphPoint>> graphPoints = new HashMap<>();
@@ -535,31 +533,35 @@ public class MainController {
     @FXML
     public void openNewWindowForChartSelected(){
 
-        if(newChartWindowDialogController == null) {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/newChartWindowDialog.fxml"));
+        NewChartWindowDialogController newChartWindowDialogController;
 
-            try {
-                Parent parent = fxmlLoader.load();
-                Scene scene = new Scene(parent, 900, 400);
-                Stage stage = new Stage();
-                stage.setScene(scene);
-                stage.setOnCloseRequest(windowEvent -> newChartWindowDialogController = null);
-                stage.show();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("/newChartWindowDialog.fxml"));
 
-
-            newChartWindowDialogController = fxmlLoader.getController();
-            NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
-            NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
-            newChartWindowDialogController.setChartAttributes(xAxis, yAxis, lineChart.getTitle());
-
+        try {
+            Parent parent = fxmlLoader.load();
+            Scene scene = new Scene(parent, 900, 400);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        XYChart.Series<Number, Number> series = allSeries.get(getCurrentTab().getDatabaseID());
-        XYChart.Series<Number, Number> copySeries = copySeries(series);
-        newChartWindowDialogController.addSeries(copySeries);
+
+
+        newChartWindowDialogController = fxmlLoader.getController();
+        NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
+        NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
+        newChartWindowDialogController.setChartAttributes(xAxis, yAxis, lineChart.getTitle());
+
+//        XYChart.Series<Number, Number> series = allSeries.get(getCurrentTab().getDatabaseID());
+//        XYChart.Series<Number, Number> copySeries = copySeries(series);
+//        newChartWindowDialogController.addSeries(copySeries);
+
+        for(XYChart.Series<Number,Number> series : lineChart.getData()){
+            XYChart.Series<Number, Number> copySeries = copySeries(series);
+            newChartWindowDialogController.addSeries(copySeries);
+        }
 
     }
 
