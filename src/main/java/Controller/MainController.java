@@ -147,11 +147,19 @@ public class MainController {
         });
     }
 
-    public void loadAllPreviousCampaigns(){
+    public HashMap<String, List<CampaignTab.CampaignDataPackage>> loadAllDataFromEarlierCampaigns(){
+        HashMap<String, List<CampaignTab.CampaignDataPackage>> campaignData = new HashMap<>();
         for(String campaignID : model.getAllCampaigns()){
-            CampaignTab tab = new CampaignTab(this, model.queryOverallMetrics(campaignID), campaignID);
-            tabPane.getTabs().add(tab);
+            campaignData.put(campaignID,model.queryOverallMetrics(campaignID));
+            //CampaignTab tab = new CampaignTab(this, model.queryOverallMetrics(campaignID), campaignID);
+            //tabPane.getTabs().add(tab);
         }
+        return campaignData;
+    }
+
+    public void loadEarlierCampaign(String campaignID, ArrayList<CampaignTab.CampaignDataPackage> metrics){
+        CampaignTab tab = new CampaignTab(this, metrics, campaignID);
+        tabPane.getTabs().add(tab);
     }
 
     private void disableCampaignFunctionalityButtons(){

@@ -17,6 +17,8 @@ import javafx.util.StringConverter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainView extends Application {
 
@@ -54,14 +56,22 @@ public class MainView extends Application {
 
         primaryStage.show();
 
-        Task task = new Task<Void>() {
+        Task task = new Task<HashMap<String, List<CampaignTab.CampaignDataPackage>>>() {
             @Override
-            protected Void call() {
-                controller.loadAllPreviousCampaigns();
-                return null;
+            protected HashMap<String, List<CampaignTab.CampaignDataPackage>> call() {
+                return controller.loadAllDataFromEarlierCampaigns();
             }
         };
-        controller.setBasicLoadingTaskMethods(task);
+        task.setOnRunning((e) -> showLoadingDialog());
+        task.setOnSucceeded((e) -> {
+            hideLoadingDialog();
+            HashMap<String, List<CampaignTab.CampaignDataPackage>> campaignData = ((Task<HashMap<String, List<CampaignTab.CampaignDataPackage>>>) task).getValue();
+            for(String campaignID : campaignData.keySet()){
+                controller.loadEarlierCampaign(campaignID, (ArrayList<CampaignTab.CampaignDataPackage>) campaignData.get(campaignID));
+            }
+        });
+
+        new Thread(task).start();
     }
 
     private void setUpTimeGranulationSlider(MainController controller){
