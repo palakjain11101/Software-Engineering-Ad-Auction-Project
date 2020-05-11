@@ -92,7 +92,7 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.columnSpan="2147483647">
           <Pane HBox.hgrow="ALWAYS" />
           <Button mnemonicParsing="false" onAction="#saveOrPrintSelected" text="Save/Print" />
-         <Button mnemonicParsing="false" onAction="#onHelp" text="Help" />
+         <Button mnemonicParsing="false" text="Help" />
          <MenuButton mnemonicParsing="false" text="Settings">
            <items>
              <MenuItem mnemonicParsing="false" text="Action 1" />
