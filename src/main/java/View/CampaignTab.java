@@ -2,13 +2,15 @@ package View;
 
 import Controller.MainController;
 import Model.GraphPoint;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,8 @@ public class CampaignTab extends Tab {
     private String campaignID;
 
     private ArrayList<CampaignDataPackage> basicMetrics;
+
+    private boolean shouldShowCampaign = true;
 
     private VBox pane;
     private TableView table;
@@ -32,7 +36,7 @@ public class CampaignTab extends Tab {
     }
 
     private void initCampaignTab() {
-        setText(campaignID);
+        setText("Campaign " + campaignID);
         pane = new VBox();
         pane.getStylesheets().add("styles.css");
         setContent(pane);
@@ -61,6 +65,20 @@ public class CampaignTab extends Tab {
         setSelectionModel();
 
         pane.getChildren().add(table);
+
+        CheckBox hideBox = new CheckBox();
+        hideBox.paddingProperty().setValue(new Insets(0,10,10,0));
+        Text text = new Text("Hide Series");
+        hideBox.setSelected(false);
+        hideBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            shouldShowCampaign = !shouldShowCampaign;
+            controller.recreateGraph();
+        });
+
+        HBox container = new HBox(hideBox,text);
+        container.paddingProperty().setValue(new Insets(10,10,10,10));
+        pane.getChildren().add(container);
+
 
         table.getSelectionModel().select(0);
     }
@@ -110,6 +128,10 @@ public class CampaignTab extends Tab {
 
     public String getDatabaseID(){
         return campaignID;
+    }
+
+    public boolean getShouldShowCampaign(){
+        return shouldShowCampaign;
     }
 
     public static class CampaignDataPackage{

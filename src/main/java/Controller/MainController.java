@@ -157,6 +157,10 @@ public class MainController {
         this.model = model;
     }
 
+    public void recreateGraph(){
+        recreateGraph(timeGranulationValue);
+    }
+
     public void recreateGraph(int timeGranularityValue){
         timeGranulationValue = timeGranularityValue;
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
@@ -168,12 +172,14 @@ public class MainController {
 
         allSeries = new HashMap<>();
         for(CampaignTab tab : getTabs()) {
-            metricSelected = tab.getSelected();
-            shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
-            XYChart.Series<Number, Number> series = createSeries(timeGranularityValue,graphPoints.get(tab.getDatabaseID()),shouldGraphAvg,tab.getDatabaseID(),metricSelected);
-            lineChart.getData().add(series);
-            addToolTips(series);
-            allSeries.put(tab.getDatabaseID(),series);
+            if(tab.getShouldShowCampaign()) {
+                metricSelected = tab.getSelected();
+                shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
+                XYChart.Series<Number, Number> series = createSeries(timeGranularityValue, graphPoints.get(tab.getDatabaseID()), shouldGraphAvg, tab.getDatabaseID(), metricSelected);
+                lineChart.getData().add(series);
+                addToolTips(series);
+                allSeries.put(tab.getDatabaseID(), series);
+            }
         }
 
         xAxis.setTickLabelFormatter(null);

@@ -91,17 +91,17 @@ public class SQL {
 
         System.out.println(table);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            int x = 1;
+            int lineNumber = 1;
             line = br.readLine();
 
             if(table.equals("click") && line.equals("Date,ID,Click Cost")){
                 while ((line = br.readLine()) != null) {
-                    x+=1;
+                    lineNumber+=1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
                     if(data.length != 3){
-                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
                     }else{
                         stmt.addBatch("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" cost, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
@@ -109,12 +109,11 @@ public class SQL {
                 }
             } else if(table.equals("impressions") && line.equals("Date,ID,Gender,Age,Income,Context,Impression Cost")){
                 while ((line = br.readLine()) != null) {
-                    x += 1;
-                    // use comma as separator
+                    lineNumber += 1;
                     String[] data = line.split(cvsSplitBy);
 
                     if (data.length != 7) {
-                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
                     } else {
 
                         stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
@@ -123,13 +122,13 @@ public class SQL {
                 }
             } else if(table.equals("server") && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
                 while ((line = br.readLine()) != null) {
-                    x += 1;
+                    lineNumber += 1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
 
                     if (data.length != 5) {
-                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
                     } else {
                         stmt.addBatch("INSERT INTO server (id,date,exitDate,pagesViewed,conversion,context) SELECT id, date, exitDate, pagesViewed,conversion,context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" exitDate," + data[3] + " pagesViewed,\"" + data[4] + "\" conversion, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
