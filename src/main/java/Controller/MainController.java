@@ -97,6 +97,7 @@ public class MainController {
     @FXML Button loadClickLogButton;
     @FXML Button loadImpressionLogButton;
     @FXML Button loadServerLogButton;
+    @FXML TextField campaignIDInput;
     @FXML Button addCampaignButton;
 
     public void initialize(){
@@ -119,6 +120,8 @@ public class MainController {
         setFileButtonBorder(loadImpressionLogButton,Color.RED);
         setFileButtonBorder(loadServerLogButton,Color.RED);
         addCampaignButton.setDisable(true);
+
+        campaignIDInput.textProperty().addListener((observable, oldValue, newValue) -> shouldEnableLoadCampaignButton());
     }
 
     private void disableCampaignFunctionalityButtons(){
@@ -350,7 +353,7 @@ public class MainController {
     }
 
     private void shouldEnableLoadCampaignButton(){
-        if(clickLogCSV != null && impressionLogCSV != null && serverLogCSV != null){
+        if(clickLogCSV != null && impressionLogCSV != null && serverLogCSV != null && !campaignIDInput.getText().equals("")){
             addCampaignButton.setDisable(false);
         }
         else {
@@ -383,9 +386,11 @@ public class MainController {
         else if(!serverLogCSV.getName().endsWith(".csv")){
             view.showErrorMessage("Server Log file must be a CSV file");
         }
+        else if(doesCampaignExist(campaignIDInput.getText())){
+            view.showErrorMessage("That campaign ID is already in use");
+        }
         else{
-            String campaignID = Integer.toString(campaignNumber);
-            campaignNumber++;
+            String campaignID = campaignIDInput.getText();
 
             Task task = new Task<ArrayList<CampaignTab.CampaignDataPackage>>() {
                 @Override
@@ -411,6 +416,7 @@ public class MainController {
                         clickLogCSV = null;
                         impressionLogCSV = null;
                         serverLogCSV = null;
+                        campaignIDInput.setText("");
                         tab.setOnClosed(arg0 -> {
                             String id = ((CampaignTab) arg0.getTarget()).getDatabaseID();
                             model.deleteCampaign(id);
@@ -434,6 +440,10 @@ public class MainController {
             setFileButtonBorder(loadImpressionLogButton,Color.RED);
             setFileButtonBorder(loadServerLogButton,Color.RED);
         }
+    }
+
+    private boolean doesCampaignExist(String campaignID){
+        return graphPoints.keySet().contains(campaignID);
     }
 
     public void updateGraphData(String metricSelected, String campaignId){
