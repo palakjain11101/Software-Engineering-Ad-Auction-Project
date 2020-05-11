@@ -298,7 +298,7 @@ public class MainController {
         holdTotal = shouldGraphAvg ? (totalDenom == 0 ? 0 : total/totalDenom) : (total);
         newPoints.add(new GraphPoint(previousX+1,holdTotal));
 
-        newPoints = model.setOutliers(newPoints);
+        newPoints = model.setOutliers(newPoints, 2.0);
         for(GraphPoint point : newPoints){
             graphElement = new XYChart.Data<>(point.getX(),point.getY());
             series.getData().add(graphElement);

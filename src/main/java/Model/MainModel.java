@@ -229,14 +229,14 @@ public class MainModel {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ArrayList<GraphPoint> setOutliers(ArrayList<GraphPoint> dataPoints) {
+    public ArrayList<GraphPoint> setOutliers(ArrayList<GraphPoint> dataPoints, double strictness) {
         double mean = this.computeMean(dataPoints);
         double stdDev = this.getStdDev(dataPoints , mean);
 
 
         for (GraphPoint x : dataPoints) {
             double distance = Math.abs(x.getY() - mean);
-            if (distance > (2.0 * stdDev)) {
+            if (distance > (strictness * stdDev)) {
                 //System.out.println("Value " + x.getY() + " is an outlier");
                 x.setOutlier();
             }

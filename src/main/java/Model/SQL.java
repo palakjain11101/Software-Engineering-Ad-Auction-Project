@@ -52,7 +52,7 @@ public class SQL {
 
 
         String personTable = "CREATE TABLE person (\n"
-                + " id integer,\n"
+                + " id integer UNIQUE,\n"
                 + " gender text,\n"
                 + " ageRange text,\n"
                 + " income text,\n"
@@ -86,67 +86,109 @@ public class SQL {
         String line;
         String cvsSplitBy = ",";
         Connection c = connections.get(campaignId);
-        Statement stmt = statements.get(campaignId);
+        //Statement stmt = statements.get(campaignId);
         c.setAutoCommit(false);
 
-        System.out.println(table);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            int lineNumber = 1;
+            int x = 1;
             line = br.readLine();
 
+            System.out.println(table + "S");
             if(table.equals("click") && line.equals("Date,ID,Click Cost")){
+                PreparedStatement pstmt = c.prepareStatement("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT ? id,? date,? cost, impressions.context context, abs(strftime('%s',?) - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = ? ORDER BY closest LIMIT 1);\n));");
                 while ((line = br.readLine()) != null) {
-                    lineNumber+=1;
+                    x+=1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
                     if(data.length != 3){
-                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     }else{
-                        stmt.addBatch("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" cost, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
+                        pstmt.setString(1,data[1]);
+                        pstmt.setString(2,data[0]);
+                        pstmt.setString(3,data[2]);
+                        pstmt.setString(4,data[0]);
+                        pstmt.setString(5,data[1]);
+                        pstmt.addBatch();
                     }
 
                 }
-            } else if(table.equals("impressions") && line.equals("Date,ID,Gender,Age,Income,Context,Impression Cost")){
+                pstmt.executeBatch();
+                c.setAutoCommit(true);
+                pstmt.close();
+            }
+            else if(table.equals("impressions") && line.equals("Date,ID,Gender,Age,Income,Context,Impression Cost")){
+                PreparedStatement pstmt1 = c.prepareStatement("INSERT INTO impressions VALUES (?,?,?,?);");
+                PreparedStatement pstmt2 = c.prepareStatement("INSERT OR IGNORE INTO person VALUES (?,?,?,?);");
                 while ((line = br.readLine()) != null) {
-                    lineNumber += 1;
+                    x += 1;
+                    // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
                     if (data.length != 7) {
-                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
+                        pstmt1.setLong(1,Long.parseLong(data[1]));
+                        pstmt1.setString(2,data[0]);
+                        pstmt1.setString(3,data[5]);
+                        pstmt1.setFloat(4,Float.parseFloat(data[6]));
 
-                        stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
-                        stmt.addBatch("INSERT OR IGNORE INTO person VALUES (" + data[1] + ",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
+                        pstmt2.setLong(1,Long.parseLong(data[1]));
+                        pstmt2.setString(2,data[2]);
+                        pstmt2.setString(3,data[3]);
+                        pstmt2.setString(4,data[4]);
+
+                        pstmt1.addBatch();
+                        pstmt2.addBatch();
                     }
                 }
-            } else if(table.equals("server") && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
+                pstmt1.executeBatch();
+                pstmt2.executeBatch();
+                c.setAutoCommit(true);
+                pstmt1.close();
+                pstmt2.close();
+            }
+            else if(table.equals("server") && line.equals("Entry Date,ID,Exit Date,Pages Viewed,Conversion")){
+                PreparedStatement pstmt = c.prepareStatement("INSERT INTO server (id,date,exitDate,pagesViewed,conversion,context) SELECT id, date, exitDate, pagesViewed,conversion,context FROM (SELECT ? id,? date,? exitDate,? pagesViewed,? conversion, impressions.context context, abs(strftime('%s',?) - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = ? ORDER BY closest LIMIT 1);\n));");
                 while ((line = br.readLine()) != null) {
-                    lineNumber += 1;
+                    x += 1;
                     // use comma as separator
                     String[] data = line.split(cvsSplitBy);
 
 
                     if (data.length != 5) {
-                        throw new Exception("Values missing on line " + lineNumber + ", \"" + line + "\"");
+                        throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        stmt.addBatch("INSERT INTO server (id,date,exitDate,pagesViewed,conversion,context) SELECT id, date, exitDate, pagesViewed,conversion,context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" exitDate," + data[3] + " pagesViewed,\"" + data[4] + "\" conversion, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
+                        pstmt.setString(1,data[1]);
+                        pstmt.setString(2,data[0]);
+                        pstmt.setString(3,data[2]);
+                        pstmt.setString(4,data[3]);
+                        pstmt.setString(5,data[4]);
+                        pstmt.setString(6,data[0]);
+                        pstmt.setString(7,data[1]);
+                        pstmt.addBatch();
+                        //stmt.addBatch("INSERT INTO server (id,date,exitDate,pagesViewed,conversion,context) SELECT id, date, exitDate, pagesViewed,conversion,context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" exitDate," + data[3] + " pagesViewed,\"" + data[4] + "\" conversion, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
                 }
-            } else {
+                pstmt.executeBatch();
+                c.setAutoCommit(true);
+                pstmt.close();
+            }
+            else {
                 throw new Exception("Incorrect file format");
             }
         } catch (IOException e) {
             throw new Exception("No file found at given path");
         }
-        try{
-            stmt.executeBatch();
-            c.setAutoCommit(true);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        System.out.println(table + "E");
+//        try{
+//            stmt.executeBatch();
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
+//
+//        c.setAutoCommit(true);
 
-        System.out.println(table + "END");
     }
 
     public ResultSet getData(String query, String campaignId){
@@ -170,9 +212,5 @@ public class SQL {
             e.printStackTrace();
         }
         new File(id+".db").delete();
-    }
-
-    public static void main( String args[] ) {
-        SQL sql = new SQL();
     }
 }
