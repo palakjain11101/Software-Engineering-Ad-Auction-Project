@@ -71,14 +71,17 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" percentHeight="80.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
                               <Button fx:id="loadClickLogButton" minWidth="100.0" mnemonicParsing="false" onAction="#loadClickLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ClickLog" GridPane.halignment="CENTER" />
                               <Button fx:id="loadImpressionLogButton" mnemonicParsing="false" onAction="#loadImpressionLogPressed" prefHeight="25.0" prefWidth="134.0" text="Load ImpressionLog" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                               <Button fx:id="loadServerLogButton" mnemonicParsing="false" onAction="#loadServerLogPressed" prefHeight="25.0" prefWidth="140.0" text="Load ServerLog" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                               <Button fx:id="addCampaignButton" mnemonicParsing="false" onAction="#loadCampaignPressed" prefHeight="40.0" prefWidth="140.0" text="Add Campaign" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
-                              <TextField fx:id="campaignIDInput" GridPane.rowIndex="3" />
+                              <TextField fx:id="campaignIDInput" promptText="Insert campaign name here" GridPane.rowIndex="3">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" right="30.0" />
+                                 </GridPane.margin></TextField>
                            </children>
                         </GridPane>
                      </children></AnchorPane>
