@@ -22,14 +22,12 @@ public class HistogramController implements Initializable {
     private int numberOfClasses;
     private Double classWidth;
 
-    HistogramController(MainModel model, String campaignId) {
+    HistogramController(MainModel model) {
         this.model = model;
-        this.clickCostList = model.getAllClickCosts(campaignId);
-        this.classWidth = 2.5;
+        this.clickCostList = model.getAllClickCosts();
+        this.classWidth = 1.0;
         double classes = ((Collections.max(clickCostList))/classWidth);
         this.numberOfClasses = (int) Math.ceil(classes);
-
-
     }
 
     @FXML
@@ -43,21 +41,15 @@ public class HistogramController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         ArrayList<Integer> clickCostFrequencies = new ArrayList<>(Collections.nCopies(numberOfClasses+1, 0));
         ArrayList<Double> clickCostFreqDens = new ArrayList<>();
-
-        for ( Double clickCost : clickCostList) {
+        for ( Double clickCost : model.getAllClickCosts()) {
             int classID = (int) Math.ceil(clickCost/classWidth);
             clickCostFrequencies.set(classID, (clickCostFrequencies.get(classID))+1);
-
         }
-
         for ( int freq : clickCostFrequencies) {
             clickCostFreqDens.add(freq/classWidth);
-
         }
-
         boolean firstClass = true;
         int index = 0;
         for ( Double dens : clickCostFreqDens) {
@@ -65,17 +57,12 @@ public class HistogramController implements Initializable {
                 histogramSeries.getData().add(new XYChart.Data("0 - " + classWidth, clickCostFreqDens.get(0)));
                 index++;
                 firstClass = false;
-
             }
-
             else {
                 histogramSeries.getData().add(new XYChart.Data(classWidth*index + " - " + classWidth*(index+1), clickCostFreqDens.get(index)));
                 index++;
-
             }
-
         }
-
 //        for (int i = 0; i < clickCostFreqDens.size(); i++) {
 //            if (i == 0) {
 //                histogramSeries.getData().add(new XYChart.Data("0 - " + classWidth, clickCostFreqDens.get(0)));
@@ -87,8 +74,6 @@ public class HistogramController implements Initializable {
 //
 //            }
 //        }
-
         clickCostHistogram.getData().addAll(histogramSeries);
-
     }
 }

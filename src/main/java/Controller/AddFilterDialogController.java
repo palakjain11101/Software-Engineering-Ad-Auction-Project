@@ -1,14 +1,25 @@
 package Controller;
 
-import javafx.application.Platform;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
+import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 public class AddFilterDialogController<string> {
@@ -62,7 +73,6 @@ public class AddFilterDialogController<string> {
         if(isDateSet("dateAfter")){
             dateAfter.setValue(getDate("dateAfter"));
         }
-
         lowIncome.setSelected(isFilterSelected("income","Low"));
         mediumIncome.setSelected(isFilterSelected("income","Medium"));
         highIncome.setSelected(isFilterSelected("income","High"));
@@ -79,7 +89,6 @@ public class AddFilterDialogController<string> {
         ageGT54.setSelected(isFilterSelected("ageRange",">54"));
         genderMale.setSelected(isFilterSelected("gender","Male"));
         genderFemale.setSelected(isFilterSelected("gender","Female"));
-
     }
 
     private boolean isFilterSelected(String metric, String filter){
@@ -98,12 +107,9 @@ public class AddFilterDialogController<string> {
     private LocalDate getDate(String metric){
         List<String> filtersForMetric = filters.get(metric);
         String dateString = filtersForMetric.get(0).split(" ")[0];
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(dateString, formatter);
     }
-
-
 
     @FXML public void dateBeforeChanged(){
         setDate("dateBefore",dateBefore);
@@ -133,7 +139,6 @@ public class AddFilterDialogController<string> {
         }
     }
 
-
     @FXML public void lowIncomeChanged(){onSelected("income","Low");}
     @FXML public void mediumIncomeChanged(){onSelected("income","Medium");}
     @FXML public void highIncomeChanged(){onSelected("income","High");}
@@ -161,7 +166,6 @@ public class AddFilterDialogController<string> {
         else {
             filterList.add(filter);
         }
-
         if(filterList.size()==0){
             filters.remove(metric);
         }
@@ -183,6 +187,17 @@ public class AddFilterDialogController<string> {
     public HashMap<String,List<String>> getFilters(){
         return filters;
     }
+
+    @FXML public void getHelp(){
+        OutputStream fos = new FileOutputStream(dest);
+        PdfWriter writer = new PdfWriter(fos);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+        document.add(new Paragraph("Hello World!"));
+        document.close();
+
+    }
+
 
 
 }
