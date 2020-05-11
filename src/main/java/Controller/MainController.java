@@ -423,6 +423,10 @@ public class MainController {
             });
 
             new Thread(task).start();
+
+            setFileButtonBorder(loadClickLogButton,Color.RED);
+            setFileButtonBorder(loadImpressionLogButton,Color.RED);
+            setFileButtonBorder(loadServerLogButton,Color.RED);
         }
     }
 

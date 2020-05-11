@@ -52,7 +52,7 @@ public class SQL {
 
 
         String personTable = "CREATE TABLE person (\n"
-                + " id integer UNIQUE,\n"
+                + " id integer,\n"
                 + " gender text,\n"
                 + " ageRange text,\n"
                 + " income text,\n"
@@ -89,6 +89,7 @@ public class SQL {
         Statement stmt = statements.get(campaignId);
         c.setAutoCommit(false);
 
+        System.out.println(table);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int x = 1;
             line = br.readLine();
@@ -102,7 +103,6 @@ public class SQL {
                     if(data.length != 3){
                         throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     }else{
-                        //System.out.println("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT \" + data[1] + \" id,\\\"\" + data[0] + \"\\\" date,\\\"\" + data[2] + \"\\\" cost, impressions.context context, abs(strftime('%s',\\\"\" + data[0] + \"\\\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \\\"\" + data[1] + \"\\\" ORDER BY closest LIMIT 1);\\n));");
                         stmt.addBatch("INSERT INTO click (id,date,cost,context) SELECT id, date, cost, context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" cost, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
 
@@ -116,6 +116,7 @@ public class SQL {
                     if (data.length != 7) {
                         throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
+
                         stmt.addBatch("INSERT INTO impressions VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[5] + "\",\"" + data[6] + "\");");
                         stmt.addBatch("INSERT OR IGNORE INTO person VALUES (" + data[1] + ",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                     }
@@ -130,7 +131,6 @@ public class SQL {
                     if (data.length != 5) {
                         throw new Exception("Values missing on line " + x + ", \"" + line + "\"");
                     } else {
-                        //stmt.addBatch("INSERT INTO server VALUES (" + data[1] + ",\"" + data[0] + "\",\"" + data[2] + "\",\"" + data[3] + "\",\"" + data[4] + "\");");
                         stmt.addBatch("INSERT INTO server (id,date,exitDate,pagesViewed,conversion,context) SELECT id, date, exitDate, pagesViewed,conversion,context FROM (SELECT " + data[1] + " id,\"" + data[0] + "\" date,\"" + data[2] + "\" exitDate," + data[3] + " pagesViewed,\"" + data[4] + "\" conversion, impressions.context context, abs(strftime('%s',\"" + data[0] + "\") - strftime('%s', impressions.date)) as closest FROM impressions WHERE impressions.id = \"" + data[1] + "\" ORDER BY closest LIMIT 1);\n));");
                     }
                 }
@@ -147,6 +147,7 @@ public class SQL {
             System.out.println(e.getMessage());
         }
 
+        System.out.println(table + "END");
     }
 
     public ResultSet getData(String query, String campaignId){

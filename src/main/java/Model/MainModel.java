@@ -137,12 +137,19 @@ public class MainModel {
         String cases = convertFiltersToCase(allFilters.get(campaignId));
 
         double impressions = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
+
         double clicks = getData("SELECT COUNT(case when " + cases + " then 1 else null end) FROM click INNER JOIN person ON click.id = person.id;");
+
         double uniques = getData("select count(case when " + cases + " then 1 else null end) from (SELECT distinct date,click.id,gender,ageRange,income,context from click INNER JOIN person ON click.id = person.id);");
+
         double bounces = getData("SELECT COUNT(case when strftime('%s',exitDate) - strftime('%s',date) < " + bounceTime + " AND pagesViewed <= " + bouncePages + " AND " + cases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
+
         double conversions = getData("SELECT COUNT(case when conversion = 'Yes' AND " + cases + " then 1 else null end) FROM server INNER JOIN person ON server.id = person.id;");
+
         double totalCostClick = getData("SELECT SUM(case when " + cases + " then cost else 0 end) FROM click INNER JOIN person ON click.id = person.id;");
+
         double totalCostImpressions = getData("SELECT SUM(case when " + cases + " then cost else 0 end) FROM impressions INNER JOIN person ON impressions.id = person.id;");
+
         double totalCost = totalCostClick + totalCostImpressions;
 
         mertics.add(new CampaignTab.CampaignDataPackage("Number of Impressions",impressions));
@@ -230,7 +237,7 @@ public class MainModel {
         for (GraphPoint x : dataPoints) {
             double distance = Math.abs(x.getY() - mean);
             if (distance > (2.0 * stdDev)) {
-                System.out.println("Value " + x.getY() + " is an outlier");
+                //System.out.println("Value " + x.getY() + " is an outlier");
                 x.setOutlier();
             }
         }
