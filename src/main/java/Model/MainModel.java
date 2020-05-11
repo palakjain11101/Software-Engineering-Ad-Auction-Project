@@ -19,6 +19,7 @@ public class MainModel {
     private int bounceTime;
     private int bouncePages;
 
+    private List<String> allCampaigns;
     private HashMap<String, HashMap<String, List<String>>> allFilters;
     private String graphType;
     //private String chartTypeTime = "DATE(";
@@ -28,10 +29,34 @@ public class MainModel {
         bounceTime = 30;
         bouncePages = 10;
         graphType = "Standard";
+        allCampaigns = new ArrayList<>();
         allFilters = new HashMap<>();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(this::deleteAllCampaigns, "Shutdown-thread"));
+        getAllDatabasesInDirectory();
+        Runtime.getRuntime().addShutdownHook(new Thread(sql::closeAllconnections, "Shutdown-thread"));
     }
+
+    private void getAllDatabasesInDirectory(){
+        String filename;
+        String id;
+        File dir = new File(".");
+        File[] filesList = dir.listFiles();
+        assert filesList != null;
+        for (File file : filesList) {
+            if (file.isFile() && file.getName().endsWith(".db")) {
+                filename = file.getName();
+                id = filename.substring(0,filename.length()-3);
+                sql.connection(id);
+                allCampaigns.add(id);
+                allFilters.put(id, new HashMap<>());
+            }
+        }
+    }
+
+    public List<String> getAllCampaigns(){
+        return allCampaigns;
+    }
+
 
     public void setBounceAttributes(int time, int pages) {
         bounceTime = time;
@@ -47,6 +72,7 @@ public class MainModel {
             sql.putData(clickLogPath.getPath(), "click",campaignId);
             sql.putData(serverLogPath.getPath(), "server",campaignId);
             allFilters.put(campaignId,new HashMap<>());
+            allCampaigns.add(campaignId);
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -67,6 +93,7 @@ public class MainModel {
     public void deleteCampaign(String campaignID){
         sql.deleteDatabase(campaignID);
         allFilters.remove(campaignID);
+        allCampaigns.remove(campaignID);
         if(currentcampaignId.equals(campaignID)){
             currentcampaignId = "";
         }

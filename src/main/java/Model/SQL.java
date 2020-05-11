@@ -172,6 +172,18 @@ public class SQL {
         new File(id+".db").delete();
     }
 
+    public void closeAllconnections(){
+        try {
+            for (String id : statements.keySet()) {
+                statements.get(id).close();
+                connections.get(id).close();
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
     public static void main( String args[] ) {
         SQL sql = new SQL();
     }

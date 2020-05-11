@@ -147,6 +147,13 @@ public class MainController {
         });
     }
 
+    public void loadAllPreviousCampaigns(){
+        for(String campaignID : model.getAllCampaigns()){
+            CampaignTab tab = new CampaignTab(this, model.queryOverallMetrics(campaignID), campaignID);
+            tabPane.getTabs().add(tab);
+        }
+    }
+
     private void disableCampaignFunctionalityButtons(){
         customBounceCheckBox.setDisable(true);
         chartTypeComboBox.setDisable(true);
@@ -200,6 +207,7 @@ public class MainController {
         for(CampaignTab tab : getTabs()) {
             if(tab.getShouldShowCampaign()) {
                 metricSelected = tab.getSelected();
+                if(metricSelected==null) continue;
                 shouldGraphAvg = !metricSelected.equals("Number of Impressions") && !metricSelected.equals("Number of Clicks") && !metricSelected.equals("Number of Uniques") && !metricSelected.equals("Number of Bounces") && !metricSelected.equals("Number of Conversions") && !metricSelected.equals("Total Cost");
                 XYChart.Series<Number, Number> series = createSeries(timeGranularityValue, graphPoints.get(tab.getDatabaseID()), shouldGraphAvg, tab.getDatabaseID(), metricSelected);
                 lineChart.getData().add(series);
@@ -432,6 +440,7 @@ public class MainController {
                 try {
                     if(error[0] == null) {
                         CampaignTab tab = new CampaignTab(this,((Task<ArrayList<CampaignTab.CampaignDataPackage>>) task).getValue(), campaignID);
+                        tab.selectFirst();
                         clickLogCSV = null;
                         impressionLogCSV = null;
                         serverLogCSV = null;

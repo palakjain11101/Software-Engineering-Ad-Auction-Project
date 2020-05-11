@@ -3,6 +3,7 @@ package View;
 import Controller.MainController;
 import Model.MainModel;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -15,6 +16,7 @@ import javafx.util.StringConverter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainView extends Application {
 
@@ -51,6 +53,15 @@ public class MainView extends Application {
         primaryStage.setMinWidth(900);
 
         primaryStage.show();
+
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                controller.loadAllPreviousCampaigns();
+                return null;
+            }
+        };
+        controller.setBasicLoadingTaskMethods(task);
     }
 
     private void setUpTimeGranulationSlider(MainController controller){
@@ -79,14 +90,7 @@ public class MainView extends Application {
         slider.setOnMouseReleased(mouseEvent -> {
             controller.recreateGraph((int) slider.getValue());
         });
-        controller.recreateGraph(0);
-    }
-
-    public File showFileChooser(){
-        FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-        fileChooser.getExtensionFilters().add(extFilter);
-        return fileChooser.showOpenDialog(stage);
+        //controller.recreateGraph(0);
     }
 
     public Window getWindow(){

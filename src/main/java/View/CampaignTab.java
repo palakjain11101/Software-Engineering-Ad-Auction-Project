@@ -24,6 +24,8 @@ public class CampaignTab extends Tab {
 
     private boolean shouldShowCampaign = true;
 
+    private volatile boolean isLoadingSelection = false;
+
     private VBox pane;
     private TableView table;
     private boolean listenerEnabled = true;
@@ -79,8 +81,6 @@ public class CampaignTab extends Tab {
         container.paddingProperty().setValue(new Insets(10,10,10,10));
         pane.getChildren().add(container);
 
-
-        table.getSelectionModel().select(0);
     }
 
     public void updateData(ArrayList<CampaignDataPackage> newBasicMetrics){
@@ -91,6 +91,16 @@ public class CampaignTab extends Tab {
         table.getSelectionModel().select(index);
         listenerEnabled = true;
 
+    }
+
+    public void selectFirst(){
+        table.getSelectionModel().select(0);
+    }
+
+    public void awaitCompletionOfSelection(){
+        while(isLoadingSelection){
+
+        }
     }
 
     private void addItems(){
@@ -111,7 +121,9 @@ public class CampaignTab extends Tab {
             Task task = new Task<Void>() {
                 @Override
                 protected Void call() {
+                    isLoadingSelection = true;
                     controller.updateGraphData(v.getID(),campaignID);
+                    isLoadingSelection = false;
                     return null;
                 }
             };
@@ -123,6 +135,9 @@ public class CampaignTab extends Tab {
     }
 
     public String getSelected(){
+        if(table.getSelectionModel().getSelectedItem() == null){
+            return null;
+        }
         return ((CampaignDataPackage) table.getSelectionModel().getSelectedItem()).getID();
     }
 
