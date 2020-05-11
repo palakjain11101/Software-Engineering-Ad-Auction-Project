@@ -36,7 +36,7 @@ public class CampaignTab extends Tab {
     }
 
     private void initCampaignTab() {
-        setText("Campaign " + campaignID);
+        setText(campaignID);
         pane = new VBox();
         pane.getStylesheets().add("styles.css");
         setContent(pane);
