@@ -4,16 +4,11 @@ import Model.GraphPoint;
 import Model.MainModel;
 import View.CampaignTab;
 import View.MainView;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -28,7 +23,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
@@ -40,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class MainController {
@@ -103,6 +98,7 @@ public class MainController {
     @FXML TextField campaignIDInput;
     @FXML Button addCampaignButton;
 
+    //Initialises some listeners, selections and node property's
     public void initialize(){
         disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
@@ -147,21 +143,36 @@ public class MainController {
         });
     }
 
+    /*
+    Loads the data from any campaigns automatically detected in the same directory.
+    These campaigns have already been detected in the model.
+     */
     public HashMap<String, List<CampaignTab.CampaignDataPackage>> loadAllDataFromEarlierCampaigns(){
         HashMap<String, List<CampaignTab.CampaignDataPackage>> campaignData = new HashMap<>();
         for(String campaignID : model.getAllCampaigns()){
             campaignData.put(campaignID,model.queryOverallMetrics(campaignID));
-            //CampaignTab tab = new CampaignTab(this, model.queryOverallMetrics(campaignID), campaignID);
-            //tabPane.getTabs().add(tab);
         }
         return campaignData;
     }
 
-    public void loadEarlierCampaign(String campaignID, ArrayList<CampaignTab.CampaignDataPackage> metrics){
+    /*
+    Creates a new campaign tab and sets the relevant properties
+     */
+    public CampaignTab createAndAddTab(String campaignID, ArrayList<CampaignTab.CampaignDataPackage> metrics){
         CampaignTab tab = new CampaignTab(this, metrics, campaignID);
+        tab.setOnClosed(arg0 -> {
+            String id = ((CampaignTab) arg0.getTarget()).getDatabaseID();
+            model.deleteCampaign(id);
+            graphPoints.remove(id);
+            recreateGraph(timeGranulationValue);
+        });
         tabPane.getTabs().add(tab);
+        return tab;
     }
 
+    /*
+    Disables all buttons that should only work when a campaign is active
+     */
     private void disableCampaignFunctionalityButtons(){
         customBounceCheckBox.setDisable(true);
         chartTypeComboBox.setDisable(true);
@@ -171,6 +182,9 @@ public class MainController {
         filterRemoveButton.setDisable(true);
     }
 
+    /*
+    Enables all buttons that should only work when a campaign is active
+     */
     private void enableCampaignFunctionalityButtons(){
         customBounceCheckBox.setDisable(false);
         chartTypeComboBox.setDisable(false);
@@ -180,7 +194,10 @@ public class MainController {
         filterRemoveButton.setDisable(false);
     }
 
-    private List<CampaignTab> getTabs(){
+    /*
+    Returns a list of all tabs, not including the default tab
+     */
+    private List<CampaignTab> getCampaignTabs(){
         List<CampaignTab> tabs = new ArrayList<>();
         for(Tab tab : tabPane.getTabs()){
             if(!(tab == defaultTab)){
@@ -190,18 +207,30 @@ public class MainController {
         return tabs;
     }
 
+    /*
+    Sets the main view
+     */
     public void setView(MainView view){
         this.view = view;
     }
 
+    /*
+    Sets the main model
+     */
     public void setModel(MainModel model){
         this.model = model;
     }
 
+    /*
+    If no new time granularity value is selected, uses the current value
+     */
     public void recreateGraph(){
         recreateGraph(timeGranulationValue);
     }
 
+    /*
+    Recreates the graph based on the current data and properties
+     */
     public void recreateGraph(int timeGranularityValue){
         timeGranulationValue = timeGranularityValue;
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
@@ -212,7 +241,7 @@ public class MainController {
         String metricSelected;
 
         allSeries = new HashMap<>();
-        for(CampaignTab tab : getTabs()) {
+        for(CampaignTab tab : getCampaignTabs()) {
             if(tab.getShouldShowCampaign()) {
                 metricSelected = tab.getSelected();
                 if(metricSelected==null) continue;
@@ -275,6 +304,9 @@ public class MainController {
         lineChart.autosize();
     }
 
+    /*
+    Gets the length in days of teh campaign with the greatest length
+     */
     private int getMostDaysInACampaign(){
         int days = 0;
         for(ArrayList<GraphPoint> list : graphPoints.values()){
@@ -283,9 +315,12 @@ public class MainController {
         return days;
     }
 
-    private XYChart.Series<Number, Number> createSeries(int value, ArrayList<GraphPoint> graphData, boolean shouldGraphAvg, String id, String selected){
+    /*
+    Creates a new series for a campaign based on the time granularity value, graph type and point data
+     */
+    private XYChart.Series<Number, Number> createSeries(int graphType, ArrayList<GraphPoint> graphData, boolean shouldGraphAvg, String campaignID, String selected){
         double divider = 1;
-        switch (value){
+        switch (graphType){
             case SLIDER_DAY:
                 divider = 1;
                 break;
@@ -340,10 +375,13 @@ public class MainController {
             isOutlier(point,graphElement);
         }
 
-        series.setName(id + " : " + selected);
+        series.setName(campaignID + " : " + selected);
         return series;
     }
 
+    /*
+    Checks if a given point on a graph is an outlier and alters it accordingly
+     */
     private void isOutlier(GraphPoint point,  XYChart.Data<Number,Number> graphElement){
         if(point.getOutlier()){
             graphElement.nodeProperty().addListener((observable, oldValue, newValue) -> {
@@ -354,7 +392,10 @@ public class MainController {
         }
     }
 
-    private void addToolTips(XYChart.Series<Number, Number> series){
+    /*
+    Adds tool tips to every point in a series
+     */
+    public void addToolTips(XYChart.Series<Number, Number> series){
         Tooltip tooltip;
         for (XYChart.Data<Number, Number> entry : series.getData()) {
             tooltip = new Tooltip(entry.getYValue().toString());
@@ -401,30 +442,13 @@ public class MainController {
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
     }
 
+    /*
+    Called when load campaign pressed. Creates a new task to load the base data.
+     */
     @FXML public void loadCampaignPressed(){
         final String[] error = new String[1];
-        if(clickLogCSV == null){
-            view.showErrorMessage("Click Log file needed");
-        }
-        else if(impressionLogCSV == null){
-            view.showErrorMessage("Impression Log file needed");
-        }
-        else if(serverLogCSV == null){
-            view.showErrorMessage("Server Log file needed");
-        }
-        else if(!clickLogCSV.getName().endsWith(".csv")){
-            view.showErrorMessage("Click Log file must be a CSV file");
-        }
-        else if(!impressionLogCSV.getName().endsWith(".csv")){
-            view.showErrorMessage("Impression Log file must be a CSV file");
-        }
-        else if(!serverLogCSV.getName().endsWith(".csv")){
-            view.showErrorMessage("Server Log file must be a CSV file");
-        }
-        else if(doesCampaignExist(campaignIDInput.getText())){
-            view.showErrorMessage("That campaign ID is already in use");
-        }
-        else{
+        if(shouldLoadCampaign()) {
+
             String campaignID = campaignIDInput.getText();
 
             Task task = new Task<ArrayList<CampaignTab.CampaignDataPackage>>() {
@@ -447,19 +471,12 @@ public class MainController {
                 view.hideLoadingDialog();
                 try {
                     if(error[0] == null) {
-                        CampaignTab tab = new CampaignTab(this,((Task<ArrayList<CampaignTab.CampaignDataPackage>>) task).getValue(), campaignID);
+                        CampaignTab tab = createAndAddTab(campaignID,((Task<ArrayList<CampaignTab.CampaignDataPackage>>) task).getValue());
                         tab.selectFirst();
                         clickLogCSV = null;
                         impressionLogCSV = null;
                         serverLogCSV = null;
                         campaignIDInput.setText("");
-                        tab.setOnClosed(arg0 -> {
-                            String id = ((CampaignTab) arg0.getTarget()).getDatabaseID();
-                            model.deleteCampaign(id);
-                            graphPoints.remove(id);
-                            recreateGraph(timeGranulationValue);
-                        });
-                        tabPane.getTabs().add(tab);
                         tabPane.getSelectionModel().select(tab);
                     }
                     else {
@@ -478,19 +495,62 @@ public class MainController {
         }
     }
 
+    /*
+    Checks various conditions to see if the campaign should be loaded or not.
+     */
+    private boolean shouldLoadCampaign(){
+        if(clickLogCSV == null){
+            view.showErrorMessage("Click Log file needed");
+        }
+        else if(impressionLogCSV == null){
+            view.showErrorMessage("Impression Log file needed");
+        }
+        else if(serverLogCSV == null){
+            view.showErrorMessage("Server Log file needed");
+        }
+        else if(!clickLogCSV.getName().endsWith(".csv")){
+            view.showErrorMessage("Click Log file must be a CSV file");
+        }
+        else if(!impressionLogCSV.getName().endsWith(".csv")){
+            view.showErrorMessage("Impression Log file must be a CSV file");
+        }
+        else if(!serverLogCSV.getName().endsWith(".csv")){
+            view.showErrorMessage("Server Log file must be a CSV file");
+        }
+        else if(doesCampaignExist(campaignIDInput.getText())){
+            view.showErrorMessage("That campaign ID is already in use");
+        }
+        else {
+            return true;
+        }
+        return false;
+    }
+
+    /*
+    Checks to see if a given campaign exists
+     */
     private boolean doesCampaignExist(String campaignID){
         return graphPoints.keySet().contains(campaignID);
     }
 
+    /*
+    Updates the graph point data for a campaign.
+     */
     public void updateGraphData(String metricSelected, String campaignId){
         if(metricSelected == null){return;}
         graphPoints.put(campaignId,model.queryCampaign(metricSelected, campaignId));
     }
 
+    /*
+    Returns the currently selected tab.
+     */
     private CampaignTab getCurrentTab(){
         return (CampaignTab) tabPane.getTabs().get(tabPane.getSelectionModel().getSelectedIndex());
     }
 
+    /*
+    When add filter is selected, creates a new dialog.
+     */
     @FXML public void addFilterButtonPressed() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/addFilterDialog.fxml"));
         Parent parent = fxmlLoader.load();
@@ -507,14 +567,20 @@ public class MainController {
         }
         HashMap<String, List<String>> map = dialogController.getFilters();
         fillFilterListView(map);
-        testUpdateCampaign(map);
+        updateCampaign(map);
     }
 
+    /*
+    When clear filters pressed, clears all the filters.
+     */
     @FXML public void removeFilterButtonPressed(){
         filterListView.getItems().clear();
-        testUpdateCampaign(new HashMap<>());
+        updateCampaign(new HashMap<>());
     }
 
+    /*
+    Fills the filters added box for a given campaigns filters
+     */
     private void fillFilterListView(HashMap<String, List<String>> map){
         filterListView.getItems().clear();
         for(String metric : map.keySet()){
@@ -524,13 +590,16 @@ public class MainController {
         }
     }
 
+    /*
+    Displays a histogram of the currently selected campaigns click cost.
+     */
     @FXML
     public void onDisplayHistogramPressed() {
         CampaignTab tab = getCurrentTab();
 
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("/histogram.fxml"));
-        fxmlLoader.setController(new HistogramController(model, tab.getDatabaseID()));
+        fxmlLoader.setController(new HistogramController(model, this, tab.getDatabaseID()));
 //            HistogramController histogramController = (HistogramController) fxmlLoader.getController();
         try {
 
@@ -547,6 +616,9 @@ public class MainController {
         }
     }
 
+    /*
+    Opens a new window which displays all the currently visible series
+     */
     @FXML
     public void openNewWindowForChartSelected(){
 
@@ -583,12 +655,18 @@ public class MainController {
     }
 
     //Taken from https://stackoverflow.com/questions/53807176/javafx-clone-xychart-series-doesnt-dork
-    public static XYChart.Series<Number, Number> copySeries(XYChart.Series<Number, Number> series) {
+    private static XYChart.Series<Number, Number> copySeries(XYChart.Series<Number, Number> series) {
         XYChart.Series<Number, Number> copy = new XYChart.Series<>(series.getName(),
-                FXCollections.observableArrayList(series.getData()));
+                series.getData().stream()
+                        .map(data -> new XYChart.Data<>(data.getXValue(), data.getYValue()))
+                        .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+
         return copy;
     }
 
+    /*
+    Called when the save or print button is selected.
+     */
     @FXML public void saveOrPrintSelected(){
         WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
         BufferedImage awtImage = SwingFXUtils.fromFXImage(image, null);
@@ -617,6 +695,9 @@ public class MainController {
         }
     }
 
+    /*
+    Called when the custom bounce check box is selected
+     */
     @FXML
     public void customBounceCheckBoxSelected(){
         if(customBounceCheckBox.isSelected()){
@@ -625,10 +706,13 @@ public class MainController {
         else {
             defineBounceButton.setDisable(true);
             model.setBounceAttributes(30,10);
-            testUpdateCampaign(new HashMap<>());
+            updateCampaign(new HashMap<>());
         }
     }
 
+    /*
+    Called when the define custom bounce rate button is clicked
+     */
     @FXML
     public void defineCustomBounceClicked() throws IOException{
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/setBounceDefinition.fxml"));
@@ -643,10 +727,13 @@ public class MainController {
 
         if(controller.getIsConfirmPressed()) {
             model.setBounceAttributes(controller.getSecondsAfterEntry(), controller.getMaxPagesVisited());
-            testUpdateCampaign(model.getFilters(getCurrentTab().getDatabaseID()));
+            updateCampaign(model.getFilters(getCurrentTab().getDatabaseID()));
         }
     }
 
+    /*
+    Called when the chart type combo box is changed
+     */
     @FXML
     public void onChartTypeComboBoxChanges(){
         String selected = (String) chartTypeComboBox.getSelectionModel().getSelectedItem();
@@ -676,9 +763,12 @@ public class MainController {
         new Thread(task).start();
     }
 
-    public void testUpdateCampaign(HashMap<String,List<String>> map){
+    /*
+    Updates the currently selected campaign given new filters
+     */
+    private void updateCampaign(HashMap<String,List<String>> map){
         CampaignTab tab = getCurrentTab();
-        Task task = new Task<Void>() {
+        Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() {
                 model.setFilters(map,tab.getDatabaseID());
@@ -694,6 +784,9 @@ public class MainController {
         new Thread(task).start();
     }
 
+    /*
+    Sets basic events for some loading tasks which share common features
+     */
     public Task<Void> setBasicLoadingTaskMethods(Task<Void> task){
         task.setOnRunning((e) -> {
             view.showLoadingDialog();
@@ -705,14 +798,4 @@ public class MainController {
         });
         return task;
     }
-
-    @FXML
-    public void useCurrentDatabase(){
-        model.openCurrentDatabase();
-        CampaignTab tab = new CampaignTab(this,model.queryOverallMetrics("1"),"1");
-        tabPane.getTabs().add(tab);
-        tabPane.getSelectionModel().select(tab);
-    }
-
-
 }

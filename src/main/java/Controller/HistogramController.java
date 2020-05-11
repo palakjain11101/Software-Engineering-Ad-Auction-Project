@@ -7,6 +7,8 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Tooltip;
+import javafx.util.Duration;
 
 import java.lang.reflect.Array;
 import java.net.URL;
@@ -16,14 +18,14 @@ import java.util.ResourceBundle;
 
 public class HistogramController implements Initializable {
 
-    private MainModel model;
+    private MainController controller;
 
     private ArrayList<Double> clickCostList;
     private int numberOfClasses;
     private Double classWidth;
 
-    HistogramController(MainModel model, String campaignId) {
-        this.model = model;
+    HistogramController(MainModel model, MainController controller, String campaignId) {
+        this.controller = controller;
         this.clickCostList = model.getAllClickCosts(campaignId);
         this.classWidth = 2.5;
         double classes = ((Collections.max(clickCostList))/classWidth);
@@ -89,6 +91,8 @@ public class HistogramController implements Initializable {
 //        }
 
         clickCostHistogram.getData().addAll(histogramSeries);
+        controller.addToolTips(histogramSeries);
 
     }
+
 }

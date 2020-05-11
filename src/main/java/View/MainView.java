@@ -14,7 +14,6 @@ import javafx.scene.control.Slider;
 import javafx.stage.*;
 import javafx.util.StringConverter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +66,7 @@ public class MainView extends Application {
             hideLoadingDialog();
             HashMap<String, List<CampaignTab.CampaignDataPackage>> campaignData = ((Task<HashMap<String, List<CampaignTab.CampaignDataPackage>>>) task).getValue();
             for(String campaignID : campaignData.keySet()){
-                controller.loadEarlierCampaign(campaignID, (ArrayList<CampaignTab.CampaignDataPackage>) campaignData.get(campaignID));
+                controller.createAndAddTab(campaignID, (ArrayList<CampaignTab.CampaignDataPackage>) campaignData.get(campaignID));
             }
         });
 
