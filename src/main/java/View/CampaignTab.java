@@ -2,15 +2,13 @@ package View;
 
 import Controller.MainController;
 import Model.GraphPoint;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
@@ -18,25 +16,20 @@ public class CampaignTab extends Tab {
 
     private MainController controller;
 
-    private String campaignID;
-
     private ArrayList<CampaignDataPackage> basicMetrics;
-
-    private boolean shouldShowCampaign = true;
 
     private VBox pane;
     private TableView table;
     private boolean listenerEnabled = true;
 
-    public CampaignTab(MainController controller, ArrayList<CampaignDataPackage> basicMetrics, String campaignID){
+    public CampaignTab(MainController controller, ArrayList<CampaignDataPackage> basicMetrics){
         this.controller = controller;
         this.basicMetrics = basicMetrics;
-        this.campaignID = campaignID;
         initCampaignTab();
     }
 
     private void initCampaignTab() {
-        setText(campaignID);
+        setText("Campaign 1");
         pane = new VBox();
         pane.getStylesheets().add("styles.css");
         setContent(pane);
@@ -66,21 +59,10 @@ public class CampaignTab extends Tab {
 
         pane.getChildren().add(table);
 
-        CheckBox hideBox = new CheckBox();
-        hideBox.paddingProperty().setValue(new Insets(0,10,10,0));
-        Text text = new Text("Hide Series");
-        hideBox.setSelected(false);
-        hideBox.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
-            shouldShowCampaign = !shouldShowCampaign;
-            controller.recreateGraph();
-        });
-
-        HBox container = new HBox(hideBox,text);
-        container.paddingProperty().setValue(new Insets(10,10,10,10));
-        pane.getChildren().add(container);
-
-
-        table.getSelectionModel().select(0);
+        //TEMPORARY
+        Button button = new Button("TEST");
+        button.setOnMouseClicked(mouseEvent -> controller.onTestButtonPressed());
+        pane.getChildren().add(button);
     }
 
     public void updateData(ArrayList<CampaignDataPackage> newBasicMetrics){
@@ -90,6 +72,17 @@ public class CampaignTab extends Tab {
         addItems();
         table.getSelectionModel().select(index);
         listenerEnabled = true;
+
+    }
+
+    private void setItems(){
+        int i = 0;
+        for(CampaignDataPackage data : basicMetrics){
+            table.getItems().set(i,data);
+            i++;
+        }
+
+        //table.getSelectionModel().selectFirst();
 
     }
 
@@ -111,14 +104,15 @@ public class CampaignTab extends Tab {
             Task task = new Task<Void>() {
                 @Override
                 protected Void call() {
-                    controller.updateGraphData(v.getID(),campaignID);
+                    controller.updateGraphData(v.getID(),"test");
                     return null;
                 }
             };
 
-            task = controller.setBasicLoadingTaskMethods(task);
+            task = controller.setBasicLoadingTaskMethods(task,this);
 
             new Thread(task).start();
+            //controller.updateGraphData(v.getID(),"test");
         });
     }
 
@@ -127,12 +121,13 @@ public class CampaignTab extends Tab {
     }
 
     public String getDatabaseID(){
-        return campaignID;
+        return "test";
     }
 
-    public boolean getShouldShowCampaign(){
-        return shouldShowCampaign;
-    }
+//    public void retriggerSelectionProperty(){
+//        CampaignDataPackage dataPackage = (CampaignDataPackage) table.getSelectionModel().getSelectedItem();
+//        controller.metricSelectedOnCampaignTab(dataPackage.getID(),"test");
+//    }
 
     public static class CampaignDataPackage{
         private final String a;
