@@ -17,6 +17,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -26,12 +27,14 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
+import java.awt.*;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -383,7 +386,7 @@ public class MainController {
     Checks if a given point on a graph is an outlier and alters it accordingly
      */
     private void isOutlier(GraphPoint point,  XYChart.Data<Number,Number> graphElement){
-        if(point.getOutlier()){
+        if(point.getOutlier()) {
             graphElement.nodeProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
                     newValue.setStyle("-fx-background-color: RED");
@@ -795,5 +798,14 @@ public class MainController {
             recreateGraph(timeGranulationValue);
         });
         return task;
+    }
+
+
+    @FXML public void getHelp() throws IOException {
+        try {
+            Desktop.getDesktop().browse(new URL("file:\\\\\\C:\\Users\\Palak\\Desktop\\Help.pdf").toURI());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
