@@ -124,22 +124,19 @@ public class MainView extends Application {
         waitingBox.hide();
     }
 
-    public void darkModeToggle() {
-        Scene scene = controller.darkModeToggle();
+    public void darkModeToggle(boolean isSelected) {
 
-        if (controller.darkModeToggle.isSelected()) {
-            scene.getStylesheets().removeAll(scene.getStylesheets());
-            scene.getStylesheets().add("/styles_darkmode.css");
+        if (isSelected) {
+            root.getStylesheets().removeAll(root.getStylesheets());
+            root.getStylesheets().add("/styles_darkmode.css");
 
         }
 
         else {
-            scene.getStylesheets().removeAll(scene.getStylesheets());
-            scene.getStylesheets().add("/styles.css");
+            root.getStylesheets().removeAll(root.getStylesheets());
+            root.getStylesheets().add("/styles.css");
 
         }
-
-        stage.setScene(scene);
 
     }
 
