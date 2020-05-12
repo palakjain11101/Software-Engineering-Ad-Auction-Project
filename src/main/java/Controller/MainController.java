@@ -84,6 +84,9 @@ public class MainController {
     Button displayHistogramButton;
 
     @FXML
+    public ToggleButton darkModeToggle;
+
+    @FXML
     Spinner<Double> outlierStrictnessSpinner;
 
     @FXML
@@ -98,8 +101,15 @@ public class MainController {
     @FXML TextField campaignIDInput;
     @FXML Button addCampaignButton;
 
+    private String styles;
+    private String styles_darkmode;
+
     //Initialises some listeners, selections and node property's
     public void initialize(){
+
+        styles = getClass().getResource("/styles.css").toExternalForm();
+        styles_darkmode = getClass().getResource("/styles_darkmode.css").toExternalForm();
+
         disableCampaignFunctionalityButtons();
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
         chartTypeComboBox.getSelectionModel().select(0);
@@ -614,6 +624,24 @@ public class MainController {
             e.printStackTrace();
 
         }
+    }
+
+    public Scene darkModeToggle() {
+        Scene scene = darkModeToggle.getScene();
+
+        return scene;
+//
+//        if (darkModeToggle.isSelected()) {
+//            scene.getStylesheets().removeAll(scene.getStylesheets());
+//            scene.getStylesheets().add("/styles_darkmode.css");
+//
+//        }
+//
+//        else {
+//            scene.getStylesheets().removeAll(scene.getStylesheets());
+//            scene.getStylesheets().add("/styles.css");
+//
+//        }
     }
 
     /*

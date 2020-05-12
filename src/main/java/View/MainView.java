@@ -25,6 +25,8 @@ public class MainView extends Application {
     private Parent root;
     private Alert waitingBox;
 
+    private MainController controller;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -120,6 +122,25 @@ public class MainView extends Application {
     public void hideLoadingDialog(){
         waitingBox.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
         waitingBox.hide();
+    }
+
+    public void darkModeToggle() {
+        Scene scene = controller.darkModeToggle();
+
+        if (controller.darkModeToggle.isSelected()) {
+            scene.getStylesheets().removeAll(scene.getStylesheets());
+            scene.getStylesheets().add("/styles_darkmode.css");
+
+        }
+
+        else {
+            scene.getStylesheets().removeAll(scene.getStylesheets());
+            scene.getStylesheets().add("/styles.css");
+
+        }
+
+        stage.setScene(scene);
+
     }
 
 }
