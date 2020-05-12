@@ -80,15 +80,15 @@ public class MainModel {
         return null;
     }
 
-    private void deleteAllCampaigns(){
-        Iterator<String> i = allFilters.keySet().iterator();
-        String campaignID;
-        while(i.hasNext()){
-            campaignID = i.next();
-            sql.deleteDatabase(campaignID);
-        }
-
-    }
+//    private void deleteAllCampaigns(){
+//        Iterator<String> i = allFilters.keySet().iterator();
+//        String campaignID;
+//        while(i.hasNext()){
+//            campaignID = i.next();
+//            sql.deleteDatabase(campaignID);
+//        }
+//
+//    }
 
     public void deleteCampaign(String campaignID){
         sql.deleteDatabase(campaignID);
@@ -99,10 +99,10 @@ public class MainModel {
         }
     }
 
-    public Double getData(String overallMetricQuery) {
+    private Double getData(String overallMetricQuery) {
         try {
             ResultSet set = sql.getData(overallMetricQuery, currentcampaignId);
-            Double value = set.getDouble(1);
+            double value = set.getDouble(1);
             return round(value, 2);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -110,7 +110,7 @@ public class MainModel {
         return 0.0;
     }
 
-    public static double round(double value, int places) {
+    private static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = BigDecimal.valueOf(value);
@@ -122,7 +122,7 @@ public class MainModel {
         return v2 == 0 ? 0 : v1 / v2;
     }
 
-    public ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg, boolean shouldXAxisBeIncrement) {
+    private ArrayList<GraphPoint> getDataOverTimePoints(String metricOverTimeQuery, boolean shouldGraphAvg, boolean shouldXAxisBeIncrement) {
         if (metricOverTimeQuery.equals("")) return null;
         ArrayList<GraphPoint> metricOverTime = new ArrayList<>();
         ResultSet metricOverTimeSet = sql.getData(metricOverTimeQuery, currentcampaignId);
@@ -372,12 +372,4 @@ public class MainModel {
         }
         return clickCosts;
     }
-
-
-    //FOR TESTING PURPOSES
-    public void openCurrentDatabase() {
-        sql.connection("test");
-    }
-
-
 }
