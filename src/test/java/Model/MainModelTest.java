@@ -174,12 +174,57 @@ public class MainModelTest {
 
     @Test
     public void testGraphPointValuesOnPerHoursOfDayGraph(){
+        model.setChartType("Per Hour of Day");
+
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("Total Cost",ID)), is(Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.0,5.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("CTR",ID)), is(Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("Number of Clicks",ID)), is(Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.0,4.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)));
 
     }
 
     @Test
     public void testGraphPointValuesOnPerDayOfWeekGraph(){
+        model.setChartType("Per Day of Week");
+        //model.queryCampaign("Number of Impressions",ID);
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("Number of Impressions",ID)), is(Arrays.asList(1.0,1.0,1.0,1.0,1.0,1.0,2.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("Number of Conversions",ID)), is(Arrays.asList(1.0,0.0,1.0,0.0,1.0,1.0,1.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("CPA",ID)), is(Arrays.asList(1.0,0.0,1.0,0.0,1.0,1.0,2.0)));
 
+    }
+
+
+    @Test
+    public void testGraphPointValuesOnPerDayOfWeekGraphWithFilters(){
+        model.setChartType("Per Day of Week");
+
+        HashMap<String, List<String>> filters = new HashMap<>();
+        filters.put("gender",Arrays.asList("Male"));
+        filters.put("income",Arrays.asList("Medium","High"));
+        filters.put("ageRange",Arrays.asList("<25"));
+        model.setFilters(filters,ID);
+
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("CPA",ID)), is(Arrays.asList(0.0,0.0,0.0,0.0,0.0,1.0,2.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("Number of Uniques",ID)), is(Arrays.asList(0.0,0.0,0.0,1.0,0.0,1.0,1.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("CPM",ID)), is(Arrays.asList(0.0,0.0,0.0,1000.0,0.0,0.0,500.0)));
+
+        model.setFilters(new HashMap<>(),ID);
+    }
+
+    @Test
+    public void testGraphPointValuesOnPerHourOfDayGraphWithFilters(){
+        model.setChartType("Per Hour of Day");
+
+        HashMap<String, List<String>> filters = new HashMap<>();
+        filters.put("gender",Arrays.asList("Male"));
+        filters.put("income",Arrays.asList("Low","Medium"));
+        filters.put("ageRange",Arrays.asList("<25"));
+        model.setFilters(filters,ID);
+
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("Total Cost",ID)), is(Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,5.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("Number of Conversions",ID)), is(Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,3.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)));
+        Assert.assertThat(convertGraphPointToListOfYPoints(model.queryCampaign("CPM",ID)), is(Arrays.asList(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1000.0,600.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)));
+
+        model.setFilters(new HashMap<>(),ID);
     }
 
     @SuppressWarnings("deprecation")
