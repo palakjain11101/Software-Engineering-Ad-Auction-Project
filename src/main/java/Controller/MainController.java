@@ -803,7 +803,8 @@ public class MainController {
 
     @FXML public void getHelp() throws IOException {
         try {
-            Desktop.getDesktop().browse(new URL("file:\\\\\\C:\\Users\\Palak\\Desktop\\Help.pdf").toURI());
+            URL url = getClass().getResource("/Help.pdf");
+            Desktop.getDesktop().browse(url.toURI());
         } catch (Exception e) {
             e.printStackTrace();
         }
