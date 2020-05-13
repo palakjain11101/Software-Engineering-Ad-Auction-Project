@@ -173,6 +173,7 @@ public class MainModelTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testGraphPointValuesOnPerHoursOfDayGraph(){
         model.setChartType("Per Hour of Day");
 
@@ -182,6 +183,7 @@ public class MainModelTest {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGraphPointValuesOnPerDayOfWeekGraph(){
         model.setChartType("Per Day of Week");
@@ -193,6 +195,7 @@ public class MainModelTest {
     }
 
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGraphPointValuesOnPerDayOfWeekGraphWithFilters(){
         model.setChartType("Per Day of Week");
@@ -210,6 +213,7 @@ public class MainModelTest {
         model.setFilters(new HashMap<>(),ID);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGraphPointValuesOnPerHourOfDayGraphWithFilters(){
         model.setChartType("Per Hour of Day");

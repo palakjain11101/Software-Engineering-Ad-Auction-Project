@@ -873,6 +873,7 @@ public class MainController {
             File temp = File.createTempFile("file", ".pdf");
             temp.deleteOnExit();
             OutputStream out = new FileOutputStream(temp);
+
             out.write(resource.readAllBytes());
             resource.close();
             out.flush();
