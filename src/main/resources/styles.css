@@ -1,5 +1,6 @@
 .root{
     -fx-background-color: #eae8e0;
+    -fx-font-size: 9pt;
 }
 
 .graph-pane{

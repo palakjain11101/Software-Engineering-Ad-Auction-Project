@@ -90,6 +90,9 @@ public class MainController {
     ToggleButton darkModeToggle;
 
     @FXML
+    Spinner<Integer> fontSizeChanger;
+
+    @FXML
     Spinner<Double> outlierStrictnessSpinner;
 
     @FXML
@@ -132,6 +135,11 @@ public class MainController {
 
         campaignIDInput.textProperty().addListener((observable, oldValue, newValue) -> shouldEnableLoadCampaignButton());
 
+        setOutlierStrictnessSpinnerAttributes();
+        setFontSizeChangerSpinnerAttributes();
+    }
+
+    private void setOutlierStrictnessSpinnerAttributes(){
         outlierStrictnessSpinner.setValueFactory(new SpinnerValueFactory<Double>() {
             @Override
             public void decrement(int i) {
@@ -150,6 +158,28 @@ public class MainController {
         outlierStrictnessSpinner.getValueFactory().setValue(2.0);
         outlierStrictnessSpinner.getValueFactory().valueProperty().addListener((observableValue, aDouble, t1) -> {
             recreateGraph();
+        });
+    }
+
+    private void setFontSizeChangerSpinnerAttributes(){
+        fontSizeChanger.setValueFactory(new SpinnerValueFactory<Integer>() {
+            @Override
+            public void decrement(int i) {
+                if(getValue() > 6){
+                    setValue(getValue()-1);
+                }
+            }
+
+            @Override
+            public void increment(int i) {
+                if(getValue() < 12){
+                    setValue(getValue()+1);
+                }
+            }
+        });
+        fontSizeChanger.getValueFactory().setValue(9);
+        fontSizeChanger.getValueFactory().valueProperty().addListener((observableValue, aInt, t1) -> {
+            view.setFontSize(fontSizeChanger.getValue());
         });
     }
 

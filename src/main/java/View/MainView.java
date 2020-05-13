@@ -140,4 +140,8 @@ public class MainView extends Application {
 
     }
 
+    public void setFontSize(int size){
+        root.setStyle("-fx-font-size: " + size + "pt;");
+    }
+
 }

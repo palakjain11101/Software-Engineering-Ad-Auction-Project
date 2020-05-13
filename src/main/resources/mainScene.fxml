@@ -33,16 +33,16 @@
       <ColumnConstraints minWidth="76.0" percentWidth="30.0" prefWidth="84.0" />
       <ColumnConstraints percentWidth="15.0" />
       <ColumnConstraints percentWidth="15.0" />
-      <ColumnConstraints percentWidth="10.0" />
-       <ColumnConstraints percentWidth="10.0" />
+      <ColumnConstraints percentWidth="15.0" />
+       <ColumnConstraints percentWidth="5.0" />
       <ColumnConstraints />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints maxHeight="135.0" minHeight="56.0" percentHeight="5.0" prefHeight="135.0" />
+      <RowConstraints maxHeight="135.0" minHeight="56.0" percentHeight="6.0" prefHeight="135.0" />
       <RowConstraints maxHeight="567.2000122070312" minHeight="320.0" percentHeight="60.0" prefHeight="488.0" />
-      <RowConstraints maxHeight="102.0" minHeight="22.79998779296875" percentHeight="5.0" prefHeight="102.0" />
+      <RowConstraints maxHeight="102.0" minHeight="22.79998779296875" percentHeight="9.0" prefHeight="102.0" />
       <RowConstraints />
-      <RowConstraints percentHeight="45.0" />
+      <RowConstraints percentHeight="40.0" />
       <RowConstraints />
    </rowConstraints>
    <children>
@@ -94,14 +94,51 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.columnSpan="2147483647">
           <Pane prefHeight="30.0" prefWidth="709.0" HBox.hgrow="ALWAYS" />
           <Button mnemonicParsing="false" onAction="#saveOrPrintSelected" text="Save/Print" />
-         <Button mnemonicParsing="false" text="Help" />
+         <Button mnemonicParsing="false" onAction="#getHelp" text="Help" />
          <ToggleButton fx:id="darkModeToggle" mnemonicParsing="false" onAction="#darkModeToggle" text="Darkmode Toggle" />
-         <Spinner prefHeight="25.0" prefWidth="56.0" />
+         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Set Font Size" />
+         <Spinner fx:id="fontSizeChanger" prefHeight="26.0" prefWidth="98.0" />
       </ToolBar>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="2">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time Granularity" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="15.0" />
-            <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="15.0" />
+            <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Outlier Strictness" />
+                        <Spinner fx:id="outlierStrictnessSpinner">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Spinner>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time Granularity" />
+                        <Slider id="timeGranulationSlider" fx:id="timeGranulationSlider" majorTickUnit="1.0" max="3.0" minorTickCount="0" prefHeight="30.0" prefWidth="300.0" showTickLabels="true" snapToTicks="true">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Slider>
+                     </children>
+                  </HBox>
+                  <Button mnemonicParsing="false" onAction="#openNewWindowForChartSelected" text="Open New Window For Chart" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                  <ComboBox fx:id="chartTypeComboBox" onAction="#onChartTypeComboBoxChanges" prefWidth="150.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+               </children>
+            </GridPane>
          </children>
       </AnchorPane>
       <LineChart fx:id="lineChart" animated="false" legendSide="TOP" prefHeight="308.0" prefWidth="758.0" styleClass="graph-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="1">
@@ -159,20 +196,5 @@
             </Button>
          </children>
       </VBox>
-      <ComboBox fx:id="chartTypeComboBox" onAction="#onChartTypeComboBoxChanges" prefWidth="150.0" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <Button mnemonicParsing="false" onAction="#openNewWindowForChartSelected" text="Open New Window For Chart" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Outlier Strictness" />
-            <Spinner fx:id="outlierStrictnessSpinner">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Spinner>
-         </children>
-      </HBox>
    </children>
 </GridPane>
