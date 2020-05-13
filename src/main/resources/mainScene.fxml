@@ -7,13 +7,12 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -93,15 +92,11 @@
          </GridPane.margin>
       </TabPane>
       <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.columnSpan="2147483647">
-          <Pane HBox.hgrow="ALWAYS" />
+          <Pane prefHeight="30.0" prefWidth="709.0" HBox.hgrow="ALWAYS" />
           <Button mnemonicParsing="false" onAction="#saveOrPrintSelected" text="Save/Print" />
          <Button mnemonicParsing="false" text="Help" />
-         <MenuButton mnemonicParsing="false" text="Settings">
-           <items>
-             <MenuItem mnemonicParsing="false" text="Action 1" />
-             <MenuItem mnemonicParsing="false" text="Action 2" />
-           </items>
-         </MenuButton>
+         <ToggleButton fx:id="darkModeToggle" mnemonicParsing="false" onAction="#darkModeToggle" text="Darkmode Toggle" />
+         <Spinner prefHeight="25.0" prefWidth="56.0" />
       </ToolBar>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="2">
          <children>
