@@ -1,0 +1,30 @@
+.root{
+    -fx-font-size: 6pt;
+    -fx-background-color: #eae8e0;
+}
+
+.graph-pane{
+    -fx-background-color: #f6fffa;
+    -fx-border-color: #4c4c4c;
+}
+
+.tab-selection-pane{
+    -fx-background-color: #d6d6d6;
+}
+
+.campaign-tab-radio-button-1{
+    -fx-background-color: #939393;
+}
+
+.campaign-tab-radio-button-2{
+    -fx-background-color: #afafaf;
+}
+
+.campaign-tab-radio-button-1, .campaign-tab-radio-button-2{
+    -fx-background-insets: 3px;
+}
+
+.time-granulation-bar-pane{
+    -fx-background-color: #d6d6d6;
+    -fx-background-radius: 5px;
+}
