@@ -84,7 +84,10 @@ public class MainController {
     Button displayHistogramButton;
 
     @FXML
-    ToggleButton darkModeToggle;
+    public ToggleButton darkModeToggle;
+
+    @FXML
+    ComboBox<Integer> textSizes;
 
     @FXML
     Spinner<Double> outlierStrictnessSpinner;
@@ -108,6 +111,9 @@ public class MainController {
 
 
         disableCampaignFunctionalityButtons();
+
+        textSizes.getItems().addAll(6,8,10,12,14);
+
         chartTypeComboBox.getItems().addAll("Standard","Per Hour of Day","Per Day of Week");
         chartTypeComboBox.getSelectionModel().select(0);
         tabPane.getSelectionModel().selectedItemProperty().addListener(
@@ -623,9 +629,19 @@ public class MainController {
         }
     }
 
+    /*
+    Toggles between dark and light mode themes for the application window
+     */
     @FXML
     public void darkModeToggle() {
         view.darkModeToggle(darkModeToggle.isSelected());
+
+    }
+
+    @FXML
+    public void textSizeChange() {
+        view.textSizeChange(textSizes.getSelectionModel().getSelectedItem(), darkModeToggle.isSelected());
+
     }
 
     /*

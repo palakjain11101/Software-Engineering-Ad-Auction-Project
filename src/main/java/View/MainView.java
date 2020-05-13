@@ -124,6 +124,9 @@ public class MainView extends Application {
         waitingBox.hide();
     }
 
+    /*
+    Toggles between dark and light mode themes for the application window
+     */
     public void darkModeToggle(boolean isSelected) {
 
         if (isSelected) {
@@ -136,6 +139,29 @@ public class MainView extends Application {
             root.getStylesheets().removeAll(root.getStylesheets());
             root.getStylesheets().add("/styles.css");
 
+        }
+
+    }
+
+    public void textSizeChange(Integer size, boolean isSelected) {
+
+        StringBuilder sb = new StringBuilder("/styles.css");
+        StringBuilder sbd = new StringBuilder("/styles_darkmode.css");
+
+//        root.getStylesheets().removeAll(root.getStylesheets());
+//        sb.insert(7, Integer.toString(size));
+//        root.getStylesheets().add(sb.toString());
+
+        if(isSelected) {
+            root.getStylesheets().removeAll(root.getStylesheets());
+            sbd.insert(16, Integer.toString(size));
+            root.getStylesheets().add(sb.toString());
+        }
+
+        else {
+            root.getStylesheets().removeAll(root.getStylesheets());
+            sb.insert(7, Integer.toString(size));
+            root.getStylesheets().add(sb.toString());
         }
 
     }

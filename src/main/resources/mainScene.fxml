@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Spinner?>
@@ -96,7 +97,8 @@
           <Button mnemonicParsing="false" onAction="#saveOrPrintSelected" text="Save/Print" />
          <Button mnemonicParsing="false" text="Help" />
          <ToggleButton fx:id="darkModeToggle" mnemonicParsing="false" onAction="#darkModeToggle" text="Darkmode Toggle" />
-         <Spinner prefHeight="25.0" prefWidth="56.0" />
+         <Label text="Text Size:" />
+         <ComboBox fx:id="textSizes" onAction="#textSizeChange" prefHeight="25.0" prefWidth="60.0" />
       </ToolBar>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="time-granulation-bar-pane" stylesheets="@styles.css" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="2">
          <children>
