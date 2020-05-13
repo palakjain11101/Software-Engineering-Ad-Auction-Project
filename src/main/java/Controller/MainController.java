@@ -32,8 +32,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -843,10 +842,34 @@ public class MainController {
     }
 
 
-    @FXML public void getHelp() throws IOException {
+    @FXML public void getHelp() {
         try {
-            URL url = getClass().getResource("/Help.pdf");
-            Desktop.getDesktop().browse(url.toURI());
+//            InputStream is = getClass().getResourceAsStream("/Help.pdf");
+//            byte[] data = new byte[is.available()];
+//            System.out.println(is.read(data));
+//            is.close();
+//
+//            String tempFile = "file";
+//            File temp = File.createTempFile(tempFile, ".pdf");
+//            FileOutputStream fos = new FileOutputStream(temp);
+//            fos.write(data);
+//            fos.flush();
+//            fos.close();
+
+            Desktop desktop = Desktop.getDesktop();
+            InputStream resource = getClass().getResourceAsStream("/Help.pdf");
+            File temp = File.createTempFile("file", ".pdf");
+            temp.deleteOnExit();
+            OutputStream out = new FileOutputStream(temp);
+            out.write(resource.readAllBytes());
+            resource.close();
+            out.flush();
+            out.close();
+            desktop.open(temp);
+
+            //URL url = getClass().getResource("/Help.pdf");
+            //Desktop.getDesktop().browse(temp.toURI());
+            //Desktop.getDesktop().open(temp);
         } catch (Exception e) {
             e.printStackTrace();
         }
