@@ -29,6 +29,7 @@ import javafx.util.StringConverter;
 
 import java.awt.*;
 import java.awt.print.Printable;
+import java.awt.print.PrinterAbortException;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.awt.image.BufferedImage;
@@ -520,6 +521,7 @@ public class MainController {
                     }
                     else {
                         view.showErrorMessage(error[0]);
+                        model.deleteCampaign(campaignID);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -710,30 +712,35 @@ public class MainController {
     Called when the save or print button is selected.
      */
     @FXML public void saveOrPrintSelected(){
-        WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
-        BufferedImage awtImage = SwingFXUtils.fromFXImage(image, null);
+        try {
+            WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
+            BufferedImage awtImage = SwingFXUtils.fromFXImage(image, null);
 
-        PrinterJob printJob = PrinterJob.getPrinterJob();
+            PrinterJob printJob = PrinterJob.getPrinterJob();
 
-        printJob.setPrintable((graphics, pageFormat, pageIndex) -> {
-            int x = (int) Math.ceil(pageFormat.getImageableX());
-            int y = (int) Math.ceil(pageFormat.getImageableY());
-            if (pageIndex != 0) {
-                return Printable.NO_SUCH_PAGE;
+            printJob.setPrintable((graphics, pageFormat, pageIndex) -> {
+                int x = (int) Math.ceil(pageFormat.getImageableX());
+                int y = (int) Math.ceil(pageFormat.getImageableY());
+                if (pageIndex != 0) {
+                    return Printable.NO_SUCH_PAGE;
+                }
+
+                double scaler = Math.ceil(pageFormat.getImageableWidth()) / awtImage.getWidth();
+
+                graphics.drawImage(awtImage, x, y, (int) Math.ceil(pageFormat.getImageableWidth()), (int) Math.ceil(awtImage.getHeight() * scaler), null);
+                return Printable.PAGE_EXISTS;
+            });
+
+            if (printJob.printDialog()) {
+                try {
+                    printJob.print();
+                } catch (PrinterException prt) {
+                    prt.printStackTrace();
+                }
             }
+        }
+        catch (Exception e){
 
-            double scaler = Math.ceil(pageFormat.getImageableWidth())/awtImage.getWidth();
-
-            graphics.drawImage(awtImage, x, y, (int) Math.ceil(pageFormat.getImageableWidth()), (int) Math.ceil(awtImage.getHeight()*scaler), null);
-            return Printable.PAGE_EXISTS;
-        });
-
-        if (printJob.printDialog()) {
-            try {
-                printJob.print();
-            } catch (PrinterException prt) {
-                prt.printStackTrace();
-            }
         }
     }
 
