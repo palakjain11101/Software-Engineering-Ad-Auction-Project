@@ -740,7 +740,7 @@ public class MainController {
             }
         }
         catch (Exception e){
-
+            view.showErrorMessage(e.getMessage());
         }
     }
 
